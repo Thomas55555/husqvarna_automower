@@ -1,0 +1,33 @@
+{
+    "config": {
+        "title": "Husqvarna Automower",
+        "step": {
+            "user": {
+                "title": "Husqvarna Automower",
+                "description": "If you need help with the configuration have a look here: https://nochein-zu.tragen",
+                "data": {
+                    "username": "Benutzername",
+                    "password": "Password",
+                    "api_key": "API Key"
+                }
+            }
+        },
+        "error": {
+            "auth": "Username/Password is wrong."
+        },
+        "abort": {
+            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
+        }
+    },
+    "options": {
+        "step": {
+            "user": {
+                "data": {
+                    "binary_sensor": "Binary sensor enabled",
+                    "sensor": "Sensor enabled",
+                    "switch": "Switch enabled"
+                }
+            }
+        }
+    }
+}
