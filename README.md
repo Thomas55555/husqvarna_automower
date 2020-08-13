@@ -11,18 +11,10 @@ Custom component to support Automower.
   - [Installation through HACS](#installation-through-hacs)
   - [Manual installation](#manual-installation)
 - [Configuration](#configuration)
-  - [Home Assistant](#home-assistant)
   - [Gardena Application Key / Client ID](#gardena-application-key--client-id)
-- [Supported devices](#supported-devices)
-- [Services](#services)
-  - [Smart Irrigation Control services](#smart-irrigation-control-services)
-  - [Smart Mower services](#smart-mower-services)
-  - [Smart Power Socket services](#smart-power-socket-services)
-  - [Smart Sensor services](#smart-sensor-services)
-  - [Smart Water Control services](#smart-water-control-services)
-- [Development](#development)
-  - [Debugging](#debugging)
-  - [TODO](#todo)
+  - [Home Assistant](#home-assistant)
+- [Usage](#usage)
+- [TODO](#todo)
 
 ## About
 
@@ -52,19 +44,13 @@ Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the
 ## Configuration
 
 
-### Home Assistant
+### Husqvarna API-Key
 
-Setup under Integrations in Home Assistant, search for "husqvarna_automower". You need to enter e-mail, password and your API-Key. 
-
-### Gardena Application Key / Client ID
-
-In order to use this integration you must get a client ID /
-Application Key from Gardena/Husqvarna.
+In order to use this integration you must get a API-Key from Husqvarna.
 
 1. Go to https://developer.husqvarnagroup.cloud/
 
-2. Create an account if needed, otherwise sign in with your Gardena
-   account.
+2. Create an account if needed, otherwise sign in with your Husqvarna account.
 
 3. After signing in you will be automatically redirected to "Your
    applications". (Otherwise go to: https://developer.husqvarnagroup.cloud/apps)
@@ -73,79 +59,33 @@ Application Key from Gardena/Husqvarna.
    (doesn't matter), leave the other fields empty.
 
 5. Click on "+Connect new API" and connect the Authentication API and
-   the GARDENA smart system API.
+   the Husqvarna Automower API.
 
 6. Copy your Application Key, this is what you need when you add the integration in Home Assistant.
 
+### Home Assistant
 
-## Supported devices
+Setup under Integrations in Home Assistant, search for "husqvarna_automower". You need to enter e-mail, password and your API-Key.
+If the integration is not shown, try to refresh your browser (F5) or (Shift+F5). Maybe you need to reopen your browser.
 
-The following devices are supported :
+## Usage
 
-* Gardena Smart Irrigation Control (as switch)
-* Gardena Smart Mower (as vacuum)
-* Gardena Smart Sensor (as sensor)
-* Gardena Smart Water Control (as switch)
-* Gardena Smart Power Socket (as switch)
-
-## Services
-
-### Smart Irrigation Control services
-
-> [TODO: document services]
-
-### Smart Mower services
-
-`vacuum.start`  
-Start the mower using the Gardena API command START_SECONDS_TO_OVERRIDE.  
-The mower switches to manual operation for a defined duration of time.   The duration is taken from the integration option "*Mower Duration (minutes)*" (see *Configuration -> Integrations* in HA).
+`vacuum.pause`  
+Pauses the mower until a new command
 
 `vacuum.stop`  
-Stop the mower using the Gardena API command PARK_UNTIL_FURTHER_NOTICE.  
-The mower cancels the current operation, returns to charging station and ignores schedule.
+The mower returns to the base and parks ther until the next scheduled start
 
 `vacuum.return_to_base`  
-Stop the mower using Gardena API command PARK_UNTIL_NEXT_TASK.  
-The mower cancels the current operation and returns to charging station. It will reactivate with the next schedule.
+The mower returns to the base and parks ther until it gets a new start command
 
-### Smart Power Socket services
+`vacuum.start`  
+The mower continues to mow, within the specifed schedule
 
-> [TODO: document services]
-
-### Smart Sensor services
-
-> [TODO: document services]
-
-### Smart Water Control services
-
-> [TODO: document services]
-
-## Development
-
-### Debugging
-
-To enable debug logging for this integration and related libraries you
-can control this in your Home Assistant `configuration.yaml`
-file. Example:
-
-```
-logger:
-  default: info
-  logs:
-    custom_components.gardena_smart_system: debug
-    custom_components.gardena_smart_system.mower : debug
-    custom_components.gardena_smart_system.sensor : debug
-    custom_components.gardena_smart_system.switch : debug
-    custom_components.gardena_smart_system.config_flow : debug
-
-    gardena: debug
-    gardena.smart_system: debug
-    websocket: debug
-```
-
-After a restart detailed log entries will appear in `/config/home-assistant.log`.
 
 ### TODO
 
-* Do we need support for more than one location? Should we make it
-  possible to configure it?
+- If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
+- Out-source the communitcation to the API from Home Assistant to get away the warning `Detected I/O inside the event loop. This is causing stability issues.`
+- General code improvement
+- The integration only supports one mower
