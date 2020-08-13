@@ -11,7 +11,7 @@ Custom component to support Automower.
   - [Installation through HACS](#installation-through-hacs)
   - [Manual installation](#manual-installation)
 - [Configuration](#configuration)
-  - [Gardena Application Key / Client ID](#gardena-application-key--client-id)
+  - [Husqvarna API-Key](#husqvarna-api--key)
   - [Home Assistant](#home-assistant)
 - [Usage](#usage)
 - [TODO](#todo)
