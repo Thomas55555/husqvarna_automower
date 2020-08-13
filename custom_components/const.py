@@ -3,9 +3,9 @@
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.1"
+VERSION = "0.1"
 
-ISSUE_URL = "https://github.com/custom-components/blueprint/issues"
+ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
 
 # Icons
 ICON = "mdi:robot-mower"
