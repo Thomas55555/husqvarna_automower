@@ -64,7 +64,7 @@ class HusqvarnaEntity(entity.Entity):
             "restrictedReason": self.coordinator.data['attributes']['planner']['restrictedReason'],
             "connected": self.coordinator.data['attributes']['metadata']['connected'],
             "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['attributes']['metadata']['statusTimestamp'])/1000)),
-            "all_data": self.coordinator.data
+            #"all_data": self.coordinator.data
         }
 
         return self.attributes
