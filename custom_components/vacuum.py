@@ -1,7 +1,6 @@
-"""Sensor platform for blueprint."""
 from custom_components.husqvarna_automower.const import DEFAULT_NAME, DOMAIN, ICON, ERRORCODES
 from custom_components.husqvarna_automower.entity import HusqvarnaEntity
-from custom_components.husqvarna_automower.api_get_token import Return
+from husqvarna_automower import Return
 import json
 import time
 from custom_components.husqvarna_automower.const import CONF_API_KEY
@@ -206,5 +205,3 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     def __set_state_to_dock(self):
         self._state = STATE_DOCKED
         self.schedule_update_ha_state()
-
-
