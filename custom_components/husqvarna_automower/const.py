@@ -1,9 +1,8 @@
-"""Constants for blueprint."""
 # Base component constants
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.2"
+VERSION = "0.3"
 
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
 
