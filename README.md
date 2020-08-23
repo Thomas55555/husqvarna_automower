@@ -85,7 +85,7 @@ The mower continues to mow, within the specifed schedule
 ### TODO
 
 - If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
-- Out-source the communitcation to the API from Home Assistant to get away the warning `Detected I/O inside the event loop. This is causing stability issues.`
+- Solve: `Detected I/O inside the event loop. This is causing stability issues.`
 - General code improvement
 - The integration only supports one mower
 - Add Husqvarna logo in the integrations page
