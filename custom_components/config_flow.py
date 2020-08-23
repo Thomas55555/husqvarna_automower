@@ -1,11 +1,9 @@
-"""Adds config flow for Blueprint."""
 from homeassistant import config_entries
 from homeassistant.core import callback
-from sampleclient.client import Client
 from collections import OrderedDict
 import voluptuous as vol
 import logging
-from custom_components.husqvarna_automower.api_get_token import GetAccessToken, GetMowerData
+from husqvarna_automower import GetAccessToken, GetMowerData
 
 from custom_components.husqvarna_automower.const import (  # pylint: disable=unused-import
     CONF_PASSWORD,
