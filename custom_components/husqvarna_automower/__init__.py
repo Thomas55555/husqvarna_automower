@@ -1,7 +1,6 @@
 import asyncio
 from datetime import timedelta
 import logging
-import requests
 import json
 from typing import List
 import time
@@ -67,8 +66,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the API."""
-
 
     def __init__(self, hass, username, password, api_key):
         """Initialize."""
