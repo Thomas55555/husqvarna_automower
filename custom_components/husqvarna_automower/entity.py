@@ -1,12 +1,12 @@
-"""HusqvarnaEntity class"""
 from homeassistant.helpers import entity
 import time
-from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, VERSION, NAME
-
-
+from custom_components.husqvarna_automower.const import DOMAIN, ERRORCODES, VERSION, NAME
 
 
 class HusqvarnaEntity(entity.Entity):
+    
+    """Defining the Entity"""
+    
     def __init__(self, coordinator, config_entry):
         self.coordinator = coordinator
         self.config_entry = config_entry
