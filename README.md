@@ -1,7 +1,7 @@
 # Home Assistant integration for Husqvarna Automower
 
 ![Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
-
+[![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
 
 Custom component to support Automower.
 
