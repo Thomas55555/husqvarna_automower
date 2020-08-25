@@ -1,10 +1,9 @@
 from homeassistant.helpers import entity
 import time
-from custom_components.husqvarna_automower.const import DOMAIN, ERRORCODES, VERSION, NAME
+from custom_components.husqvarna_automower.const import DOMAIN, VERSION, NAME
 
 
 class HusqvarnaEntity(entity.Entity):
-    
     """Defining the Entity"""
     
     def __init__(self, coordinator, config_entry):
