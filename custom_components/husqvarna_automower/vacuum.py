@@ -1,12 +1,9 @@
-from custom_components.husqvarna_automower.const import DEFAULT_NAME, DOMAIN, ICON, ERRORCODES
+from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES
 from custom_components.husqvarna_automower.entity import HusqvarnaEntity
 from husqvarna_automower import Return
 import json
-import time
-from custom_components.husqvarna_automower.const import CONF_API_KEY
 
 from homeassistant.components.vacuum import (
-    ATTR_CLEANED_AREA,
     STATE_CLEANING,
     STATE_DOCKED,
     STATE_IDLE,
@@ -51,8 +48,6 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
 
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
-    """blueprint Sensor class."""
-
 
     @property
     def name(self):
@@ -108,11 +103,6 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     def battery_level(self):
         """Return the current battery level of the vacuum."""
         return max(0, min(100, self.coordinator.data['attributes']['battery']['batteryPercent']))
-
-    @property
-    def name(self):
-        """Return the current battery level of the vacuum."""
-        return self.coordinator.data['attributes']['system']['name']
 
 
     # @property
