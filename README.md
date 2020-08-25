@@ -10,7 +10,7 @@ Custom component to support Automower.
 - [About](#about)
 - [Installation](#installation)
   - [Installation through HACS](#installation-through-hacs)
-  - [Manual installation](#manual-installation)
+  - [Manual installation](#manual-installation)  
 - [Configuration](#configuration)
   - [Husqvarna API-Key](#husqvarna-api-key)
   - [Home Assistant](#home-assistant)
@@ -19,8 +19,8 @@ Custom component to support Automower.
 
 ## About
 
-The idea for this component ist coming from the https://github.com/walthowd/ha-automower integration. As this integration doesn't use the offical API, I decided to create a
-integration, which is based on the offical API: https://developer.husqvarnagroup.cloud/. There are some disatvanteges between, the offical API and the unoffical API:
+The idea for this component ist coming from the <https://github.com/walthowd/ha-automower> integration. As this integration doesn't use the offical API, I decided to create a
+integration, which is based on the offical API: <https://developer.husqvarnagroup.cloud/>. There are some disatvanteges between, the offical API and the unoffical API:
 
 - Offical API doesn't support GPS position
 - Offical API is limited to 10,000 accesses per 30 days. So state of the mower is only update every 5 minutes
@@ -48,20 +48,17 @@ Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the
 
 In order to use this integration you must get a API-Key from Husqvarna.
 
-1. Go to https://developer.husqvarnagroup.cloud/
+1.  Go to <https://developer.husqvarnagroup.cloud/>
 
-2. Create an account if needed, otherwise sign in with your Husqvarna account.
+2.  Create an account if needed, otherwise sign in with your Husqvarna account.
 
-3. After signing in you will be automatically redirected to "Your
-   applications". (Otherwise go to: https://developer.husqvarnagroup.cloud/apps)
+3.  After signing in you will be automatically redirected to "Your applications". (Otherwise go to: <https://developer.husqvarnagroup.cloud/apps>)
 
-4. Create an new application, name it for example "My Home Assistant"
-   (doesn't matter), leave the other fields empty.
+4.  Create an new application, name it for example "My Home Assistant" (doesn't matter), leave the other fields empty.
 
-5. Click on "+Connect new API" and connect the Authentication API and
-   the Husqvarna Automower API.
+5.  Click on "+Connect new API" and connect the Authentication API and the Husqvarna Automower API.
 
-6. Copy your Application Key, this is what you need when you add the integration in Home Assistant.
+6.  Copy your Application Key, this is what you need when you add the integration in Home Assistant.
 
 ### Home Assistant
 
@@ -85,8 +82,8 @@ The mower continues to mow, within the specifed schedule
 
 ### TODO
 
-- If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
-- Solve: `Detected I/O inside the event loop. This is causing stability issues.`
-- General code improvement
-- The integration only supports one mower
-- Add Husqvarna logo in the integrations page
+-  If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
+-  Solve: `Detected I/O inside the event loop. This is causing stability issues.`
+-  General code improvement
+-  The integration only supports one mower
+-  Add Husqvarna logo in the integrations page
