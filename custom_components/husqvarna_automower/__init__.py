@@ -1,8 +1,6 @@
 import asyncio
 from datetime import timedelta
 import logging
-import json
-from typing import List
 import time
 
 from homeassistant.config_entries import ConfigEntry
@@ -69,7 +67,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass, username, password, api_key):
         """Initialize."""
-
         self.platforms = []
         self.username = username
         self.password = password
