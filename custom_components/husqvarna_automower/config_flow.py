@@ -3,7 +3,7 @@ from homeassistant.core import callback
 from collections import OrderedDict
 import voluptuous as vol
 import logging
-from husqvarna_automower import GetAccessToken, GetMowerData
+from husqvarna_automower import GetAccessToken
 
 from custom_components.husqvarna_automower.const import (  # pylint: disable=unused-import
     CONF_PASSWORD,
