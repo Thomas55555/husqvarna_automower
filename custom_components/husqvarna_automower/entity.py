@@ -1,8 +1,7 @@
 """HusqvarnaEntity class"""
 from homeassistant.helpers import entity
-import json
 import time
-from custom_components.husqvarna_automower.const import DEFAULT_NAME, DOMAIN, ICON, ERRORCODES, VERSION, NAME
+from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, VERSION, NAME
 
 
 
@@ -50,7 +49,7 @@ class HusqvarnaEntity(entity.Entity):
         else:
             self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['attributes']['planner']['nextStartTimestamp'])/1000))
 
-        self.attributes = { 
+        self.attributes = {
             "type": self.coordinator.data['type'],
             "id": self.coordinator.data['id'],
             "models": self.coordinator.data['attributes']['system']['model'],
