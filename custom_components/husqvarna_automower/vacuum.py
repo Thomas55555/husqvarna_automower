@@ -1,7 +1,7 @@
 from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES
 from custom_components.husqvarna_automower.entity import HusqvarnaEntity
 from husqvarna_automower import Return
-import json
+import time
 
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
@@ -132,7 +132,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     #     self.schedule_update_ha_state()
 
     def pause(self, **kwargs):
-        """pause"""
+        """pause."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -142,7 +142,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self._state = "Pausing"
 
     def stop(self, **kwargs):
-        """park until next schedule"""
+        """park until next schedule."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -153,7 +153,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
 
     def return_to_base(self, **kwargs):
-        """park until further notice"""
+        """park until further notice."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -163,7 +163,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self._state = "Parked until further notice"
 
     def start(self, **kwargs):
-        """resume schedule"""
+        """resume schedule."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
