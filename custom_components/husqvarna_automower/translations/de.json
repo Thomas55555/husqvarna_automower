@@ -4,7 +4,7 @@
         "step": {
             "user": {
                 "title": "Husqvarna Automower",
-                "description": "If you need help with the configuration have a look here: https://nochein-zu.tragen",
+                "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
                     "username": "Benutzername",
                     "password": "Password",
