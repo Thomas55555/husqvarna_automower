@@ -28,6 +28,8 @@ integration, which is based on the offical API: <https://developer.husqvarnagrou
 
 But the adavantage is, that Husqvarna won't close the offical API suddenly.
 
+![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/master/screenshot_husqvarna_automower.PNG)
+
 
 ## Installation
 
