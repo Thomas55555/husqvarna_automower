@@ -44,23 +44,21 @@ async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([husqvarna_automowerVacuum(coordinator, entry)])
-    
-
 
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self.coordinator.data['attributes']['system']['name']
+        return self.coordinator.data['data'][0]['attributes']['system']['name']
 
     @property
     def state(self):
         # """Return the state of the sensor."""
-        # if self.coordinator.data['api_status_code'] == 200:
+        # if self.coordinator.data['data'][0]['api_status_code'] == 200:
         #     """Return the state, if api respone is positive"""
         self.api_key = self.coordinator.data['api_key']
-        self.mower_attributes = self.coordinator.data['attributes']
+        self.mower_attributes = self.coordinator.data['data'][0]['attributes']
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
         self.mower_local_timestamp = time.localtime(self.mower_timestamp)
         self.readable_mower_local_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", self.mower_local_timestamp)
@@ -87,7 +85,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
                 return f"{self.mower_attributes['mower']['state']}"
         # else:
         #     """return the state, if api respone is not 200""""
-        #     return self.coordinator.data['api_status_code']
+        #     return self.coordinator.data['data'][0]['api_status_code']
 
 
 
@@ -96,7 +94,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         """Return the icon of the sensor."""
         return ICON
 
-        
+
     @property
     def supported_features(self):
         """Flag supported features."""
@@ -105,7 +103,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     @property
     def battery_level(self):
         """Return the current battery level of the vacuum."""
-        return max(0, min(100, self.coordinator.data['attributes']['battery']['batteryPercent']))
+        return max(0, min(100, self.coordinator.data['data'][0]['attributes']['battery']['batteryPercent']))
 
 
     # @property
@@ -126,30 +124,30 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     # def turn_off(self, **kwargs):
     #     """park until further notice"""
-    #     self.access_token = self.coordinator.data['token']['access_token']
-    #     self.provider = self.coordinator.data['token']['provider']
-    #     self.token_type = self.coordinator.data['token']['token_type']
-    #     self.mower_id = self.coordinator.data['id']
+    #     self.access_token = self.coordinator.data['data'][0]['token']['access_token']
+    #     self.provider = self.coordinator.data['data'][0]['token']['provider']
+    #     self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+    #     self.mower_id = self.coordinator.data['data'][0]['id']
     #     self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
     #     self.mower_command.mower_parkuntilfurthernotice()
     #     self.schedule_update_ha_state()
 
     def pause(self, **kwargs):
         """pause."""
-        self.access_token = self.coordinator.data['token']['access_token']
-        self.provider = self.coordinator.data['token']['provider']
-        self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['id']
+        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
+        self.provider = self.coordinator.data['data'][0]['token']['provider']
+        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_pause()
         self._state = "Pausing"
 
     def stop(self, **kwargs):
         """park until next schedule."""
-        self.access_token = self.coordinator.data['token']['access_token']
-        self.provider = self.coordinator.data['token']['provider']
-        self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['id']
+        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
+        self.provider = self.coordinator.data['data'][0]['token']['provider']
+        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilnextschedule()
         self._state = "WEEK_SCHEDULE"
@@ -157,20 +155,20 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     def return_to_base(self, **kwargs):
         """park until further notice."""
-        self.access_token = self.coordinator.data['token']['access_token']
-        self.provider = self.coordinator.data['token']['provider']
-        self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['id']
+        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
+        self.provider = self.coordinator.data['data'][0]['token']['provider']
+        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilfurthernotice()
         self._state = "Parked until further notice"
 
     def start(self, **kwargs):
         """resume schedule."""
-        self.access_token = self.coordinator.data['token']['access_token']
-        self.provider = self.coordinator.data['token']['provider']
-        self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['id']
+        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
+        self.provider = self.coordinator.data['data'][0]['token']['provider']
+        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_resumeschedule()
         self.schedule_update_ha_state()
