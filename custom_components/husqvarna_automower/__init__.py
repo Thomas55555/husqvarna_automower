@@ -92,7 +92,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token = self.access_token_raw['access_token']
             self.provider = self.access_token_raw['provider']
             self.token_type = self.access_token_raw['token_type']
-            self.token_expires_at = self.access_token_raw['expires_at']
+            self.time_now = time.time()
+            self.token_expires_at = self.access_token_raw['expires_in'] + self.time_now
 
 
         if self.token_expires_at < time.time():
@@ -103,7 +104,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token = self.access_token_raw['access_token']
             self.provider = self.access_token_raw['provider']
             self.token_type = self.access_token_raw['token_type']
-            self.token_expires_at = self.access_token_raw['expires_at']
+            self.time_now = time.time()
+            self.token_expires_at = self.access_token_raw['expires_in'] + self.time_now
 
         self.mower_api = GetMowerData(self.api_key, self.access_token, self.provider, self.token_type)
 
