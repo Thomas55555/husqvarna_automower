@@ -5,7 +5,7 @@ from custom_components.husqvarna_automower.const import DOMAIN, VERSION, NAME
 
 class HusqvarnaEntity(entity.Entity):
     """Defining the Entity"""
-    
+
     def __init__(self, coordinator, config_entry):
         self.coordinator = coordinator
         self.config_entry = config_entry
@@ -38,31 +38,31 @@ class HusqvarnaEntity(entity.Entity):
     @property
     def device_state_attributes(self):
         """Return the specific state attributes of this vacuum cleaner."""
-        if self.coordinator.data['attributes']['mower']['errorCodeTimestamp'] == 0:
+        if self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'] == 0:
             self.attr_errorCodeTimestamp = "-"
         else:
-            self.attr_errorCodeTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['attributes']['mower']['errorCodeTimestamp'])/1000))
+            self.attr_errorCodeTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'])/1000))
 
-        if self.coordinator.data['attributes']['planner']['nextStartTimestamp'] == 0:
+        if self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'] == 0:
             self.attr_nextStartTimestamp = "-"
         else:
-            self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['attributes']['planner']['nextStartTimestamp'])/1000))
+            self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'])/1000))
 
         self.attributes = {
-            "type": self.coordinator.data['type'],
-            "id": self.coordinator.data['id'],
-            "models": self.coordinator.data['attributes']['system']['model'],
-            "mode": self.coordinator.data['attributes']['mower']['mode'],
-            "activity": self.coordinator.data['attributes']['mower']['activity'],
-            "state": self.coordinator.data['attributes']['mower']['state'],
-            "errorCode": self.coordinator.data['attributes']['mower']['errorCode'],
+            "type": self.coordinator.data['data'][0]['type'],
+            "id": self.coordinator.data['data'][0]['id'],
+            "models": self.coordinator.data['data'][0]['attributes']['system']['model'],
+            "mode": self.coordinator.data['data'][0]['attributes']['mower']['mode'],
+            "activity": self.coordinator.data['data'][0]['attributes']['mower']['activity'],
+            "state": self.coordinator.data['data'][0]['attributes']['mower']['state'],
+            "errorCode": self.coordinator.data['data'][0]['attributes']['mower']['errorCode'],
             "errorCodeTimestamp": self.attr_errorCodeTimestamp,
             "nextStartTimestamp": self.attr_nextStartTimestamp,
-            "action": self.coordinator.data['attributes']['planner']['override']['action'],
-            "restrictedReason": self.coordinator.data['attributes']['planner']['restrictedReason'],
-            "connected": self.coordinator.data['attributes']['metadata']['connected'],
-            "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['attributes']['metadata']['statusTimestamp'])/1000)),
-            #"all_data": self.coordinator.data
+            "action": self.coordinator.data['data'][0]['attributes']['planner']['override']['action'],
+            "restrictedReason": self.coordinator.data['data'][0]['attributes']['planner']['restrictedReason'],
+            "connected": self.coordinator.data['data'][0]['attributes']['metadata']['connected'],
+            "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['data'][0]['attributes']['metadata']['statusTimestamp'])/1000)),
+            #"all_data": self.coordinator.data['data'][0]
         }
 
         return self.attributes
