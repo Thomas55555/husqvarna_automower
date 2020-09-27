@@ -32,9 +32,7 @@ SUPPORT_STATE_SERVICES = (
     | SUPPORT_PAUSE
     | SUPPORT_STOP
     | SUPPORT_RETURN_HOME
-##    | SUPPORT_FAN_SPEED
     | SUPPORT_BATTERY
-##    | SUPPORT_CLEAN_SPOT
     | SUPPORT_START
 )
 
@@ -106,37 +104,11 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         return max(0, min(100, self.coordinator.data['data'][0]['attributes']['battery']['batteryPercent']))
 
 
-    # @property
-    # def fan_speed_list(self):
-    #     """Return the list of supported fan speeds."""
-    #     return FAN_SPEEDS
-
-    # def turn_on(self, **kwargs):
-    #     """Turn the vacuum on."""
-    #     if self.supported_features & SUPPORT_TURN_ON == 0:
-    #         return
-
-    #     self._state = True
-    #     self._cleaned_area += 5.32
-    #     self._battery_level -= 2
-    #     self._status = "Cleaning"
-    #     self.schedule_update_ha_state()
-
-    # def turn_off(self, **kwargs):
-    #     """park until further notice"""
-    #     self.access_token = self.coordinator.data['data'][0]['token']['access_token']
-    #     self.provider = self.coordinator.data['data'][0]['token']['provider']
-    #     self.token_type = self.coordinator.data['data'][0]['token']['token_type']
-    #     self.mower_id = self.coordinator.data['data'][0]['id']
-    #     self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
-    #     self.mower_command.mower_parkuntilfurthernotice()
-    #     self.schedule_update_ha_state()
-
     def pause(self, **kwargs):
         """pause."""
-        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
-        self.provider = self.coordinator.data['data'][0]['token']['provider']
-        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.access_token = self.coordinator.data['token']['access_token']
+        self.provider = self.coordinator.data['token']['provider']
+        self.token_type = self.coordinator.data['token']['token_type']
         self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_pause()
@@ -144,9 +116,9 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     def stop(self, **kwargs):
         """park until next schedule."""
-        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
-        self.provider = self.coordinator.data['data'][0]['token']['provider']
-        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.access_token = self.coordinator.data['token']['access_token']
+        self.provider = self.coordinator.data['token']['provider']
+        self.token_type = self.coordinator.data['token']['token_type']
         self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilnextschedule()
@@ -155,9 +127,9 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     def return_to_base(self, **kwargs):
         """park until further notice."""
-        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
-        self.provider = self.coordinator.data['data'][0]['token']['provider']
-        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.access_token = self.coordinator.data['token']['access_token']
+        self.provider = self.coordinator.data['token']['provider']
+        self.token_type = self.coordinator.data['token']['token_type']
         self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilfurthernotice()
@@ -165,33 +137,14 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     def start(self, **kwargs):
         """resume schedule."""
-        self.access_token = self.coordinator.data['data'][0]['token']['access_token']
-        self.provider = self.coordinator.data['data'][0]['token']['provider']
-        self.token_type = self.coordinator.data['data'][0]['token']['token_type']
+        self.access_token = self.coordinator.data['token']['access_token']
+        self.provider = self.coordinator.data['token']['provider']
+        self.token_type = self.coordinator.data['token']['token_type']
         self.mower_id = self.coordinator.data['data'][0]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_resumeschedule()
         self.schedule_update_ha_state()
         self._state = "WEEK_SCHEDULE"
-
-    # def clean_spot(self, **kwargs):
-    #     """Perform a spot clean-up."""
-    #     if self.supported_features & SUPPORT_CLEAN_SPOT == 0:
-    #         return
-
-    #     self._state = STATE_CLEANING
-    #     self._cleaned_area += 1.32
-    #     self._battery_level -= 1
-    #     self.schedule_update_ha_state()
-
-    # def set_fan_speed(self, fan_speed, **kwargs):
-    #     """Set the vacuum's fan speed."""
-    #     if self.supported_features & SUPPORT_FAN_SPEED == 0:
-    #         return
-
-    #     if fan_speed in self.fan_speed_list:
-    #         self._fan_speed = fan_speed
-    #         self.schedule_update_ha_state()
 
     def __set_state_to_dock(self):
         self._state = STATE_DOCKED
