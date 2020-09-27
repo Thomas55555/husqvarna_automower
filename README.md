@@ -69,22 +69,22 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 ## Usage
 
+`vacuum.start`  
+The mower continues to mow, within the specifed schedule
+
 `vacuum.pause`  
 Pauses the mower until a new command
 
 `vacuum.stop`  
-The mower returns to the base and parks ther until the next scheduled start
+The mower returns to the base and parks there until the next schedule starts
 
 `vacuum.return_to_base`  
-The mower returns to the base and parks ther until it gets a new start command
+The mower returns to the base and parks there until it gets a new start command
 
-`vacuum.start`  
-The mower continues to mow, within the specifed schedule
 
 
 ### TODO
 
 -  If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
--  Solve: `Detected I/O inside the event loop. This is causing stability issues.`
 -  General code improvement
 -  The integration only supports one mower
