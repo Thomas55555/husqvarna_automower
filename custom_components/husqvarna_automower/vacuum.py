@@ -1,18 +1,15 @@
-from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES
-from custom_components.husqvarna_automower.entity import HusqvarnaEntity
+from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, VERSION, NAME
 from husqvarna_automower import Return
+from homeassistant.helpers import entity
 import time
 
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
+    STATE_ERROR,
     STATE_DOCKED,
-    STATE_IDLE,
     STATE_PAUSED,
     STATE_RETURNING,
     SUPPORT_BATTERY,
-    SUPPORT_CLEAN_SPOT,
-    SUPPORT_FAN_SPEED,
-    SUPPORT_LOCATE,
     SUPPORT_PAUSE,
     SUPPORT_RETURN_HOME,
     SUPPORT_SEND_COMMAND,
@@ -22,8 +19,7 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON,
-    StateVacuumEntity,
-    VacuumEntity,
+    StateVacuumEntity
 )
 
 
@@ -36,25 +32,58 @@ SUPPORT_STATE_SERVICES = (
     | SUPPORT_START
 )
 
-FAN_SPEEDS = ["min", "medium", "high", "max"]
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([husqvarna_automowerVacuum(coordinator, entry)])
 
+
+
+class HusqvarnaEntity(entity.Entity):
+    """Defining the Entity"""
+
+    def __init__(self, coordinator, config_entry):
+        self.coordinator = coordinator
+        self.config_entry = config_entry
+
+    @property
+    def should_poll(self):
+        """No need to poll. Coordinator notifies entity of updates."""
+        return False
+
+    @property
+    def available(self):
+        """Return if entity is available."""
+        return self.coordinator.last_update_success
+
+
+    async def async_added_to_hass(self):
+        """Connect to dispatcher listening for entity data notifications."""
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self.async_write_ha_state)
+        )
+
+    async def async_update(self):
+        """Update Brother entity."""
+        await self.coordinator.async_request_refresh()
+
+
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
 
     @property
     def name(self):
-        """Return the name of the sensor."""
-        return self.coordinator.data['data'][0]['attributes']['system']['name']
+        """Return the name of the vacuum."""
+        return f"{self.coordinator.data['data'][0]['attributes']['system']['model']}_{self.coordinator.data['data'][0]['attributes']['system']['name']}"
+
+    @property
+    def unique_id(self):
+        """Return a unique ID to use for this vacuum."""
+        return self.coordinator.data['data'][0]['id']
 
     @property
     def state(self):
-        # """Return the state of the sensor."""
-        # if self.coordinator.data['data'][0]['api_status_code'] == 200:
-        #     """Return the state, if api respone is positive"""
+        """Return the state of the vacuum."""
         self.api_key = self.coordinator.data['api_key']
         self.mower_attributes = self.coordinator.data['data'][0]['attributes']
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
@@ -81,15 +110,11 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
                     return f"{self.mower_attributes['planner']['restrictedReason']}"
             else:
                 return f"{self.mower_attributes['mower']['state']}"
-        # else:
-        #     """return the state, if api respone is not 200""""
-        #     return self.coordinator.data['data'][0]['api_status_code']
-
 
 
     @property
     def icon(self):
-        """Return the icon of the sensor."""
+        """Return the icon of the vacuum."""
         return ICON
 
 
@@ -102,6 +127,35 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     def battery_level(self):
         """Return the current battery level of the vacuum."""
         return max(0, min(100, self.coordinator.data['data'][0]['attributes']['battery']['batteryPercent']))
+
+    @property
+    def device_state_attributes(self):
+        """Return the specific state attributes of this vacuum."""
+        if self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'] == 0:
+            self.attr_errorCodeTimestamp = "-"
+        else:
+            self.attr_errorCodeTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'])/1000))
+
+        if self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'] == 0:
+            self.attr_nextStartTimestamp = "-"
+        else:
+            self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'])/1000))
+
+        self.attributes = {
+            "mode": self.coordinator.data['data'][0]['attributes']['mower']['mode'],
+            "activity": self.coordinator.data['data'][0]['attributes']['mower']['activity'],
+            "state": self.coordinator.data['data'][0]['attributes']['mower']['state'],
+            "errorCode": self.coordinator.data['data'][0]['attributes']['mower']['errorCode'],
+            "errorCodeTimestamp": self.attr_errorCodeTimestamp,
+            "nextStartTimestamp": self.attr_nextStartTimestamp,
+            "action": self.coordinator.data['data'][0]['attributes']['planner']['override']['action'],
+            "restrictedReason": self.coordinator.data['data'][0]['attributes']['planner']['restrictedReason'],
+            "connected": self.coordinator.data['data'][0]['attributes']['metadata']['connected'],
+            "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['data'][0]['attributes']['metadata']['statusTimestamp'])/1000)),
+            "all_data": self.coordinator.data['data'][0]
+        }
+
+        return self.attributes
 
 
     def pause(self, **kwargs):
