@@ -152,7 +152,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
             "restrictedReason": self.coordinator.data['data'][0]['attributes']['planner']['restrictedReason'],
             "connected": self.coordinator.data['data'][0]['attributes']['metadata']['connected'],
             "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['data'][0]['attributes']['metadata']['statusTimestamp'])/1000)),
-            "all_data": self.coordinator.data['data'][0]
+            #"all_data": self.coordinator.data['data'][0]
         }
 
         return self.attributes
