@@ -2,6 +2,11 @@ from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES
 from husqvarna_automower import Return
 from homeassistant.helpers import entity
 import time
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
@@ -36,16 +41,16 @@ SUPPORT_STATE_SERVICES = (
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([husqvarna_automowerVacuum(coordinator, entry)])
 
+    async_add_devices(
+        husqvarna_automowerVacuum(coordinator, idx) for idx, ent in enumerate(coordinator.data['data'])
+    )
 
 
 class HusqvarnaEntity(entity.Entity):
     """Defining the Entity"""
-
-    def __init__(self, coordinator, config_entry):
+    def __init__(self, coordinator):
         self.coordinator = coordinator
-        self.config_entry = config_entry
 
     @property
     def should_poll(self):
@@ -69,23 +74,28 @@ class HusqvarnaEntity(entity.Entity):
         await self.coordinator.async_request_refresh()
 
 
-class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
+class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorEntity):
+
+    def __init__(self, coordinator, idx):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator)
+        self.idx = idx
+        self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
 
     @property
     def name(self):
         """Return the name of the vacuum."""
-        return f"{self.coordinator.data['data'][0]['attributes']['system']['model']}_{self.coordinator.data['data'][0]['attributes']['system']['name']}"
+        return f"{self.coordinator.data['data'][self.idx]['attributes']['system']['model']}_{self.coordinator.data['data'][self.idx]['attributes']['system']['name']}"
 
     @property
     def unique_id(self):
         """Return a unique ID to use for this vacuum."""
-        return self.coordinator.data['data'][0]['id']
+        return self.coordinator.data['data'][self.idx]['id']
 
     @property
     def state(self):
         """Return the state of the vacuum."""
         self.api_key = self.coordinator.data['api_key']
-        self.mower_attributes = self.coordinator.data['data'][0]['attributes']
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
         self.mower_local_timestamp = time.localtime(self.mower_timestamp)
         self.readable_mower_local_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", self.mower_local_timestamp)
@@ -126,33 +136,34 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
     @property
     def battery_level(self):
         """Return the current battery level of the vacuum."""
-        return max(0, min(100, self.coordinator.data['data'][0]['attributes']['battery']['batteryPercent']))
+        return max(0, min(100, self.mower_attributes['battery']['batteryPercent']))
 
     @property
     def device_state_attributes(self):
         """Return the specific state attributes of this vacuum."""
-        if self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'] == 0:
+
+        if self.mower_attributes['mower']['errorCodeTimestamp'] == 0:
             self.attr_errorCodeTimestamp = "-"
         else:
-            self.attr_errorCodeTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['mower']['errorCodeTimestamp'])/1000))
+            self.attr_errorCodeTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.mower_attributes['mower']['errorCodeTimestamp'])/1000))
 
-        if self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'] == 0:
+        if self.mower_attributes['planner']['nextStartTimestamp'] == 0:
             self.attr_nextStartTimestamp = "-"
         else:
-            self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.coordinator.data['data'][0]['attributes']['planner']['nextStartTimestamp'])/1000))
+            self.attr_nextStartTimestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime((self.mower_attributes['planner']['nextStartTimestamp'])/1000))
 
         self.attributes = {
-            "mode": self.coordinator.data['data'][0]['attributes']['mower']['mode'],
-            "activity": self.coordinator.data['data'][0]['attributes']['mower']['activity'],
-            "state": self.coordinator.data['data'][0]['attributes']['mower']['state'],
-            "errorCode": self.coordinator.data['data'][0]['attributes']['mower']['errorCode'],
+            "mode": self.mower_attributes['mower']['mode'],
+            "activity": self.mower_attributes['mower']['activity'],
+            "state": self.mower_attributes['mower']['state'],
+            "errorCode": self.mower_attributes['mower']['errorCode'],
             "errorCodeTimestamp": self.attr_errorCodeTimestamp,
             "nextStartTimestamp": self.attr_nextStartTimestamp,
-            "action": self.coordinator.data['data'][0]['attributes']['planner']['override']['action'],
-            "restrictedReason": self.coordinator.data['data'][0]['attributes']['planner']['restrictedReason'],
-            "connected": self.coordinator.data['data'][0]['attributes']['metadata']['connected'],
-            "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.coordinator.data['data'][0]['attributes']['metadata']['statusTimestamp'])/1000)),
-            #"all_data": self.coordinator.data['data'][0]
+            "action": self.mower_attributes['planner']['override']['action'],
+            "restrictedReason": self.mower_attributes['planner']['restrictedReason'],
+            "connected": self.mower_attributes['metadata']['connected'],
+            "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.mower_attributes['metadata']['statusTimestamp'])/1000)),
+            #"all_data0": self.coordinator.data['data'][self.idx]
         }
 
         return self.attributes
@@ -163,7 +174,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['data'][0]['id']
+        self.mower_id = self.coordinator.data['data'][self.idx]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_pause()
         self._state = "Pausing"
@@ -173,7 +184,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['data'][0]['id']
+        self.mower_id = self.coordinator.data['data'][self.idx]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilnextschedule()
         self._state = "WEEK_SCHEDULE"
@@ -184,7 +195,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['data'][0]['id']
+        self.mower_id = self.coordinator.data['data'][self.idx]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_parkuntilfurthernotice()
         self._state = "Parked until further notice"
@@ -194,7 +205,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity):
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
-        self.mower_id = self.coordinator.data['data'][0]['id']
+        self.mower_id = self.coordinator.data['data'][self.idx]['id']
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id)
         self.mower_command.mower_resumeschedule()
         self.schedule_update_ha_state()
