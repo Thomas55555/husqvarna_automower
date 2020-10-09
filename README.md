@@ -87,4 +87,3 @@ The mower returns to the base and parks there until it gets a new start command
 
 -  If you enter the wrong credentials in the Home Assistant config flow, it will not be recongnized
 -  General code improvement
--  The integration only supports one mower
