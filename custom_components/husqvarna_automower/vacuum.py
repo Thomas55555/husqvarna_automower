@@ -1,4 +1,5 @@
 from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, VERSION, NAME
+from custom_components.husqvarna_automower import AuthenticationUpdateCoordinator
 from husqvarna_automower import Return
 from homeassistant.helpers import entity
 import time
@@ -52,16 +53,6 @@ class HusqvarnaEntity(entity.Entity):
     def __init__(self, coordinator):
         self.coordinator = coordinator
 
-    @property
-    def should_poll(self):
-        """No need to poll. Coordinator notifies entity of updates."""
-        return False
-
-    @property
-    def available(self):
-        """Return if entity is available."""
-        return self.coordinator.last_update_success
-
 
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""
@@ -80,7 +71,6 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator)
         self.idx = idx
-        self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
 
     @property
     def name(self):
@@ -95,6 +85,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
     @property
     def state(self):
         """Return the state of the vacuum."""
+        self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
         self.api_key = self.coordinator.data['api_key']
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
         self.mower_local_timestamp = time.localtime(self.mower_timestamp)
@@ -141,7 +132,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
     @property
     def device_state_attributes(self):
         """Return the specific state attributes of this vacuum."""
-
+        self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
         if self.mower_attributes['mower']['errorCodeTimestamp'] == 0:
             self.attr_errorCodeTimestamp = "-"
         else:
@@ -163,7 +154,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
             "restrictedReason": self.mower_attributes['planner']['restrictedReason'],
             "connected": self.mower_attributes['metadata']['connected'],
             "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.mower_attributes['metadata']['statusTimestamp'])/1000)),
-            #"all_data0": self.coordinator.data['data'][self.idx]
+            #"all_data": self.coordinator.data
         }
 
         return self.attributes
