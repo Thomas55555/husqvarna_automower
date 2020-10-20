@@ -47,7 +47,6 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
 
 class HusqvarnaEntity(entity.Entity):
-    
     """Defining the Husqvarna Entity"""
     def __init__(self, coordinator):
         """Pass the coordinator to the class"""
@@ -65,7 +64,6 @@ class HusqvarnaEntity(entity.Entity):
 
 
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorEntity):
-
     """Defining each mower Entity"""
     def __init__(self, coordinator, idx):
         """Pass coordinator to CoordinatorEntity."""
