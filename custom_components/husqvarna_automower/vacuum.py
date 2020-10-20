@@ -47,7 +47,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
 
 class HusqvarnaEntity(entity.Entity):
-    """Defining the Husqvarna Entity"""
+    """Defining the Husqvarna Entity."""
     def __init__(self, coordinator):
         """Pass the coordinator to the class"""
         self.coordinator = coordinator
@@ -64,7 +64,7 @@ class HusqvarnaEntity(entity.Entity):
 
 
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorEntity):
-    """Defining each mower Entity"""
+    """Defining each mower Entity."""
     def __init__(self, coordinator, idx):
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator)
@@ -77,17 +77,17 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
     @property
     def name(self):
-        """Return the name of the vacuum."""
+        """Return the name of the mower."""
         return f"{self.coordinator.data['data'][self.idx]['attributes']['system']['model']}_{self.coordinator.data['data'][self.idx]['attributes']['system']['name']}"
 
     @property
     def unique_id(self):
-        """Return a unique ID to use for this vacuum."""
+        """Return a unique ID to use for this mower."""
         return self.coordinator.data['data'][self.idx]['id']
 
     @property
     def state(self):
-        """Return the state of the vacuum."""
+        """Return the state of the mower."""
         self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
         self.api_key = self.coordinator.data['api_key']
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
@@ -115,7 +115,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
     @property
     def icon(self):
-        """Return the icon of the vacuum."""
+        """Return the icon of the mower."""
         return ICON
 
 
@@ -126,12 +126,12 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
     @property
     def battery_level(self):
-        """Return the current battery level of the vacuum."""
+        """Return the current battery level of the mower."""
         return max(0, min(100, self.mower_attributes['battery']['batteryPercent']))
 
     @property
     def device_state_attributes(self):
-        """Return the specific state attributes of this vacuum."""
+        """Return the specific state attributes of this mower."""
         self.mower_attributes = self.coordinator.data['data'][self.idx]['attributes']
         if self.mower_attributes['mower']['errorCodeTimestamp'] == 0:
             self.attr_errorCodeTimestamp = "-"
@@ -160,7 +160,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
 
     def pause(self, **kwargs):
-        """Pauses the mower"""
+        """Pauses the mower."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
