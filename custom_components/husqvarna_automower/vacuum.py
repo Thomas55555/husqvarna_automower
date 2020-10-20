@@ -49,7 +49,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class HusqvarnaEntity(entity.Entity):
     """Defining the Husqvarna Entity."""
     def __init__(self, coordinator):
-        """Pass the coordinator to the class"""
+        """Pass the coordinator to the class."""
         self.coordinator = coordinator
 
     async def async_added_to_hass(self):
