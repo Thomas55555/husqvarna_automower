@@ -1,5 +1,4 @@
-from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, VERSION, NAME
-from custom_components.husqvarna_automower import AuthenticationUpdateCoordinator
+from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, NAME
 from husqvarna_automower import Return
 from homeassistant.helpers import entity
 import time
@@ -73,6 +72,11 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
         self.idx = idx
 
     @property
+    def available(self):
+        """Return True if the device is available."""
+        return self.coordinator.data['data'][self.idx]['attributes']['metadata']['connected']
+
+    @property
     def name(self):
         """Return the name of the vacuum."""
         return f"{self.coordinator.data['data'][self.idx]['attributes']['system']['model']}_{self.coordinator.data['data'][self.idx]['attributes']['system']['name']}"
@@ -90,27 +94,24 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
         self.mower_timestamp = (self.mower_attributes['metadata']['statusTimestamp'])/1000
         self.mower_local_timestamp = time.localtime(self.mower_timestamp)
         self.readable_mower_local_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", self.mower_local_timestamp)
-        if self.mower_attributes['metadata']['connected'] == False:
-            return "Not connected"
-        elif self.mower_attributes['metadata']['connected'] == True:
-            if self.mower_attributes['mower']['state'] == "IN_OPERATION":
-                return f"{self.mower_attributes['mower']['activity']}"
-            elif self.mower_attributes['mower']['state'] == "FATAL_ERROR":
-                self.error_code = self.mower_attributes['mower']['errorCode']
-                return ERRORCODES.get(self.error_code)
-            elif self.mower_attributes['mower']['state'] == "ERROR":
-                self.error_code = self.mower_attributes['mower']['errorCode']
-                return ERRORCODES.get(self.error_code)
-            elif self.mower_attributes['mower']['state'] == "ERROR_AT_POWER_UP":
-                self.error_code = self.mower_attributes['mower']['errorCode']
-                return ERRORCODES.get(self.error_code)
-            elif self.mower_attributes['mower']['state'] == "RESTRICTED":
-                if self.mower_attributes['planner']['restrictedReason'] == "NOT_APPLICABLE":
-                    return "Parked until further notice"
-                else:
-                    return f"{self.mower_attributes['planner']['restrictedReason']}"
+        if self.mower_attributes['mower']['state'] == "IN_OPERATION":
+            return f"{self.mower_attributes['mower']['activity']}"
+        elif self.mower_attributes['mower']['state'] == "FATAL_ERROR":
+            self.error_code = self.mower_attributes['mower']['errorCode']
+            return ERRORCODES.get(self.error_code)
+        elif self.mower_attributes['mower']['state'] == "ERROR":
+            self.error_code = self.mower_attributes['mower']['errorCode']
+            return ERRORCODES.get(self.error_code)
+        elif self.mower_attributes['mower']['state'] == "ERROR_AT_POWER_UP":
+            self.error_code = self.mower_attributes['mower']['errorCode']
+            return ERRORCODES.get(self.error_code)
+        elif self.mower_attributes['mower']['state'] == "RESTRICTED":
+            if self.mower_attributes['planner']['restrictedReason'] == "NOT_APPLICABLE":
+                return "Parked until further notice"
             else:
-                return f"{self.mower_attributes['mower']['state']}"
+                return f"{self.mower_attributes['planner']['restrictedReason']}"
+        else:
+            return f"{self.mower_attributes['mower']['state']}"
 
 
     @property
@@ -152,7 +153,6 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
             "nextStartTimestamp": self.attr_nextStartTimestamp,
             "action": self.mower_attributes['planner']['override']['action'],
             "restrictedReason": self.mower_attributes['planner']['restrictedReason'],
-            "connected": self.mower_attributes['metadata']['connected'],
             "statusTimestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime((self.mower_attributes['metadata']['statusTimestamp'])/1000)),
             #"all_data": self.coordinator.data
         }
