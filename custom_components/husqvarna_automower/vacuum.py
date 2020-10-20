@@ -1,10 +1,9 @@
-from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES, NAME
+from custom_components.husqvarna_automower.const import DOMAIN, ICON, ERRORCODES
 from husqvarna_automower import Return
 from homeassistant.helpers import entity
 import time
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator,
     UpdateFailed,
 )
 
@@ -48,10 +47,11 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
 
 class HusqvarnaEntity(entity.Entity):
-    """Defining the Entity"""
+    
+    """Defining the Husqvarna Entity"""
     def __init__(self, coordinator):
+        """Pass the coordinator to the class"""
         self.coordinator = coordinator
-
 
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""
@@ -66,6 +66,7 @@ class HusqvarnaEntity(entity.Entity):
 
 class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorEntity):
 
+    """Defining each mower Entity"""
     def __init__(self, coordinator, idx):
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator)
@@ -161,7 +162,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
 
     def pause(self, **kwargs):
-        """pause."""
+        """Pauses the mower"""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -171,7 +172,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
         self._state = "Pausing"
 
     def stop(self, **kwargs):
-        """park until next schedule."""
+        """Parks the mower until next schedule."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -182,7 +183,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
 
 
     def return_to_base(self, **kwargs):
-        """park until further notice."""
+        """Parks the mower until further notice."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
@@ -192,7 +193,7 @@ class husqvarna_automowerVacuum(HusqvarnaEntity, StateVacuumEntity, CoordinatorE
         self._state = "Parked until further notice"
 
     def start(self, **kwargs):
-        """resume schedule."""
+        """Resume schedule."""
         self.access_token = self.coordinator.data['token']['access_token']
         self.provider = self.coordinator.data['token']['provider']
         self.token_type = self.coordinator.data['token']['token_type']
