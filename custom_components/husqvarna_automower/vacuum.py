@@ -177,7 +177,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         except Exception as exception:
             raise UpdateFailed(exception)
 
-    async def async_async_pause(self, **kwargs):
+    async def async_pause(self, **kwargs):
         """Pauses the mower."""
         self.payload = '{"data": {"type": "Pause"}}'
         self.mower_command = Return(self.api_key, self.access_token, self.provider, self.token_type, self.mower_id, self.payload)
