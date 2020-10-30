@@ -1,7 +1,7 @@
 # Home Assistant integration for Husqvarna Automower
 
 ![Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f1a332b2d2de4edca8c46b6e74b2bacd)](https://app.codacy.com/manual/Thomas55555/husqvarna_automower?utm_source=github.com&utm_medium=referral&utm_content=Thomas55555/husqvarna_automower&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1600597b0d744166a9778e1f60781bb3)](https://www.codacy.com/gh/Thomas55555/husqvarna_automower/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Thomas55555/husqvarna_automower&amp;utm_campaign=Badge_Grade)
 [![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
 
 Custom component to support Automower.
