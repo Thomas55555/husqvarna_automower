@@ -103,13 +103,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.readable_mower_local_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", self.mower_local_timestamp)
         if self.mower_attributes['mower']['state'] == "IN_OPERATION":
             return f"{self.mower_attributes['mower']['activity']}"
-        elif self.mower_attributes['mower']['state'] == "FATAL_ERROR":
-            self.error_code = self.mower_attributes['mower']['errorCode']
-            return ERRORCODES.get(self.error_code)
-        elif self.mower_attributes['mower']['state'] == "ERROR":
-            self.error_code = self.mower_attributes['mower']['errorCode']
-            return ERRORCODES.get(self.error_code)
-        elif self.mower_attributes['mower']['state'] == "ERROR_AT_POWER_UP":
+        elif self.mower_attributes['mower']['state'] in ["FATAL_ERROR", "ERROR", "ERROR_AT_POWER_UP"]:
             self.error_code = self.mower_attributes['mower']['errorCode']
             return ERRORCODES.get(self.error_code)
         elif self.mower_attributes['mower']['state'] == "RESTRICTED":
