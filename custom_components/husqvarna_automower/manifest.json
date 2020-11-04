@@ -5,5 +5,5 @@
   "dependencies": [],
   "config_flow": true,
   "codeowners": ["@Thomas55555"],
-  "requirements": ["husqvarna-automower==0.4"]
+  "requirements": ["husqvarna-automower==0.5"]
 }
