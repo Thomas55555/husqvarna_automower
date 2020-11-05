@@ -2,6 +2,6 @@
   "name": "Husqvarna Automower",
   "domains": ["vacuum"],
   "homeassistant": "0.113",
-  "iot_class": ["Cloud Polling"]
+  "iot_class": ["Cloud Polling"],
   "render_readme": true
 }
