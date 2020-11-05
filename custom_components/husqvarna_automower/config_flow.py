@@ -1,22 +1,23 @@
+import logging
+from collections import OrderedDict
+
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from collections import OrderedDict
-import voluptuous as vol
-import logging
-from husqvarna_automower import GetAccessToken
 
 from custom_components.husqvarna_automower.const import (  # pylint: disable=unused-import
+    CONF_API_KEY,
     CONF_PASSWORD,
     CONF_USERNAME,
-    CONF_API_KEY,
     DOMAIN,
     PLATFORMS,
 )
-
+from husqvarna_automower import GetAccessToken
 
 CONF_ID = "unique_id"
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
@@ -46,7 +47,11 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         try:
-            await try_connection (user_input[CONF_USERNAME], user_input[CONF_PASSWORD], user_input[CONF_API_KEY])
+            await try_connection(
+                user_input[CONF_USERNAME],
+                user_input[CONF_PASSWORD],
+                user_input[CONF_API_KEY],
+            )
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "auth"
@@ -57,7 +62,6 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         await self.async_set_unique_id(unique_id)
         self._abort_if_unique_id_configured()
 
-
         return self.async_create_entry(
             title="",
             data={
@@ -65,12 +69,14 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_USERNAME: user_input[CONF_USERNAME],
                 CONF_PASSWORD: user_input[CONF_PASSWORD],
                 CONF_API_KEY: user_input[CONF_API_KEY],
-            })
-    
+            },
+        )
+
+
 async def try_connection(username, password, api_key):
     _LOGGER.debug("Trying to connect to Husqvarna")
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
-    if access_token_raw in [400,401,402,403]:
+    if access_token_raw in [400, 401, 402, 403]:
         raise Exception
     _LOGGER.debug("Successfully connected to Gardena during setup")

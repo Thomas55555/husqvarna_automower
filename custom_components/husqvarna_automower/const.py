@@ -39,7 +39,7 @@ If you have any issues with this you need to open an issue here:
 -------------------------------------------------------------------
 """
 
-#Errorcodes
+# Errorcodes
 ERRORCODES = {
     0: "Unexpected error",
     1: "Outside working area",
@@ -130,5 +130,5 @@ ERRORCODES = {
     86: "Wheel motor overloaded, rear right",
     87: "Wheel motor overloaded, rear left",
     88: "Angular sensor problem",
-    89: "Invalid system configuration"
+    89: "Invalid system configuration",
 }

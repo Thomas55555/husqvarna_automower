@@ -1,28 +1,26 @@
 import asyncio
-from datetime import timedelta
 import logging
 import time
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from husqvarna_automower import GetAccessToken, GetMowerData
 
 from custom_components.husqvarna_automower.const import (
+    CONF_API_KEY,
     CONF_PASSWORD,
     CONF_USERNAME,
-    CONF_API_KEY,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
 )
+from husqvarna_automower import GetAccessToken, GetMowerData
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
 _LOGGER = logging.getLogger(__name__)
-
-
 
 
 async def async_setup(hass: HomeAssistant, config: Config):
@@ -61,10 +59,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-
-
 class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
-
     def __init__(self, hass, username, password, api_key):
         """Initialize."""
         _LOGGER.info("Inizialising UpdateCoordiantor")
@@ -77,8 +72,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
-
-
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.info("Updating data")
@@ -87,23 +80,24 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
             self.access_token_raw = await self.auth_api.async_get_access_token()
             _LOGGER.info(f"{self.access_token_raw}")
-            self.access_token = self.access_token_raw['access_token']
-            self.provider = self.access_token_raw['provider']
-            self.token_type = self.access_token_raw['token_type']
+            self.access_token = self.access_token_raw["access_token"]
+            self.provider = self.access_token_raw["provider"]
+            self.token_type = self.access_token_raw["token_type"]
             self.time_now = time.time()
-            self.token_expires_at = self.access_token_raw['expires_in'] + self.time_now
+            self.token_expires_at = self.access_token_raw["expires_in"] + self.time_now
             _LOGGER.info(f"Token expires at {self.token_expires_at} UTC")
 
-        self.mower_api = GetMowerData(self.api_key, self.access_token, self.provider, self.token_type)
+        self.mower_api = GetMowerData(
+            self.api_key, self.access_token, self.provider, self.token_type
+        )
 
         try:
             data = await self.mower_api.async_mower_state()
-            data['token'] = self.access_token_raw
-            data['api_key'] = self.api_key
+            data["token"] = self.access_token_raw
+            data["api_key"] = self.api_key
             return data
         except Exception as exception:
             raise UpdateFailed(exception)
-
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
