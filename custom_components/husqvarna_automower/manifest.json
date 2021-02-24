@@ -6,5 +6,6 @@
   "dependencies": [],
   "config_flow": true,
   "codeowners": ["@Thomas55555"],
-  "requirements": ["husqvarna-automower==0.5.17"]
+  "requirements": ["husqvarna-automower==0.5.17"],
+  "version": "2021.2.1"
 }
