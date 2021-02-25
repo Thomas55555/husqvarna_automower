@@ -37,7 +37,13 @@ Requires Home Assistant 0.113 or newer.
 
 ### Installation through HACS
 
-Not provided yet.
+If you have not yet installed HACS, go get it at https://hacs.xyz/ and walk through the installation and configuration.
+
+Then find the Husqvarna Automower integration in HACS and install it.
+
+Restart Home Assistant!
+
+Install the new integration through Configuration -> Integrations in HA (see below).
 
 ### Manual installation
 
@@ -82,7 +88,19 @@ The mower returns to the base and parks there until the next schedule starts
 The mower returns to the base and parks there until it gets a new start command
 
 
+## Debugging
 
-### TODO
+To enable debug logging for this integration and related libraries you
+can control this in your Home Assistant `configuration.yaml`
+file. Example:
 
--  Add to HACS
+```
+logger:
+  default: info
+  logs:
+    custom_components.husqvarna_automower: debug
+    custom_components.husqvarna_automower.vacuum: debug
+    custom_components.husqvarna_automower.config_flow: debug
+```
+
+After a restart detailed log entries will appear in `/config/home-assistant.log`.
