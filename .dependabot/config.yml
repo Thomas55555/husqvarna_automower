@@ -1,6 +1,6 @@
-version: 3
+version: 1
 update_configs:
-- package-ecosystem: pip
+- package_manager: "python"
   directory: "/custom_components/husqvarna_automower"
   update_schedule: "live"
   open-pull-requests-limit: 10
