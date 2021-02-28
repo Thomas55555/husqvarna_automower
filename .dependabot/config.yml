@@ -1,5 +1,0 @@
-version: 1
-update_configs:
-- package_manager: "python"
-  directory: "/custom_components/husqvarna_automower"
-  update_schedule: "live"
