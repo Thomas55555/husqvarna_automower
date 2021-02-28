@@ -2,7 +2,5 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "custom_components/husqvarna_automower/"
-  schedule:
-    interval: daily
-    time: "06:00"
+  update_schedule: "live"
   open-pull-requests-limit: 10
