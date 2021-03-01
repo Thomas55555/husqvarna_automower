@@ -75,17 +75,22 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.info("Updating data")
+        self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
         if (self.access_token is None) or (self.token_expires_at < time.time()):
             _LOGGER.info("Getting new token, because Null oder expired")
-            self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
-            self.access_token_raw = await self.auth_api.async_get_access_token()
-            _LOGGER.info(f"{self.access_token_raw}")
-            self.access_token = self.access_token_raw["access_token"]
-            self.provider = self.access_token_raw["provider"]
-            self.token_type = self.access_token_raw["token_type"]
-            self.time_now = time.time()
-            self.token_expires_at = self.access_token_raw["expires_in"] + self.time_now
-            _LOGGER.info(f"Token expires at {self.token_expires_at} UTC")
+            try:
+                self.access_token_raw = await self.auth_api.async_get_access_token()
+                _LOGGER.debug(f"Acces token raw: {self.access_token_raw}")
+                self.access_token_raw != 400
+                self.access_token = self.access_token_raw["access_token"]
+                self.provider = self.access_token_raw["provider"]
+                self.token_type = self.access_token_raw["token_type"]
+                self.time_now = time.time()
+                self.token_expires_at = self.access_token_raw["expires_in"] + self.time_now
+                _LOGGER.info(f"Token expires at {self.token_expires_at} UTC")
+            except Exception as err:
+                _LOGGER.debug(f"Error message for UpdateFailed: {self.access_token_raw}")
+                raise UpdateFailed(f"Error communicating with API")
 
         self.mower_api = GetMowerData(
             self.api_key, self.access_token, self.provider, self.token_type

@@ -1,4 +1,5 @@
 import logging
+import time
 from collections import OrderedDict
 
 import voluptuous as vol
@@ -13,6 +14,7 @@ from custom_components.husqvarna_automower.const import (  # pylint: disable=unu
     PLATFORMS,
 )
 from husqvarna_automower import GetAccessToken
+from husqvarna_automower import GetMowerData
 
 CONF_ID = "unique_id"
 
@@ -74,9 +76,35 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 async def try_connection(username, password, api_key):
+    errors = {}
     _LOGGER.debug("Trying to connect to Husqvarna")
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
-    if access_token_raw in [400, 401, 402, 403]:
+    _LOGGER.debug(f"Access token raw: {access_token_raw}")
+    if 'access_token' in access_token_raw:
+        _LOGGER.info("Connected with the Authentication API")
+        access_token = access_token_raw["access_token"]
+        _LOGGER.debug(f"Access token: {access_token}")
+        provider = access_token_raw["provider"]
+        _LOGGER.debug(f"Provider: {provider}")
+        token_type = access_token_raw["token_type"]
+        _LOGGER.debug(f"Token type: {token_type}")
+    elif access_token_raw == 400:
+        _LOGGER.error("Error 400 - Bad request")
         raise Exception
-    _LOGGER.debug("Successfully connected to Gardena during setup")
+    elif access_token_raw == 401:
+        _LOGGER.error("Error 401 - Unauthorized check your credentials")
+        raise Exception
+    else:
+        _LOGGER.error("Unknown Error")
+        raise Exception
+    automower_api = GetMowerData(api_key, access_token, provider, token_type)
+    mower_data = await automower_api.async_mower_state()
+    if 'data' in mower_data:
+        _LOGGER.info("Connected with the Automower Connect API")
+    else:
+        _LOGGER.error("Make sure, that you have connected to the Automower Connect API on https://developer.husqvarnagroup.cloud/")
+        raise Exception
+    _LOGGER.debug(f"Mower data: {mower_data}")
+    _LOGGER.info("Successfully connected Authentication and Automower Connect API")
+    time.sleep(5)
