@@ -13,8 +13,7 @@ from custom_components.husqvarna_automower.const import (  # pylint: disable=unu
     DOMAIN,
     PLATFORMS,
 )
-from husqvarna_automower import GetAccessToken
-from husqvarna_automower import GetMowerData
+from husqvarna_automower import GetAccessToken, GetMowerData
 
 CONF_ID = "unique_id"
 
@@ -81,7 +80,7 @@ async def try_connection(username, password, api_key):
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
     _LOGGER.debug(f"Access token raw: {access_token_raw}")
-    if 'access_token' in access_token_raw:
+    if "access_token" in access_token_raw:
         _LOGGER.info("Connected with the Authentication API")
         access_token = access_token_raw["access_token"]
         _LOGGER.debug(f"Access token: {access_token}")
@@ -100,10 +99,12 @@ async def try_connection(username, password, api_key):
         raise Exception
     automower_api = GetMowerData(api_key, access_token, provider, token_type)
     mower_data = await automower_api.async_mower_state()
-    if 'data' in mower_data:
+    if "data" in mower_data:
         _LOGGER.info("Connected with the Automower Connect API")
     else:
-        _LOGGER.error("Make sure, that you have connected to the Automower Connect API on https://developer.husqvarnagroup.cloud/")
+        _LOGGER.error(
+            "Make sure, that you have connected to the Automower Connect API on https://developer.husqvarnagroup.cloud/"
+        )
         raise Exception
     _LOGGER.debug(f"Mower data: {mower_data}")
     _LOGGER.info("Successfully connected Authentication and Automower Connect API")

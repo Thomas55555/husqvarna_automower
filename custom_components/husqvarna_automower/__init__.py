@@ -86,10 +86,14 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 self.provider = self.access_token_raw["provider"]
                 self.token_type = self.access_token_raw["token_type"]
                 self.time_now = time.time()
-                self.token_expires_at = self.access_token_raw["expires_in"] + self.time_now
+                self.token_expires_at = (
+                    self.access_token_raw["expires_in"] + self.time_now
+                )
                 _LOGGER.info(f"Token expires at {self.token_expires_at} UTC")
             except Exception as err:
-                _LOGGER.debug(f"Error message for UpdateFailed: {self.access_token_raw}")
+                _LOGGER.debug(
+                    f"Error message for UpdateFailed: {self.access_token_raw}"
+                )
                 raise UpdateFailed(f"Error communicating with API")
 
         self.mower_api = GetMowerData(
