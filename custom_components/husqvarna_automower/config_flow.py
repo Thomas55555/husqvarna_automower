@@ -75,7 +75,6 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 async def try_connection(username, password, api_key):
-    errors = {}
     _LOGGER.debug("Trying to connect to Husqvarna")
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
