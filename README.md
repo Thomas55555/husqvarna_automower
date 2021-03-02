@@ -101,6 +101,7 @@ logger:
     custom_components.husqvarna_automower: debug
     custom_components.husqvarna_automower.vacuum: debug
     custom_components.husqvarna_automower.config_flow: debug
+    husqvarna_automower: debug
 ```
 
 After a restart detailed log entries will appear in `/config/home-assistant.log`.
