@@ -2,7 +2,7 @@
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "2021.2.2"
+VERSION = "2021.3.1"
 
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
 
