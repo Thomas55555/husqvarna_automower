@@ -3,6 +3,7 @@
 ![Maintenance](https://img.shields.io/maintenance/yes/2021.svg)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1600597b0d744166a9778e1f60781bb3)](https://www.codacy.com/gh/Thomas55555/husqvarna_automower/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Thomas55555/husqvarna_automower&amp;utm_campaign=Badge_Grade)
 [![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
+[![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)
 
 Custom component to support Automower.
 
