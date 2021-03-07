@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: "Set version number"
+        run: |
+          sed -i 's|"version": "2021.2.2"|"version": "${{ github.ref }}"|' custom_components/husqvarna_automower/manifest.json
+          sed -i 's|refs/heads/||' custom_components/husqvarna_automower/manifest.json
+          sed -i 's|refs/tags/||' custom_components/husqvarna_automower/manifest.json
+      - name: ZIP youtube folder
+        run: |
+          cd ${{ github.workspace }}/custom_components/husqvarna_automower/
+          zip husqvarna_automower.zip -r ./
+      - name: Upload zip to release
+        uses: svenstaro/upload-release-action@v1-release
+
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/custom_components/husqvarna_automower/husqvarna_automower.zip
+          asset_name: husqvarna_automower.zip
+          tag: ${{ github.ref }}
+          overwrite: true

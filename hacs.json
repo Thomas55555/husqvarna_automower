@@ -3,5 +3,7 @@
   "domains": ["vacuum"],
   "homeassistant": "0.113.0",
   "iot_class": ["Cloud Polling"],
-  "render_readme": true
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "husqvarna_automower.zip"
 }
