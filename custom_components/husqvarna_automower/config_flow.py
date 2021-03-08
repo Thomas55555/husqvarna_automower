@@ -11,6 +11,7 @@ from custom_components.husqvarna_automower.const import (  # pylint: disable=unu
     CONF_PASSWORD,
     CONF_USERNAME,
     DOMAIN,
+    HUSQVARNA_URL,
     PLATFORMS,
 )
 from husqvarna_automower import GetAccessToken, GetMowerData
@@ -79,7 +80,8 @@ async def try_connection(username, password, api_key):
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
     _LOGGER.debug(f"Access token raw: {access_token_raw}")
-    if "access_token" in access_token_raw:
+    _LOGGER.debug(f"Access token status: {access_token_raw['status']}")
+    if access_token_raw["status"] == 200:
         _LOGGER.info("Connected with the Authentication API")
         access_token = access_token_raw["access_token"]
         _LOGGER.debug(f"Access token: {access_token}")
@@ -87,23 +89,26 @@ async def try_connection(username, password, api_key):
         _LOGGER.debug(f"Provider: {provider}")
         token_type = access_token_raw["token_type"]
         _LOGGER.debug(f"Token type: {token_type}")
-    elif access_token_raw == 400:
-        _LOGGER.error("Error 400 - Bad request")
+    elif access_token_raw["status"] == 400:
+        _LOGGER.error("Error 400 - Bad request, check your credentials")
         raise Exception
-    elif access_token_raw == 401:
+    elif access_token_raw["status"] == 401:
         _LOGGER.error("Error 401 - Unauthorized check your credentials")
         raise Exception
     else:
-        _LOGGER.error("Unknown Error")
+        _LOGGER.error(f"Error {access_token_raw['status']}")
         raise Exception
     automower_api = GetMowerData(api_key, access_token, provider, token_type)
     mower_data = await automower_api.async_mower_state()
-    if "data" in mower_data:
+    if mower_data["status"] == 200:
         _LOGGER.info("Connected with the Automower Connect API")
-    else:
+    elif mower_data["status"] == 403:
         _LOGGER.error(
-            "Make sure, that you have connected to the Automower Connect API on https://developer.husqvarnagroup.cloud/"
+            f"Error 403 - Make sure that you are connected to the Authentication API and the Automower Connect API on {HUSQVARNA_URL}"
         )
+        raise Exception
+    else:
+        _LOGGER.error(f"Error {mower_data['status']}")
         raise Exception
     _LOGGER.debug(f"Mower data: {mower_data}")
     _LOGGER.info("Successfully connected Authentication and Automower Connect API")
