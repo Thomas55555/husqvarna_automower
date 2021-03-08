@@ -5,6 +5,7 @@ DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "2021.3.2"
 
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
+HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/"
 
 # Icons
 ICON = "mdi:robot-mower"
