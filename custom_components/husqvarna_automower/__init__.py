@@ -91,7 +91,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"Token expires at {self.token_expires_at} UTC")
             except Exception:
                 _LOGGER.debug(
-                    f"Error message for UpdateFailed: {self.access_token_raw}"
+                    f"Error message for UpdateFailed: {self.access_token_raw['status']}"
                 )
                 raise UpdateFailed("Error communicating with API")
 
