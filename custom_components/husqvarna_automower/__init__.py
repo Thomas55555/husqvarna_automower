@@ -16,7 +16,7 @@ from custom_components.husqvarna_automower.const import (
     PLATFORMS,
     STARTUP_MESSAGE,
 )
-from husqvarna_automower import GetAccessToken, GetMowerData
+from husqvarna_automower import GetAccessToken, GetMowerData, RefreshAccessToken
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
@@ -75,18 +75,35 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.info("Updating data")
-        self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
-        if (self.access_token is None) or (self.token_expires_at < time.time()):
-            _LOGGER.debug("Getting new token, because Null oder expired")
+        if (self.access_token is None):
+            self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
+            _LOGGER.debug("Getting new token, because Null")
             try:
                 self.access_token_raw = await self.auth_api.async_get_access_token()
                 _LOGGER.debug(f"Acces token raw: {self.access_token_raw}")
                 self.access_token = self.access_token_raw["access_token"]
                 self.provider = self.access_token_raw["provider"]
                 self.token_type = self.access_token_raw["token_type"]
-                self.time_now = time.time()
+                self.refresh_token = self.access_token_raw["refresh_token"]
                 self.token_expires_at = (
-                    self.access_token_raw["expires_in"] + self.time_now
+                    self.access_token_raw["expires_in"] + time.time()
+                )
+                _LOGGER.debug(f"Token expires at {self.token_expires_at} UTC")
+            except Exception:
+                _LOGGER.debug(
+                    f"Error message for UpdateFailed: {self.access_token_raw['status']}"
+                )
+                raise UpdateFailed("Error communicating with API")
+        elif self.token_expires_at < time.time():
+            self.auth_api = RefreshAccessToken(self.api_key, self.refresh_token)
+            _LOGGER.debug("Getting new token, because expired")
+            try:
+                self.access_token_raw = await self.auth_api.async_refresh_access_token()
+                _LOGGER.debug(f"Acces token raw: {self.access_token_raw}")
+                self.access_token = self.access_token_raw["access_token"]
+                self.refresh_token = self.access_token_raw["refresh_token"]
+                self.token_expires_at = (
+                    self.access_token_raw["expires_in"] + time.time()
                 )
                 _LOGGER.debug(f"Token expires at {self.token_expires_at} UTC")
             except Exception:
@@ -122,7 +139,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     if unloaded:
         hass.data[DOMAIN].pop(entry.entry_id)
-
     return unloaded
 
 
