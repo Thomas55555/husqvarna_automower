@@ -1,4 +1,5 @@
 template: |
+  ![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/20xx.y.z/total.svg)
   ## What’s Changed
 
   $CHANGES
