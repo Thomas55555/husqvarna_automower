@@ -80,7 +80,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Getting new token, because Null")
             try:
                 self.access_token_raw = await self.auth_api.async_get_access_token()
-                _LOGGER.debug(f"Acces token raw: {self.access_token_raw}")
                 self.access_token = self.access_token_raw["access_token"]
                 self.provider = self.access_token_raw["provider"]
                 self.token_type = self.access_token_raw["token_type"]
@@ -99,7 +98,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Getting new token, because expired")
             try:
                 self.access_token_raw = await self.auth_api.async_refresh_access_token()
-                _LOGGER.debug(f"Acces token raw: {self.access_token_raw}")
                 self.access_token = self.access_token_raw["access_token"]
                 self.refresh_token = self.access_token_raw["refresh_token"]
                 self.token_expires_at = (
