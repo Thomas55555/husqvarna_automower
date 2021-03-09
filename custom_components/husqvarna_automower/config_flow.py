@@ -75,11 +75,12 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 async def try_connection(username, password, api_key):
+    """Try to connect to Husqvarna with the given inputs."""
     _LOGGER.debug("Trying to connect to Husqvarna")
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
-    _LOGGER.debug(f"Access token raw: {access_token_raw}")
-    _LOGGER.debug(f"Access token status: {access_token_raw['status']}")
+    _LOGGER.debug("Access token raw: %s", access_token_raw)
+    _LOGGER.debug("Access token status: %s", access_token_raw["status"])
     if access_token_raw["status"] == 200:
         _LOGGER.debug("Connected with the Authentication API")
         access_token = access_token_raw["access_token"]
@@ -92,7 +93,7 @@ async def try_connection(username, password, api_key):
         _LOGGER.error("Error 401 - Unauthorized check your credentials")
         raise Exception
     else:
-        _LOGGER.error(f"Error {access_token_raw['status']}")
+        _LOGGER.error("Error %s", access_token_raw["status"])
         raise Exception
     automower_api = GetMowerData(api_key, access_token, provider, token_type)
     mower_data = await automower_api.async_mower_state()
@@ -100,12 +101,13 @@ async def try_connection(username, password, api_key):
         _LOGGER.debug("Connected with the Automower Connect API")
     elif mower_data["status"] == 403:
         _LOGGER.error(
-            f"Error 403 - Make sure that you are connected to the Authentication API and the Automower Connect API on {HUSQVARNA_URL}"
+            "Error 403 - Make sure that you are connected to the Authentication API and the Automower Connect API on %s",
+            HUSQVARNA_URL,
         )
         raise Exception
     else:
-        _LOGGER.error(f"Error {mower_data['status']}")
+        _LOGGER.error("Error %s", mower_data["status"])
         raise Exception
-    _LOGGER.debug(f"Mower data: {mower_data}")
+    _LOGGER.debug("Mower data: %s", mower_data)
     _LOGGER.debug("Successfully connected Authentication and Automower Connect API")
     time.sleep(5)

@@ -1,3 +1,4 @@
+"""The Husqvarna Automower integration."""
 import asyncio
 import logging
 import time
@@ -60,6 +61,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
+    """Update Coordinator."""
+
     def __init__(self, hass, username, password, api_key):
         """Initialize."""
         _LOGGER.info("Inizialising UpdateCoordiantor")
@@ -69,17 +72,22 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.api_key = api_key
         self.access_token = None
         self.token_expires_at = 0
+        self.access_token_raw = None
+        self.provider = None
+        self.token_type = None
+        self.mower_api = None
+        self.get_token = GetAccessToken(self.api_key, self.username, self.password)
+        self.refresh_token = None
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.info("Updating data")
-        if (self.access_token is None):
-            self.auth_api = GetAccessToken(self.api_key, self.username, self.password)
+        if self.access_token is None:
             _LOGGER.debug("Getting new token, because Null")
             try:
-                self.access_token_raw = await self.auth_api.async_get_access_token()
+                self.access_token_raw = await self.get_token.async_get_access_token()
                 self.access_token = self.access_token_raw["access_token"]
                 self.provider = self.access_token_raw["provider"]
                 self.token_type = self.access_token_raw["token_type"]
@@ -87,26 +95,30 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 self.token_expires_at = (
                     self.access_token_raw["expires_in"] + time.time()
                 )
-                _LOGGER.debug(f"Token expires at {self.token_expires_at} UTC")
+                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
             except Exception:
                 _LOGGER.debug(
-                    f"Error message for UpdateFailed: {self.access_token_raw['status']}"
+                    "Error message for UpdateFailed: %i",
+                    self.access_token_raw["status"],
                 )
                 raise UpdateFailed("Error communicating with API")
         elif self.token_expires_at < time.time():
-            self.auth_api = RefreshAccessToken(self.api_key, self.refresh_token)
             _LOGGER.debug("Getting new token, because expired")
+            self.refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
             try:
-                self.access_token_raw = await self.auth_api.async_refresh_access_token()
+                self.access_token_raw = (
+                    await self.refresh_token.async_refresh_access_token()
+                )
                 self.access_token = self.access_token_raw["access_token"]
                 self.refresh_token = self.access_token_raw["refresh_token"]
                 self.token_expires_at = (
                     self.access_token_raw["expires_in"] + time.time()
                 )
-                _LOGGER.debug(f"Token expires at {self.token_expires_at} UTC")
+                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
             except Exception:
                 _LOGGER.debug(
-                    f"Error message for UpdateFailed: {self.access_token_raw['status']}"
+                    "Error message for UpdateFailed: %i",
+                    self.access_token_raw["status"],
                 )
                 raise UpdateFailed("Error communicating with API")
 
