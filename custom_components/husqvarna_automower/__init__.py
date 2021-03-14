@@ -9,11 +9,14 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-
-from .const import (
+from homeassistant.const import (
+    CONF_ACCESS_TOKEN,
+    CONF_USERNAME,
     CONF_API_KEY,
     CONF_PASSWORD,
-    CONF_USERNAME,
+)
+
+from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,

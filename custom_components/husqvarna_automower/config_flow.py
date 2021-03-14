@@ -1,4 +1,5 @@
 """Config flow to add the integration via the UI."""
+from homeassistant.const import CONF_ACCESS_TOKEN
 import logging
 import time
 from collections import OrderedDict
@@ -7,8 +8,13 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from homeassistant import config_entries
 from homeassistant.core import callback
-
-from .const import CONF_API_KEY, CONF_PASSWORD, CONF_USERNAME, DOMAIN, HUSQVARNA_URL
+from homeassistant.const import (
+    CONF_ACCESS_TOKEN,
+    CONF_USERNAME,
+    CONF_API_KEY,
+    CONF_PASSWORD,
+)
+from .const import DOMAIN, HUSQVARNA_URL
 
 CONF_ID = "unique_id"
 
@@ -43,11 +49,12 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         try:
-            await try_connection(
+            config_data = await try_connection(
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 user_input[CONF_API_KEY],
             )
+            _LOGGER.debug("Config_data %s", config_data)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "auth"
@@ -65,6 +72,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_USERNAME: user_input[CONF_USERNAME],
                 CONF_PASSWORD: user_input[CONF_PASSWORD],
                 CONF_API_KEY: user_input[CONF_API_KEY],
+                CONF_ACCESS_TOKEN: config_data,
             },
         )
 
@@ -74,7 +82,6 @@ async def try_connection(username, password, api_key):
     _LOGGER.debug("Trying to connect to Husqvarna")
     auth_api = GetAccessToken(api_key, username, password)
     access_token_raw = await auth_api.async_get_access_token()
-    _LOGGER.debug("Access token raw: %s", access_token_raw)
     _LOGGER.debug("Access token status: %s", access_token_raw["status"])
     if access_token_raw["status"] == 200:
         _LOGGER.debug("Connected with the Authentication API")
@@ -103,6 +110,8 @@ async def try_connection(username, password, api_key):
     else:
         _LOGGER.error("Error %s", mower_data["status"])
         raise Exception
+
     _LOGGER.debug("Mower data: %s", mower_data)
     _LOGGER.debug("Successfully connected Authentication and Automower Connect API")
     time.sleep(5)
+    return access_token
