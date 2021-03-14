@@ -1,5 +1,4 @@
 """Config flow to add the integration via the UI."""
-from homeassistant.const import CONF_ACCESS_TOKEN
 import logging
 import time
 from collections import OrderedDict
@@ -7,13 +6,14 @@ from collections import OrderedDict
 import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from homeassistant import config_entries
-from homeassistant.core import callback
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
-    CONF_USERNAME,
     CONF_API_KEY,
     CONF_PASSWORD,
+    CONF_USERNAME,
 )
+from homeassistant.core import callback
+
 from .const import DOMAIN, HUSQVARNA_URL
 
 CONF_ID = "unique_id"

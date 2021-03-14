@@ -6,21 +6,17 @@ from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (
+    CONF_ACCESS_TOKEN,
+    CONF_API_KEY,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_USERNAME,
-    CONF_API_KEY,
-    CONF_PASSWORD,
-)
 
-from .const import (
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
