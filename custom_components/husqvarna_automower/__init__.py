@@ -4,12 +4,11 @@ import logging
 import time
 from datetime import timedelta
 
+from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-
-from husqvarna_automower import GetAccessToken, GetMowerData, RefreshAccessToken
 
 from .const import (
     CONF_API_KEY,

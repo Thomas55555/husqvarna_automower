@@ -1,6 +1,7 @@
 """Creates a vacuum entity for the mower"""
 import time
 
+from aioautomower import Return
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -22,7 +23,6 @@ from homeassistant.components.vacuum import (
 from homeassistant.helpers import entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
-from husqvarna_automower import Return
 from .const import DOMAIN, ERRORCODES, ICON
 
 SUPPORT_STATE_SERVICES = (

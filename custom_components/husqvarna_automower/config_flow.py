@@ -4,10 +4,9 @@ import time
 from collections import OrderedDict
 
 import voluptuous as vol
+from aioautomower import GetAccessToken, GetMowerData
 from homeassistant import config_entries
 from homeassistant.core import callback
-
-from husqvarna_automower import GetAccessToken, GetMowerData
 
 from .const import CONF_API_KEY, CONF_PASSWORD, CONF_USERNAME, DOMAIN, HUSQVARNA_URL
 
