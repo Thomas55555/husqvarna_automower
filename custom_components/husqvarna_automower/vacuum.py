@@ -1,5 +1,7 @@
+"""Creates a vacuum entity for the mower"""
 import time
 
+from aioautomower import Return
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -21,8 +23,7 @@ from homeassistant.components.vacuum import (
 from homeassistant.helpers import entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
-from custom_components.husqvarna_automower.const import DOMAIN, ERRORCODES, ICON
-from husqvarna_automower import Return
+from .const import DOMAIN, ERRORCODES, ICON
 
 SUPPORT_STATE_SERVICES = (
     SUPPORT_STATE
@@ -76,6 +77,15 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.token_type = self.coordinator.data["token"]["token_type"]
         self.mower_id = self.mower["id"]
         self.api_key = self.coordinator.data["api_key"]
+        self.mower_command = None
+        self.mower_timestamp = None
+        self.mower_local_timestamp = None
+        self.readable_mower_local_timestamp = None
+        self.error_code = None
+        self.error_code_timestamp = None
+        self.next_start_timestamp = None
+        self.attributes = None
+        self.payload = None
 
     @property
     def available(self):
@@ -107,20 +117,18 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         )
         if self.mower_attributes["mower"]["state"] == "IN_OPERATION":
             return f"{self.mower_attributes['mower']['activity']}"
-        elif self.mower_attributes["mower"]["state"] in [
+        if self.mower_attributes["mower"]["state"] in [
             "FATAL_ERROR",
             "ERROR",
             "ERROR_AT_POWER_UP",
         ]:
             self.error_code = self.mower_attributes["mower"]["errorCode"]
             return ERRORCODES.get(self.error_code)
-        elif self.mower_attributes["mower"]["state"] == "RESTRICTED":
+        if self.mower_attributes["mower"]["state"] == "RESTRICTED":
             if self.mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
                 return "Parked until further notice"
-            else:
-                return f"{self.mower_attributes['planner']['restrictedReason']}"
-        else:
-            return f"{self.mower_attributes['mower']['state']}"
+            return f"{self.mower_attributes['planner']['restrictedReason']}"
+        return f"{self.mower_attributes['mower']['state']}"
 
     @property
     def icon(self):
@@ -155,9 +163,9 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             ]
             == 0
         ):
-            self.attr_errorCodeTimestamp = "-"
+            self.error_code_timestamp = "-"
         else:
-            self.attr_errorCodeTimestamp = time.strftime(
+            self.error_code_timestamp = time.strftime(
                 "%Y-%m-%d %H:%M:%S",
                 time.gmtime(
                     (
@@ -175,9 +183,9 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             ]
             == 0
         ):
-            self.attr_nextStartTimestamp = "-"
+            self.next_start_timestamp = "-"
         else:
-            self.attr_nextStartTimestamp = time.strftime(
+            self.next_start_timestamp = time.strftime(
                 "%Y-%m-%d %H:%M:%S",
                 time.gmtime(
                     (
@@ -194,8 +202,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "activity": self.mower_attributes["mower"]["activity"],
             "state": self.mower_attributes["mower"]["state"],
             "errorCode": self.mower_attributes["mower"]["errorCode"],
-            "errorCodeTimestamp": self.attr_errorCodeTimestamp,
-            "nextStartTimestamp": self.attr_nextStartTimestamp,
+            "errorCodeTimestamp": self.error_code_timestamp,
+            "nextStartTimestamp": self.next_start_timestamp,
             "action": self.mower_attributes["planner"]["override"]["action"],
             "restrictedReason": self.mower_attributes["planner"]["restrictedReason"],
             "statusTimestamp": time.strftime(
