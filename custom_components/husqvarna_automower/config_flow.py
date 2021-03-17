@@ -5,17 +5,26 @@ from collections import OrderedDict
 
 import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
+
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_PASSWORD,
-    CONF_USERNAME,
     CONF_TOKEN,
+    CONF_USERNAME,
 )
 from homeassistant.core import callback
 
-from .const import DOMAIN, HUSQVARNA_URL, CONF_PROVIDER, CONF_TOKEN_TYPE, CONF_REFRESH_TOKEN, CONF_TOKEN_EXPIRES_AT, ACCESS_TOKEN_RAW
+from .const import (
+    ACCESS_TOKEN_RAW,
+    CONF_PROVIDER,
+    CONF_REFRESH_TOKEN,
+    CONF_TOKEN_EXPIRES_AT,
+    CONF_TOKEN_TYPE,
+    DOMAIN,
+    HUSQVARNA_URL,
+)
 
 CONF_ID = "unique_id"
 
@@ -25,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     """Handle a config flow."""
-    
+
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_PUSH
 

@@ -5,19 +5,21 @@ import time
 from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_PASSWORD,
-    CONF_USERNAME,
     CONF_TOKEN,
+    CONF_USERNAME,
 )
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    ACCESS_TOKEN_RAW,
     CONF_PROVIDER,
     CONF_REFRESH_TOKEN,
     CONF_TOKEN_EXPIRES_AT,
@@ -25,7 +27,6 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
-    ACCESS_TOKEN_RAW,
 )
 
 SCAN_INTERVAL = timedelta(seconds=300)
@@ -80,10 +81,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
     return True
 
+
 class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
     """Update Coordinator."""
 
-    def __init__(self, hass, entry, username, password, api_key, access_token, token_expires_at, provider, token_type, refresh_token):
+    def __init__(
+        self,
+        hass,
+        entry,
+        username,
+        password,
+        api_key,
+        access_token,
+        token_expires_at,
+        provider,
+        token_type,
+        refresh_token,
+    ):
         """Initialize."""
         _LOGGER.info("Inizialising UpdateCoordiantor")
         self.hass = hass
@@ -102,10 +116,11 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.get_token = GetAccessToken(self.api_key, self.username, self.password)
         self.update_config_entry = hass.config_entries
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
+
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.info("Updating data")
-        if self.access_token is None:       ##deprecated, remove in 2021.6
+        if self.access_token is None:  ##deprecated, remove in 2021.6
             _LOGGER.debug("Getting new token, because Null")
             try:
                 self.access_token_raw = await self.get_token.async_get_access_token()
@@ -138,12 +153,13 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 )
                 raise UpdateFailed("Error communicating with API")
             self.update_config_entry.async_update_entry(
-                self.entry, data={
-                            CONF_PASSWORD: self.password,   ##deprecated, remove in 2021.6
-                            CONF_USERNAME: self.username,   ##deprecated, remove in 2021.6
-                            CONF_TOKEN: self.access_token_raw,
-                            CONF_API_KEY: self.api_key
-                        },
+                self.entry,
+                data={
+                    CONF_PASSWORD: self.password,  ##deprecated, remove in 2021.6
+                    CONF_USERNAME: self.username,  ##deprecated, remove in 2021.6
+                    CONF_TOKEN: self.access_token_raw,
+                    CONF_API_KEY: self.api_key,
+                },
             )
 
         self.mower_api = GetMowerData(
@@ -154,7 +170,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             return data
         except Exception as exception:
             raise UpdateFailed(exception)
-
 
     async def async_send_command(self, payload, mower_id):
         """Send command to the mower."""
@@ -195,5 +210,3 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
-
-

@@ -1,8 +1,9 @@
 """Creates a vacuum entity for the mower"""
-import time
 import logging
+import time
 
 from aioautomower import Return
+
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -36,6 +37,7 @@ SUPPORT_STATE_SERVICES = (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
