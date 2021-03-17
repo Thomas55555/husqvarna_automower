@@ -1,5 +1,6 @@
 """Creates a vacuum entity for the mower"""
 import time
+import logging
 
 from aioautomower import Return
 from homeassistant.components.vacuum import (
@@ -34,11 +35,11 @@ SUPPORT_STATE_SERVICES = (
     | SUPPORT_START
 )
 
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-
     async_add_devices(
         HusqvarnaAutomowerEntity(coordinator, idx)
         for idx, ent in enumerate(coordinator.data["data"])
@@ -72,11 +73,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.idx = idx
         self.mower = self.coordinator.data["data"][self.idx]
         self.mower_attributes = self.mower["attributes"]
-        self.access_token = self.coordinator.data["token"]["access_token"]
-        self.provider = self.coordinator.data["token"]["provider"]
-        self.token_type = self.coordinator.data["token"]["token_type"]
         self.mower_id = self.mower["id"]
-        self.api_key = self.coordinator.data["api_key"]
         self.mower_command = None
         self.mower_timestamp = None
         self.mower_local_timestamp = None
@@ -220,16 +217,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     async def async_start(self, **kwargs):
         """Resume schedule."""
         self.payload = '{"data": {"type": "ResumeSchedule"}}'
-        self.mower_command = Return(
-            self.api_key,
-            self.access_token,
-            self.provider,
-            self.token_type,
-            self.mower_id,
-            self.payload,
-        )
         try:
-            await self.mower_command.async_mower_command()
+            await self.coordinator.async_send_command(self.payload, self.mower_id)
             await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
@@ -237,16 +226,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     async def async_pause(self, **kwargs):
         """Pauses the mower."""
         self.payload = '{"data": {"type": "Pause"}}'
-        self.mower_command = Return(
-            self.api_key,
-            self.access_token,
-            self.provider,
-            self.token_type,
-            self.mower_id,
-            self.payload,
-        )
         try:
-            await self.mower_command.async_mower_command()
+            await self.coordinator.async_send_command(self.payload, self.mower_id)
             await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
@@ -254,16 +235,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     async def async_stop(self, **kwargs):
         """Parks the mower until next schedule."""
         self.payload = '{"data": {"type": "ParkUntilNextSchedule"}}'
-        self.mower_command = Return(
-            self.api_key,
-            self.access_token,
-            self.provider,
-            self.token_type,
-            self.mower_id,
-            self.payload,
-        )
         try:
-            await self.mower_command.async_mower_command()
+            await self.coordinator.async_send_command(self.payload, self.mower_id)
             await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
@@ -271,16 +244,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     async def async_return_to_base(self, **kwargs):
         """Parks the mower until further notice."""
         self.payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
-        self.mower_command = Return(
-            self.api_key,
-            self.access_token,
-            self.provider,
-            self.token_type,
-            self.mower_id,
-            self.payload,
-        )
         try:
-            await self.mower_command.async_mower_command()
+            await self.coordinator.async_send_command(self.payload, self.mower_id)
             await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
