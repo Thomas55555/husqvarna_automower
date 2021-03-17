@@ -10,11 +10,20 @@ from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_PASSWORD,
+    CONF_TOKEN,
     CONF_USERNAME,
 )
 from homeassistant.core import callback
 
-from .const import DOMAIN, HUSQVARNA_URL
+from .const import (
+    ACCESS_TOKEN_RAW,
+    CONF_PROVIDER,
+    CONF_REFRESH_TOKEN,
+    CONF_TOKEN_EXPIRES_AT,
+    CONF_TOKEN_TYPE,
+    DOMAIN,
+    HUSQVARNA_URL,
+)
 
 CONF_ID = "unique_id"
 
@@ -54,25 +63,23 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_PASSWORD],
                 user_input[CONF_API_KEY],
             )
-            _LOGGER.debug("Config_data %s", config_data)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "auth"
             return await self._show_setup_form(errors)
 
         unique_id = user_input[CONF_API_KEY]
-
+        access_token_raw = None
         await self.async_set_unique_id(unique_id)
         self._abort_if_unique_id_configured()
 
         return self.async_create_entry(
-            title="",
+            title="Husqvarna Automower Integration",
             data={
-                CONF_ID: unique_id,
                 CONF_USERNAME: user_input[CONF_USERNAME],
                 CONF_PASSWORD: user_input[CONF_PASSWORD],
                 CONF_API_KEY: user_input[CONF_API_KEY],
-                CONF_ACCESS_TOKEN: config_data,
+                CONF_TOKEN: config_data,
             },
         )
 
@@ -88,13 +95,13 @@ async def try_connection(username, password, api_key):
         access_token = access_token_raw["access_token"]
         provider = access_token_raw["provider"]
         token_type = access_token_raw["token_type"]
-    elif access_token_raw["status"] == 400:
+    if access_token_raw["status"] == 400:
         _LOGGER.error("Error 400 - Bad request, check your credentials")
         raise Exception
-    elif access_token_raw["status"] == 401:
+    if access_token_raw["status"] == 401:
         _LOGGER.error("Error 401 - Unauthorized check your credentials")
         raise Exception
-    else:
+    if access_token_raw["status"] != 200:
         _LOGGER.error("Error %s", access_token_raw["status"])
         raise Exception
     automower_api = GetMowerData(api_key, access_token, provider, token_type)
@@ -113,5 +120,4 @@ async def try_connection(username, password, api_key):
 
     _LOGGER.debug("Mower data: %s", mower_data)
     _LOGGER.debug("Successfully connected Authentication and Automower Connect API")
-    time.sleep(5)
-    return access_token
+    return access_token_raw
