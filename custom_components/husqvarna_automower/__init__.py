@@ -184,6 +184,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         )
         try:
             await self.mower_command.async_mower_command()
+            await self.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
 

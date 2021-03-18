@@ -221,7 +221,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
-            await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
 
@@ -230,7 +229,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.payload = '{"data": {"type": "Pause"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
-            await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
 
@@ -239,7 +237,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.payload = '{"data": {"type": "ParkUntilNextSchedule"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
-            await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
 
@@ -248,6 +245,5 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
-            await self.coordinator.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception)
