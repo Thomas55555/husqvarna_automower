@@ -5,6 +5,7 @@ import time
 from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -48,12 +49,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
     api_key = entry.data.get(CONF_API_KEY)
-    token = entry.data.get(CONF_TOKEN)
-    access_token = token["access_token"]
-    provider = token["provider"]
-    token_type = token["token_type"]
-    refresh_token = token["refresh_token"]
-    token_expires_at = token["expires_at"]
+    ### Handling missing information in Config Entries, when last start was with 2021.3.4 or earlier
+    try:
+        token = entry.data.get(CONF_TOKEN)
+        access_token = token["access_token"]
+        provider = token["provider"]
+        token_type = token["token_type"]
+        refresh_token = token["refresh_token"]
+        token_expires_at = token["expires_at"]
+    except:
+        access_token = None
+        provider = None
+        token_type = None
+        refresh_token = None
+        token_expires_at = 0
 
     coordinator = AuthenticationUpdateCoordinator(
         hass,
@@ -118,48 +127,9 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Update data via library."""
-        _LOGGER.info("Updating data")
-        if self.access_token is None:  ##deprecated, remove in 2021.6
-            _LOGGER.debug("Getting new token, because Null")
-            try:
-                self.access_token_raw = await self.get_token.async_get_access_token()
-                self.access_token = self.access_token_raw["access_token"]
-                self.provider = self.access_token_raw["provider"]
-                self.token_type = self.access_token_raw["token_type"]
-                self.refresh_token = self.access_token_raw["refresh_token"]
-                self.token_expires_at = self.access_token_raw["expires_at"]
-                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
-            except Exception:
-                _LOGGER.debug(
-                    "Error message for UpdateFailed: %i",
-                    self.access_token_raw["status"],
-                )
-                raise UpdateFailed("Error communicating with API")
-        if self.token_expires_at < time.time():
-            _LOGGER.debug("Getting new token, because expired")
-            self.refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
-            try:
-                self.access_token_raw = (
-                    await self.refresh_token.async_refresh_access_token()
-                )
-                self.access_token = self.access_token_raw["access_token"]
-                self.refresh_token = self.access_token_raw["refresh_token"]
-                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
-            except Exception:
-                _LOGGER.debug(
-                    "Error message for UpdateFailed: %i",
-                    self.access_token_raw["status"],
-                )
-                raise UpdateFailed("Error communicating with API")
-            self.update_config_entry.async_update_entry(
-                self.entry,
-                data={
-                    CONF_PASSWORD: self.password,  ##deprecated, remove in 2021.6
-                    CONF_USERNAME: self.username,  ##deprecated, remove in 2021.6
-                    CONF_TOKEN: self.access_token_raw,
-                    CONF_API_KEY: self.api_key,
-                },
-            )
+        _LOGGER.debug("Updating mower data")
+        if self.access_token is None or self.token_expires_at < time.time():
+            await self.async_update_token()
 
         self.mower_api = GetMowerData(
             self.api_key, self.access_token, self.provider, self.token_type
@@ -169,6 +139,52 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             return data
         except Exception as exception:
             raise UpdateFailed(exception)
+
+    async def async_update_token(self):
+        """Update token via library."""
+        _LOGGER.debug("Updating token")
+        if self.access_token is None:  ##deprecated, remove in 2021.6
+            _LOGGER.debug("Getting new token, because is None")
+            try:
+                self.access_token_raw = await self.get_token.async_get_access_token()
+                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
+            except Exception:
+                _LOGGER.debug(
+                    "Error message for UpdateFailed: %i",
+                    self.access_token_raw["status"],
+                )
+                raise UpdateFailed("Error communicating with API")
+
+        elif self.token_expires_at < time.time():
+            _LOGGER.debug("Getting new token, because expired")
+            self.refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
+            try:
+                self.access_token_raw = (
+                    await self.refresh_token.async_refresh_access_token()
+                )
+                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
+            except Exception:
+                _LOGGER.debug(
+                    "Error message for UpdateFailed: %i",
+                    self.access_token_raw["status"],
+                )
+                raise UpdateFailed("Error communicating with API")
+
+        self.access_token = self.access_token_raw["access_token"]
+        self.provider = self.access_token_raw["provider"]
+        self.token_type = self.access_token_raw["token_type"]
+        self.refresh_token = self.access_token_raw["refresh_token"]
+        self.token_expires_at = self.access_token_raw["expires_at"]
+
+        self.update_config_entry.async_update_entry(
+            self.entry,
+            data={
+                CONF_PASSWORD: self.password,  ##deprecated, remove in 2021.6
+                CONF_USERNAME: self.username,  ##deprecated, remove in 2021.6
+                CONF_TOKEN: self.access_token_raw,
+                CONF_API_KEY: self.api_key,
+            },
+        )
 
     async def async_send_command(self, payload, mower_id):
         """Send command to the mower."""
