@@ -147,7 +147,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Getting new token, because is None")
             try:
                 self.access_token_raw = await self.get_token.async_get_access_token()
-                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
             except Exception:
                 _LOGGER.debug(
                     "Error message for UpdateFailed: %i",
@@ -162,7 +161,6 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 self.access_token_raw = (
                     await self.refresh_token.async_refresh_access_token()
                 )
-                _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
             except Exception:
                 _LOGGER.debug(
                     "Error message for UpdateFailed: %i",
@@ -175,6 +173,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.token_type = self.access_token_raw["token_type"]
         self.refresh_token = self.access_token_raw["refresh_token"]
         self.token_expires_at = self.access_token_raw["expires_at"]
+        _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
 
         self.update_config_entry.async_update_entry(
             self.entry,
