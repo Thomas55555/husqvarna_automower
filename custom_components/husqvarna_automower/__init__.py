@@ -147,6 +147,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         try:
             data = await self.mower_api.async_mower_state()
             return data
+            _LOGGER.debug("Mower data: %s", data)
         except Exception as exception:
             raise UpdateFailed(exception)
 
