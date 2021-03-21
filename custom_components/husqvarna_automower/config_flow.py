@@ -5,7 +5,6 @@ from collections import OrderedDict
 
 import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
-
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
