@@ -4,19 +4,21 @@
         "step": {
             "user": {
                 "title": "Husqvarna Automower",
-                "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
+                "description": "Wenn sie Hilfe benötigen besuchen sie diese Seite: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
                     "username": "Benutzername",
                     "password": "Password",
-                    "api_key": "API Key"
+                    "api_key": "36 stelliger API Key"
                 }
             }
         },
         "error": {
-            "auth": "Username/Password is wrong."
+            "auth": "Benutzername, Password und/oder API-Key ist falsch.",
+            "mower": "Stellen sie sicher, dass ihr API-Key mit der Authentication API und der Automower-Connect API verbunden sind: https://developer.husqvarnagroup.cloud/",
+            "unknown": "Es ist ein unbekannter Fehler aufgetreten"
         },
         "abort": {
-            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
+            "single_instance_allowed": "Es ist nur eine Konfiguration von Husqvarna Automower erlaubt."
         }
     },
     "options": {

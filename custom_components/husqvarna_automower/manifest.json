@@ -6,6 +6,6 @@
   "dependencies": [],
   "config_flow": true,
   "codeowners": ["@Thomas55555"],
-  "requirements": ["aioautomower==2021.3.4"],
-  "version": "2021.3.4"
+  "requirements": ["aioautomower==2021.3.5"],
+  "version": "2021.3.5"
 }
