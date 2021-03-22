@@ -89,6 +89,17 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
 
     @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                (DOMAIN, self.mower_id)
+            },
+            "name": self.mower_attributes['system']['name'],
+            "manufacturer": "Husqvarna",
+            "model": self.mower_attributes['system']['model'],
+        }
+
+    @property
     def available(self):
         """Return True if the device is available."""
         if (self.connected == False) and (
