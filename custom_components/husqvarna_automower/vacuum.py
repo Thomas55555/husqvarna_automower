@@ -74,6 +74,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.idx = idx
         self.mower = self.coordinator.data["data"][self.idx]
         self.mower_attributes = self.mower["attributes"]
+        self.connected = self.mower_attributes["metadata"]["connected"]
         self.mower_id = self.mower["id"]
         self.mower_command = None
         self.mower_timestamp = None
@@ -84,18 +85,28 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.next_start_timestamp = None
         self.attributes = None
         self.payload = None
+        self.communication_not_possible_already_sent = False
+        self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
 
     @property
     def available(self):
         """Return True if the device is available."""
-        return self.coordinator.data["data"][self.idx]["attributes"]["metadata"][
-            "connected"
-        ]
+        if (self.connected == False) and (
+            self.communication_not_possible_already_sent == False
+        ):
+            self.communication_not_possible_already_sent = True
+            _LOGGER.warning("Connection to %s lost", self.mower_name)
+        if (self.connected == True) and (
+            self.communication_not_possible_already_sent == True
+        ):
+            self.communication_not_possible_already_sent = False
+            _LOGGER.info("Connected to %s again", self.mower_name)
+        return self.connected
 
     @property
     def name(self):
         """Return the name of the mower."""
-        return f"{self.coordinator.data['data'][self.idx]['attributes']['system']['model']}_{self.coordinator.data['data'][self.idx]['attributes']['system']['name']}"
+        return self.mower_name
 
     @property
     def unique_id(self):
