@@ -5,7 +5,9 @@ import time
 from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
-from homeassistant.config_entries import ConfigEntry, SOURCE_REAUTH
+from aiohttp import ClientError
+
+from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,

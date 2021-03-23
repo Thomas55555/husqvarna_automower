@@ -3,6 +3,7 @@ import logging
 import time
 
 from aioautomower import Return
+
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,

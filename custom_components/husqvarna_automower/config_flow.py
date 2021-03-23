@@ -7,6 +7,7 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from aiohttp import ClientError
 from aiohttp.client_exceptions import ClientConnectorError
+
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -89,12 +90,12 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "unknown"
             return await self._show_setup_form(errors)
         unique_id = user_input[CONF_API_KEY]
-        data={
-                CONF_USERNAME: user_input[CONF_USERNAME],
-                CONF_PASSWORD: user_input[CONF_PASSWORD],
-                CONF_API_KEY: user_input[CONF_API_KEY],
-                CONF_TOKEN: access_token_raw,
-            }
+        data = {
+            CONF_USERNAME: user_input[CONF_USERNAME],
+            CONF_PASSWORD: user_input[CONF_PASSWORD],
+            CONF_API_KEY: user_input[CONF_API_KEY],
+            CONF_TOKEN: access_token_raw,
+        }
         existing_entry = await self.async_set_unique_id(unique_id)
 
         if existing_entry:
