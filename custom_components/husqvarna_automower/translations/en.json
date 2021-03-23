@@ -9,10 +9,7 @@
                     "api_key": "36 digits API Key",
                     "username": "Username",
                     "password": "Password"
-                },
-                "reauth_confirm": {
-                    "description": "The Husqvarna Automower integration needs to re-authenticate your account"
-                    }
+                }
             }
         },
         "error": {
