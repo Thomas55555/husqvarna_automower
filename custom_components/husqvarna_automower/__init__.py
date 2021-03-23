@@ -134,7 +134,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.token_expires_at = token_expires_at
         self.mower_api = None
         self.update_config_entry = hass.config_entries
-        self.refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
+        self.api_refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
@@ -159,7 +159,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Getting new token, because expired")
         try:
             self.access_token_raw = (
-                await self.refresh_token.async_refresh_access_token()
+                await self.api_refresh_token.async_refresh_access_token()
             )
         except ClientError:
             self.hass.async_create_task(
