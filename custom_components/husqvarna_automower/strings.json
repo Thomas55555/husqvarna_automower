@@ -1,7 +1,13 @@
 {
   "config": {
+    "step": {
+      "reauth_confirm": {
+        "title": "[%key:common::config_flow::title::reauth%]",
+        "description": "The Husqvarna Automower integration needs to re-authenticate your account."
+      }
+    },
     "abort": {
       "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
     }
   }
-}
+} 
