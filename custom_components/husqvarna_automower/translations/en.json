@@ -11,7 +11,6 @@
                     "password": "Password"
                 },
                 "reauth_confirm": {
-                    "title": "Re-Authenticate Integration",
                     "description": "The Husqvarna Automower integration needs to re-authenticate your account"
                     }
             }
