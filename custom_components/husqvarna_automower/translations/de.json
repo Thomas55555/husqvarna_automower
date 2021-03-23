@@ -6,9 +6,13 @@
                 "title": "Husqvarna Automower",
                 "description": "Wenn sie Hilfe benötigen besuchen sie diese Seite: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
+                    "api_key": "36 stelliger API Key",
                     "username": "Benutzername",
-                    "password": "Password",
-                    "api_key": "36 stelliger API Key"
+                    "password": "Password"
+                },
+            "reauth_confirm": {
+                "title": "Re-Authentifiziere Integration",
+                "description": "Die Husqvarna Automower Integration muss die Kontoinformationen verifizieren"
                 }
             }
         },
@@ -18,7 +22,8 @@
             "unknown": "Es ist ein unbekannter Fehler aufgetreten"
         },
         "abort": {
-            "single_instance_allowed": "Es ist nur eine Konfiguration von Husqvarna Automower erlaubt."
+            "single_instance_allowed": "Es ist nur eine Konfiguration von Husqvarna Automower erlaubt.",
+            "reauth_successful": "The Re-Authentifizierung war erfolgreich"
         }
     },
     "options": {

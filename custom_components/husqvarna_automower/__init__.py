@@ -5,7 +5,7 @@ import time
 from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, SOURCE_REAUTH
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
@@ -159,12 +159,15 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token_raw = (
                 await self.refresh_token.async_refresh_access_token()
             )
-        except Exception:
-            _LOGGER.debug(
-                "Error message for UpdateFailed: %i",
-                self.access_token_raw["status"],
+        except ClientError:
+            self.hass.async_create_task(
+                self.hass.config_entries.flow.async_init(
+                    DOMAIN,
+                    context={"source": SOURCE_REAUTH},
+                    data=self.entry,
+                )
             )
-            raise UpdateFailed("Error communicating with API")
+            return False
 
         self.access_token = self.access_token_raw["access_token"]
         self.provider = self.access_token_raw["provider"]
