@@ -91,12 +91,10 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     @property
     def device_info(self):
         return {
-            "identifiers": {
-                (DOMAIN, self.mower_id)
-            },
-            "name": self.mower_attributes['system']['name'],
+            "identifiers": {(DOMAIN, self.mower_id)},
+            "name": self.mower_attributes["system"]["name"],
             "manufacturer": "Husqvarna",
-            "model": self.mower_attributes['system']['model'],
+            "model": self.mower_attributes["system"]["model"],
         }
 
     @property
