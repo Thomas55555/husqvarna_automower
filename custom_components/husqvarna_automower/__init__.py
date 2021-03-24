@@ -5,7 +5,9 @@ import time
 from datetime import timedelta
 
 from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
-from homeassistant.config_entries import ConfigEntry
+from aiohttp import ClientError
+
+from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
@@ -92,9 +94,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     await coordinator.async_refresh()
+
     if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": SOURCE_REAUTH},
+                data=entry,
+            )
+        )
+        return False
+
     hass.data[DOMAIN][entry.entry_id] = coordinator
+
     for platform in PLATFORMS:
         if entry.options.get(platform, True):
             coordinator.platforms.append(platform)
@@ -132,7 +144,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.token_expires_at = token_expires_at
         self.mower_api = None
         self.update_config_entry = hass.config_entries
-        self.refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
+        self.api_refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
@@ -157,14 +169,10 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Getting new token, because expired")
         try:
             self.access_token_raw = (
-                await self.refresh_token.async_refresh_access_token()
+                await self.api_refresh_token.async_refresh_access_token()
             )
-        except Exception:
-            _LOGGER.debug(
-                "Error message for UpdateFailed: %i",
-                self.access_token_raw["status"],
-            )
-            raise UpdateFailed("Error communicating with API")
+        except Exception as exception:
+            raise UpdateFailed(exception)
 
         self.access_token = self.access_token_raw["access_token"]
         self.provider = self.access_token_raw["provider"]

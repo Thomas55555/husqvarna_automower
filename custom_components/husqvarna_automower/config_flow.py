@@ -7,6 +7,7 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from aiohttp import ClientError
 from aiohttp.client_exceptions import ClientConnectorError
+
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -89,15 +90,33 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "unknown"
             return await self._show_setup_form(errors)
         unique_id = user_input[CONF_API_KEY]
-        await self.async_set_unique_id(unique_id)
-        self._abort_if_unique_id_configured()
+        data = {
+            CONF_USERNAME: user_input[CONF_USERNAME],
+            CONF_PASSWORD: user_input[CONF_PASSWORD],
+            CONF_API_KEY: user_input[CONF_API_KEY],
+            CONF_TOKEN: access_token_raw,
+        }
+        existing_entry = await self.async_set_unique_id(unique_id)
+
+        if existing_entry:
+            self.hass.config_entries.async_update_entry(existing_entry, data=data)
+            await self.hass.config_entries.async_reload(existing_entry.entry_id)
+            return self.async_abort(reason="reauth_successful")
 
         return self.async_create_entry(
             title=user_input[CONF_API_KEY],
-            data={
-                CONF_USERNAME: user_input[CONF_USERNAME],
-                CONF_PASSWORD: user_input[CONF_PASSWORD],
-                CONF_API_KEY: user_input[CONF_API_KEY],
-                CONF_TOKEN: access_token_raw,
-            },
+            data=data,
         )
+
+    async def async_step_reauth(self, user_input=None):
+        """Perform reauth upon an API authentication error."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(self, user_input=None):
+        """Dialog that informs the user that reauth is required."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id="reauth_confirm",
+                data_schema=vol.Schema({}),
+            )
+        return await self.async_step_user()
