@@ -94,9 +94,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     await coordinator.async_refresh()
+
     if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": SOURCE_REAUTH},
+                data=entry,
+            )
+        )
+        return False
+
     hass.data[DOMAIN][entry.entry_id] = coordinator
+
     for platform in PLATFORMS:
         if entry.options.get(platform, True):
             coordinator.platforms.append(platform)
@@ -161,15 +171,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token_raw = (
                 await self.api_refresh_token.async_refresh_access_token()
             )
-        except ClientError:
-            self.hass.async_create_task(
-                self.hass.config_entries.flow.async_init(
-                    DOMAIN,
-                    context={"source": SOURCE_REAUTH},
-                    data=self.entry,
-                )
-            )
-            return False
+        except Exception as exception:
+            raise UpdateFailed(exception)
 
         self.access_token = self.access_token_raw["access_token"]
         self.provider = self.access_token_raw["provider"]
