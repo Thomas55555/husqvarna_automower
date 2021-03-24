@@ -10,6 +10,10 @@
                     "username": "Benutzername",
                     "password": "Password"
                 }
+            },
+            "reauth_confirm": {
+                "description": "Die Husqvarna Automower Integration muss mit Husqvarna re-authifiziert werden",
+                "title": "Reauthentifiziere Integration"
             }
         },
         "error": {
@@ -19,7 +23,7 @@
         },
         "abort": {
             "single_instance_allowed": "Es ist nur eine Konfiguration von Husqvarna Automower erlaubt.",
-            "reauth_successful": "The Re-Authentifizierung war erfolgreich"
+            "reauth_successful": "Die Re-Authentifizierung war erfolgreich"
         }
     },
     "options": {

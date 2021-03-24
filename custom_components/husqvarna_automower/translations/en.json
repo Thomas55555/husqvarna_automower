@@ -10,6 +10,10 @@
                     "username": "Username",
                     "password": "Password"
                 }
+            },
+            "reauth_confirm": {
+                "description": "The Husqvarna Automower integration needs to re-authenticate with Husqvarna",
+                "title": "Reauthenticate Integration"
             }
         },
         "error": {
