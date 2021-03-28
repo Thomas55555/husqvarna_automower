@@ -145,6 +145,9 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.mower_api = None
         self.update_config_entry = hass.config_entries
         self.api_refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
+        self.mower_id = None
+        self.payload = None
+        self.mower_command = None
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):

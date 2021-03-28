@@ -1,18 +1,16 @@
+"""The constants for the Husqvarna Automower integration."""
 # Base component constants
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "2021.3.5"
-
-
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
 HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/"
+
 
 # Icons
 ICON = "mdi:robot-mower"
 
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 
 # Platforms
 ##SENSOR = "sensor"
