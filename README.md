@@ -1,7 +1,6 @@
 # Home Assistant integration for Husqvarna Automower
 
 ![Maintenance](https://img.shields.io/maintenance/yes/2021.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1600597b0d744166a9778e1f60781bb3)](https://www.codacy.com/gh/Thomas55555/husqvarna_automower/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Thomas55555/husqvarna_automower&amp;utm_campaign=Badge_Grade)
 [![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
 [![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)
 
@@ -11,7 +10,7 @@ Custom component to support Automower.
 - [About](#about)
 - [Installation](#installation)
   - [Installation through HACS](#installation-through-hacs)
-  - [Manual installation](#manual-installation)  
+  - [Manual installation](#manual-installation)
 - [Configuration](#configuration)
   - [Husqvarna API-Key](#husqvarna-api-key)
   - [Home Assistant](#home-assistant)
@@ -48,7 +47,7 @@ Install the new integration through Configuration -> Integrations in HA (see bel
 
 ### Manual installation
 
-Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the path `/config/custom_components/husqvarna_automower` of your HA installation. 
+Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the path `/config/custom_components/husqvarna_automower` of your HA installation.
 
 ## Configuration
 
@@ -76,16 +75,16 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 ## Usage
 
-`vacuum.start`  
+`vacuum.start`
 The mower continues to mow, within the specifed schedule
 
-`vacuum.pause`  
+`vacuum.pause`
 Pauses the mower until a new command
 
-`vacuum.stop`  
+`vacuum.stop`
 The mower returns to the base and parks there until the next schedule starts
 
-`vacuum.return_to_base`  
+`vacuum.return_to_base`
 The mower returns to the base and parks there until it gets a new start command
 
 
