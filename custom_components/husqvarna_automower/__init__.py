@@ -24,7 +24,6 @@ from .const import (
     ACCESS_TOKEN_RAW,
     CONF_PROVIDER,
     CONF_REFRESH_TOKEN,
-    CONF_TOKEN_EXPIRES_AT,
     CONF_TOKEN_TYPE,
     DOMAIN,
     PLATFORMS,
@@ -75,22 +74,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     api_key = entry.title
-    token = entry.data.get(CONF_TOKEN)
-    access_token = token["access_token"]
-    provider = token["provider"]
-    token_type = token["token_type"]
-    refresh_token = token["refresh_token"]
-    token_expires_at = token["expires_at"]
+    access_token_raw = entry.data.get(CONF_TOKEN)
 
     coordinator = AuthenticationUpdateCoordinator(
         hass,
         entry,
         api_key=api_key,
-        access_token=access_token,
-        provider=provider,
-        token_type=token_type,
-        refresh_token=refresh_token,
-        token_expires_at=token_expires_at,
+        access_token_raw=access_token_raw,
     )
 
     await coordinator.async_refresh()
@@ -124,11 +114,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         hass,
         entry,
         api_key,
-        access_token,
-        token_expires_at,
-        provider,
-        token_type,
-        refresh_token,
+        access_token_raw,
     ):
         """Initialize."""
         _LOGGER.info("Inizialising UpdateCoordiantor")
@@ -136,15 +122,12 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.entry = entry
         self.platforms = []
         self.api_key = api_key
-        self.access_token = access_token
-        self.access_token_raw = None
-        self.provider = provider
-        self.token_type = token_type
-        self.refresh_token = refresh_token
-        self.token_expires_at = token_expires_at
+        self.access_token_raw = access_token_raw
         self.mower_api = None
         self.update_config_entry = hass.config_entries
-        self.api_refresh_token = RefreshAccessToken(self.api_key, self.refresh_token)
+        self.api_refresh_token = RefreshAccessToken(
+            self.api_key, self.access_token_raw["refresh_token"]
+        )
         self.mower_id = None
         self.payload = None
         self.mower_command = None
@@ -153,11 +136,14 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         _LOGGER.debug("Updating mower data")
-        if self.token_expires_at < time.time():
+        if self.access_token_raw["expires_at"] < time.time():
             await self.async_update_token()
 
         self.mower_api = GetMowerData(
-            self.api_key, self.access_token, self.provider, self.token_type
+            self.api_key,
+            self.access_token_raw["access_token"],
+            self.access_token_raw["provider"],
+            self.access_token_raw["token_type"],
         )
         try:
             data = await self.mower_api.async_mower_state()
@@ -177,12 +163,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         except Exception as exception:
             raise UpdateFailed(exception)
 
-        self.access_token = self.access_token_raw["access_token"]
-        self.provider = self.access_token_raw["provider"]
-        self.token_type = self.access_token_raw["token_type"]
-        self.refresh_token = self.access_token_raw["refresh_token"]
-        self.token_expires_at = self.access_token_raw["expires_at"]
-        _LOGGER.debug("Token expires at %i UTC", self.token_expires_at)
+        _LOGGER.debug("Token expires at %i UTC", self.access_token_raw["expires_at"])
 
         self.update_config_entry.async_update_entry(
             self.entry,
@@ -197,9 +178,9 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.payload = payload
         self.mower_command = Return(
             self.api_key,
-            self.access_token,
-            self.provider,
-            self.token_type,
+            self.access_token_raw["access_token"],
+            self.access_token_raw["provider"],
+            self.access_token_raw["token_type"],
             self.mower_id,
             self.payload,
         )

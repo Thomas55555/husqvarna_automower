@@ -102,7 +102,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data=data,
         )
 
-    async def async_step_reauth(self, user_input=None):
+    async def async_step_reauth(self):
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 

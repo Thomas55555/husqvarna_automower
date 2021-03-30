@@ -24,7 +24,6 @@ CONF_API_KEY = "api_key"
 CONF_PROVIDER = "provider"
 CONF_TOKEN_TYPE = "token_type"
 CONF_REFRESH_TOKEN = "refresh_token"
-CONF_TOKEN_EXPIRES_AT = "token_expires_at"
 ACCESS_TOKEN_RAW = "access_token_raw"
 
 
