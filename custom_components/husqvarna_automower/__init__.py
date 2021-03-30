@@ -30,7 +30,7 @@ from .const import (
     STARTUP_MESSAGE,
 )
 
-SCAN_INTERVAL = timedelta(seconds=300)
+SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -150,7 +150,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Mower data: %s", data)
             return data
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_update_token(self):
         """Update token via library."""
@@ -161,7 +161,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 await self.api_refresh_token.async_refresh_access_token()
             )
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
         _LOGGER.debug("Token expires at %i UTC", self.access_token_raw["expires_at"])
 
@@ -188,7 +188,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             await self.mower_command.async_mower_command()
             await self.async_request_refresh()
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):

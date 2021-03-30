@@ -36,7 +36,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _show_setup_form(self, errors):
         """Show the setup form to the user."""
-        _LOGGER.debug("""Show the setup form to the user.""")
+        _LOGGER.debug("Show the setup form to the user.")
 
         fields = OrderedDict()
         fields[vol.Required(CONF_API_KEY)] = vol.All(str, vol.Length(min=36, max=36))
@@ -102,7 +102,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data=data,
         )
 
-    async def async_step_reauth(self):
+    async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 

@@ -233,7 +233,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_pause(self):
         """Pauses the mower."""
@@ -241,7 +241,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_stop(self, **kwargs):
         """Parks the mower until next schedule."""
@@ -249,7 +249,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_return_to_base(self, **kwargs):
         """Parks the mower until further notice."""
@@ -257,4 +257,4 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
