@@ -17,7 +17,7 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
-from homeassistant.helpers import entity
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
 from .const import DOMAIN, ERRORCODES, ICON
@@ -43,7 +43,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     )
 
 
-class HusqvarnaEntity(entity.Entity):
+class HusqvarnaEntity(Entity):
     """Defining the Husqvarna Entity."""
 
     def __init__(self, coordinator):
@@ -164,7 +164,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         )
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
         if (
