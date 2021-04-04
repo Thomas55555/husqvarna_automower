@@ -3,7 +3,7 @@
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "2021.3.5"
+INTEGRATION_VERSION = "master"
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
 HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/"
 
@@ -34,7 +34,7 @@ DEFAULT_NAME = DOMAIN
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
 {NAME}
-Version: {VERSION}
+Version: {INTEGRATION_VERSION}
 This is a custom integration!
 If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
