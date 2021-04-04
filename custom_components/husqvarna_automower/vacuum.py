@@ -2,9 +2,7 @@
 import logging
 import time
 
-from aioautomower import Return
 from homeassistant.components.vacuum import (
-    STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
     STATE_PAUSED,
@@ -17,8 +15,6 @@ from homeassistant.components.vacuum import (
     SUPPORT_STATE,
     SUPPORT_STATUS,
     SUPPORT_STOP,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
     StateVacuumEntity,
 )
 from homeassistant.helpers.entity import Entity
@@ -74,6 +70,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.idx = idx
         self.mower = self.coordinator.data["data"][self.idx]
         self.mower_attributes = self.mower["attributes"]
+        self.connected = self.mower_attributes["metadata"]["connected"]
         self.mower_id = self.mower["id"]
         self.mower_command = None
         self.mower_timestamp = None
@@ -84,18 +81,33 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.next_start_timestamp = None
         self.attributes = None
         self.payload = None
+        self.communication_not_possible_already_sent = False
+        self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.mower_id)},
+            "name": self.mower_attributes["system"]["name"],
+            "manufacturer": "Husqvarna",
+            "model": self.mower_attributes["system"]["model"],
+        }
 
     @property
     def available(self):
         """Return True if the device is available."""
-        return self.coordinator.data["data"][self.idx]["attributes"]["metadata"][
-            "connected"
-        ]
+        if not self.connected and not self.communication_not_possible_already_sent:
+            self.communication_not_possible_already_sent = True
+            _LOGGER.warning("Connection to %s lost", self.mower_name)
+        if self.connected and self.communication_not_possible_already_sent:
+            self.communication_not_possible_already_sent = False
+            _LOGGER.info("Connected to %s again", self.mower_name)
+        return self.connected
 
     @property
     def name(self):
         """Return the name of the mower."""
-        return f"{self.coordinator.data['data'][self.idx]['attributes']['system']['model']}_{self.coordinator.data['data'][self.idx]['attributes']['system']['name']}"
+        return self.mower_name
 
     @property
     def unique_id(self):
@@ -215,21 +227,21 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
 
         return self.attributes
 
-    async def async_start(self, **kwargs):
+    async def async_start(self):
         """Resume schedule."""
         self.payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
-    async def async_pause(self, **kwargs):
+    async def async_pause(self):
         """Pauses the mower."""
         self.payload = '{"data": {"type": "Pause"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_stop(self, **kwargs):
         """Parks the mower until next schedule."""
@@ -237,7 +249,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_return_to_base(self, **kwargs):
         """Parks the mower until further notice."""
@@ -245,4 +257,4 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception

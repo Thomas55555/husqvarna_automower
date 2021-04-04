@@ -3,9 +3,15 @@
   "name": "Husqvarna Automower",
   "documentation": "https://github.com/Thomas55555/husqvarna_automower",
   "issue_tracker": "https://github.com/Thomas55555/husqvarna_automower/issues",
-  "dependencies": [],
+  "dependencies": [
+    "http"
+  ],
   "config_flow": true,
-  "codeowners": ["@Thomas55555"],
-  "requirements": ["aioautomower==2021.3.5"],
-  "version": "2021.4.0"
+  "codeowners": [
+    "@Thomas55555"
+  ],
+  "requirements": [
+    "aioautomower==2021.3.5"
+  ],
+  "version": "2021.3.5"
 }
