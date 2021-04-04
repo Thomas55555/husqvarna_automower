@@ -3,6 +3,7 @@ import logging
 import time
 
 from homeassistant.components.vacuum import (
+    STATE_CLEANING
     STATE_DOCKED,
     STATE_ERROR,
     STATE_PAUSED,
@@ -126,17 +127,16 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "%Y-%m-%d %H:%M:%S", self.mower_local_timestamp
         )
         if self.mower_attributes["mower"]["state"] == "IN_OPERATION":
-            return f"{self.mower_attributes['mower']['activity']}"
+            return STATE_CLEANING
         if self.mower_attributes["mower"]["state"] in [
             "FATAL_ERROR",
             "ERROR",
             "ERROR_AT_POWER_UP",
         ]:
-            self.error_code = self.mower_attributes["mower"]["errorCode"]
-            return ERRORCODES.get(self.error_code)
+            return STATE_ERROR
         if self.mower_attributes["mower"]["state"] == "RESTRICTED":
             if self.mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-                return "Parked until further notice"
+                return STATE_DOCKED
             return f"{self.mower_attributes['planner']['restrictedReason']}"
         return f"{self.mower_attributes['mower']['state']}"
 
@@ -166,6 +166,10 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     @property
     def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
+        ##maybe to add:
+        ## f"{self.mower_attributes['mower']['activity']}"
+            # self.error_code = self.mower_attributes["mower"]["errorCode"]
+            # return ERRORCODES.get(self.error_code)
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
         if (
             self.coordinator.data["data"][self.idx]["attributes"]["mower"][
