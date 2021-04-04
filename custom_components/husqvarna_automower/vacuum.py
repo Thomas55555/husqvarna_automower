@@ -2,10 +2,7 @@
 import logging
 import time
 
-from aioautomower import Return
-
 from homeassistant.components.vacuum import (
-    STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
     STATE_PAUSED,
@@ -18,8 +15,6 @@ from homeassistant.components.vacuum import (
     SUPPORT_STATE,
     SUPPORT_STATUS,
     SUPPORT_STOP,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
     StateVacuumEntity,
 )
 from homeassistant.helpers import entity
@@ -101,14 +96,10 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     @property
     def available(self):
         """Return True if the device is available."""
-        if (self.connected == False) and (
-            self.communication_not_possible_already_sent == False
-        ):
+        if not self.connected and not self.communication_not_possible_already_sent:
             self.communication_not_possible_already_sent = True
             _LOGGER.warning("Connection to %s lost", self.mower_name)
-        if (self.connected == True) and (
-            self.communication_not_possible_already_sent == True
-        ):
+        if self.connected and self.communication_not_possible_already_sent:
             self.communication_not_possible_already_sent = False
             _LOGGER.info("Connected to %s again", self.mower_name)
         return self.connected
@@ -236,21 +227,21 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
 
         return self.attributes
 
-    async def async_start(self, **kwargs):
+    async def async_start(self):
         """Resume schedule."""
         self.payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
-    async def async_pause(self, **kwargs):
+    async def async_pause(self):
         """Pauses the mower."""
         self.payload = '{"data": {"type": "Pause"}}'
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_stop(self, **kwargs):
         """Parks the mower until next schedule."""
@@ -258,7 +249,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception
 
     async def async_return_to_base(self, **kwargs):
         """Parks the mower until further notice."""
@@ -266,4 +257,4 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(exception) from exception

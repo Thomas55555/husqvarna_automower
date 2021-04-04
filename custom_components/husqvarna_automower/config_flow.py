@@ -1,6 +1,5 @@
 """Config flow to add the integration via the UI."""
 import logging
-import time
 from collections import OrderedDict
 
 import voluptuous as vol
@@ -16,16 +15,11 @@ from homeassistant.const import (
     CONF_TOKEN,
     CONF_USERNAME,
 )
-from homeassistant.core import callback
 
 from .const import (
-    ACCESS_TOKEN_RAW,
     CONF_PROVIDER,
-    CONF_REFRESH_TOKEN,
-    CONF_TOKEN_EXPIRES_AT,
     CONF_TOKEN_TYPE,
     DOMAIN,
-    HUSQVARNA_URL,
 )
 
 CONF_ID = "unique_id"
@@ -38,11 +32,11 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow."""
 
     VERSION = 2
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_PUSH
+    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     async def _show_setup_form(self, errors):
         """Show the setup form to the user."""
-        _LOGGER.debug("""Show the setup form to the user.""")
+        _LOGGER.debug("Show the setup form to the user.")
 
         fields = OrderedDict()
         fields[vol.Required(CONF_API_KEY)] = vol.All(str, vol.Length(min=36, max=36))
@@ -76,9 +70,9 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         try:
             get_mower_data = GetMowerData(
                 user_input[CONF_API_KEY],
-                access_token_raw["access_token"],
-                access_token_raw["provider"],
-                access_token_raw["token_type"],
+                access_token_raw[CONF_ACCESS_TOKEN],
+                access_token_raw[CONF_PROVIDER],
+                access_token_raw[CONF_TOKEN_TYPE],
             )
             mower_data = await get_mower_data.async_mower_state()
             _LOGGER.debug("config: %s", mower_data)
