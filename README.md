@@ -34,7 +34,7 @@ But the adavantage is, that Husqvarna won't close the offical API suddenly.
 
 ## Installation
 
-Requires Home Assistant 0.113 or newer.
+Requires Home Assistant 2021.4.0 or newer.
 
 ### Installation through HACS
 
