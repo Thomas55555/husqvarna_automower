@@ -30,7 +30,7 @@ from .const import (
     STARTUP_MESSAGE,
 )
 
-SCAN_INTERVAL = timedelta(seconds=30)
+SCAN_INTERVAL = timedelta(seconds=300)
 
 _LOGGER = logging.getLogger(__name__)
 
