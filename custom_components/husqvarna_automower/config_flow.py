@@ -6,7 +6,6 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from aiohttp import ClientError
 from aiohttp.client_exceptions import ClientConnectorError
-
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -16,11 +15,7 @@ from homeassistant.const import (
     CONF_USERNAME,
 )
 
-from .const import (
-    CONF_PROVIDER,
-    CONF_TOKEN_TYPE,
-    DOMAIN,
-)
+from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 
 CONF_ID = "unique_id"
 
@@ -97,10 +92,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             await self.hass.config_entries.async_reload(existing_entry.entry_id)
             return self.async_abort(reason="reauth_successful")
 
-        return self.async_create_entry(
-            title=user_input[CONF_API_KEY],
-            data=data,
-        )
+        return self.async_create_entry(title=user_input[CONF_API_KEY], data=data,)
 
     async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""
@@ -110,7 +102,6 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Dialog that informs the user that reauth is required."""
         if user_input is None:
             return self.async_show_form(
-                step_id="reauth_confirm",
-                data_schema=vol.Schema({}),
+                step_id="reauth_confirm", data_schema=vol.Schema({}),
             )
         return await self.async_step_user()
