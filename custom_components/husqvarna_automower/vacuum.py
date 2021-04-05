@@ -8,6 +8,7 @@ from homeassistant.components.vacuum import (
     STATE_ERROR,
     STATE_PAUSED,
     STATE_RETURNING,
+    STATE_IDLE,
     SUPPORT_BATTERY,
     SUPPORT_PAUSE,
     SUPPORT_RETURN_HOME,
@@ -119,25 +120,25 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def state(self):
         """Return the state of the mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        self.mower_timestamp = (
-            self.mower_attributes["metadata"]["statusTimestamp"]
-        ) / 1000
-        self.mower_local_timestamp = time.localtime(self.mower_timestamp)
-        self.readable_mower_local_timestamp = time.strftime(
-            "%Y-%m-%d %H:%M:%S", self.mower_local_timestamp
-        )
-        if self.mower_attributes["mower"]["state"] == "IN_OPERATION":
+        if self.mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
             return STATE_CLEANING
+        if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
+            return STATE_RETURNING
         if self.mower_attributes["mower"]["state"] in [
             "FATAL_ERROR",
             "ERROR",
             "ERROR_AT_POWER_UP",
         ]:
             return STATE_ERROR
-        if self.mower_attributes["mower"]["state"] == "RESTRICTED":
-            if self.mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-                return STATE_DOCKED
-            return f"{self.mower_attributes['planner']['restrictedReason']}"
+        if self.mower_attributes["mower"]["state"] in [
+            "WAIT_UPDATING",
+            "WAIT_POWER_UP",
+        ]:
+            return STATE_IDLE
+        if self.mower_attributes["mower"]["state"] == "PAUSED":
+            return STATE_PAUSED
+        if self.mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
+            return STATE_DOCKED
         return f"{self.mower_attributes['mower']['state']}"
 
     @property
@@ -166,60 +167,21 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     @property
     def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
-        ##maybe to add:
-        ## f"{self.mower_attributes['mower']['activity']}"
-        # self.error_code = self.mower_attributes["mower"]["errorCode"]
-        # return ERRORCODES.get(self.error_code)
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        if (
-            self.coordinator.data["data"][self.idx]["attributes"]["mower"][
-                "errorCodeTimestamp"
-            ]
-            == 0
-        ):
-            self.error_code_timestamp = "-"
-        else:
-            self.error_code_timestamp = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime(
-                    (
-                        self.coordinator.data["data"][self.idx]["attributes"]["mower"][
-                            "errorCodeTimestamp"
-                        ]
-                    )
-                    / 1000
-                ),
-            )
+        self.mower_timestamp = (
+            self.mower_attributes["metadata"]["statusTimestamp"]
+        ) / 1000
+        self.mower_local_timestamp = time.localtime(self.mower_timestamp)
+        self.readable_mower_local_timestamp = time.strftime(
+            "%Y-%m-%d %H:%M:%S", self.mower_local_timestamp
+        )
 
-        if (
-            self.coordinator.data["data"][self.idx]["attributes"]["planner"][
-                "nextStartTimestamp"
-            ]
-            == 0
-        ):
-            self.next_start_timestamp = "-"
-        else:
-            self.next_start_timestamp = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime(
-                    (
-                        self.coordinator.data["data"][self.idx]["attributes"][
-                            "planner"
-                        ]["nextStartTimestamp"]
-                    )
-                    / 1000
-                ),
-            )
+
 
         self.attributes = {
             "mode": self.mower_attributes["mower"]["mode"],
             "activity": self.mower_attributes["mower"]["activity"],
-            "state": self.mower_attributes["mower"]["state"],
-            "errorCode": self.mower_attributes["mower"]["errorCode"],
-            "errorCodeTimestamp": self.error_code_timestamp,
-            "nextStartTimestamp": self.next_start_timestamp,
             "action": self.mower_attributes["planner"]["override"]["action"],
-            "restrictedReason": self.mower_attributes["planner"]["restrictedReason"],
             "statusTimestamp": time.strftime(
                 "%Y-%m-%d %H:%M:%S",
                 time.localtime(
@@ -228,6 +190,38 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             ),
             # "all_data": self.coordinator.data
         }
+
+        if (
+            self.mower_attributes["mower"]["state"] == "RESTRICTED"
+            and self.mower_attributes["mower"]["mode"] != "HOME"
+        ):
+            self.attributes["restrictedReason"] = self.mower_attributes["planner"][
+                "restrictedReason"
+            ]
+
+        if self.mower_attributes["planner"]["nextStartTimestamp"] != 0:
+            self.attributes["nextStart"] = time.strftime(
+                "%Y-%m-%d %H:%M:%S",
+                time.gmtime(
+                    (self.mower_attributes["planner"]["nextStartTimestamp"]) / 1000
+                ),
+            )
+
+        if self.mower_attributes["mower"]["errorCodeTimestamp"] != 0:
+            self.error_message = ERRORCODES.get(self.error_code)
+            self.error_code_timestamp = time.strftime(
+                "%Y-%m-%d %H:%M:%S",
+                time.gmtime(
+                    (self.mower_attributes["mower"]["errorCodeTimestamp"]) / 1000
+                ),
+            )
+
+            self.error_attributes = {
+                "errorCode": self.mower_attributes["mower"]["errorCode"],
+                "errorCodeTimestamp": self.error_code_timestamp,
+                "errorMessage": self.error_message,
+            }
+            self.attributes.update(self.error_attributes)
 
         return self.attributes
 
