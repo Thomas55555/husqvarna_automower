@@ -3,7 +3,7 @@ import logging
 import time
 
 from homeassistant.components.vacuum import (
-    STATE_CLEANING
+    STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
     STATE_PAUSED,
@@ -168,8 +168,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         """Return the specific state attributes of this mower."""
         ##maybe to add:
         ## f"{self.mower_attributes['mower']['activity']}"
-            # self.error_code = self.mower_attributes["mower"]["errorCode"]
-            # return ERRORCODES.get(self.error_code)
+        # self.error_code = self.mower_attributes["mower"]["errorCode"]
+        # return ERRORCODES.get(self.error_code)
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
         if (
             self.coordinator.data["data"][self.idx]["attributes"]["mower"][
