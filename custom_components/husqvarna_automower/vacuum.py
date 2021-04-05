@@ -176,8 +176,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "%Y-%m-%d %H:%M:%S", self.mower_local_timestamp
         )
 
-
-
         self.attributes = {
             "mode": self.mower_attributes["mower"]["mode"],
             "activity": self.mower_attributes["mower"]["activity"],
