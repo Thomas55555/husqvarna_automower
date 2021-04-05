@@ -57,7 +57,10 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         get_token = GetAccessToken(api_key, username, password)
         access_token_raw = await get_token.async_get_access_token()
         hass.config_entries.async_update_entry(
-            config_entry, data={CONF_TOKEN: access_token_raw,},
+            config_entry,
+            data={
+                CONF_TOKEN: access_token_raw,
+            },
         )
         config_entry.version = 2
 
@@ -82,7 +85,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     access_token_raw = entry.data.get(CONF_TOKEN)
 
     coordinator = AuthenticationUpdateCoordinator(
-        hass, entry, api_key=api_key, access_token_raw=access_token_raw,
+        hass,
+        entry,
+        api_key=api_key,
+        access_token_raw=access_token_raw,
     )
 
     await coordinator.async_refresh()
@@ -105,7 +111,11 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
     """Update Coordinator."""
 
     def __init__(
-        self, hass, entry, api_key, access_token_raw,
+        self,
+        hass,
+        entry,
+        api_key,
+        access_token_raw,
     ):
         """Initialize."""
         _LOGGER.info("Inizialising UpdateCoordiantor")
@@ -159,7 +169,10 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Token expires at %i UTC", self.access_token_raw["expires_at"])
 
         self.update_config_entry.async_update_entry(
-            self.entry, data={CONF_TOKEN: self.access_token_raw,},
+            self.entry,
+            data={
+                CONF_TOKEN: self.access_token_raw,
+            },
         )
 
     async def async_validate_token(self):
@@ -178,7 +191,9 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         except TokenError as error:
             self.hass.async_create_task(
                 self.hass.config_entries.flow.async_init(
-                    DOMAIN, context={"source": SOURCE_REAUTH}, data=self.entry,
+                    DOMAIN,
+                    context={"source": SOURCE_REAUTH},
+                    data=self.entry,
                 )
             )
             return False
