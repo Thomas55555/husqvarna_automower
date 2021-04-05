@@ -6,7 +6,6 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from aiohttp import ClientError
 from aiohttp.client_exceptions import ClientConnectorError
-
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -16,11 +15,7 @@ from homeassistant.const import (
     CONF_USERNAME,
 )
 
-from .const import (
-    CONF_PROVIDER,
-    CONF_TOKEN_TYPE,
-    DOMAIN,
-)
+from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 
 CONF_ID = "unique_id"
 

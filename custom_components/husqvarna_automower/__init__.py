@@ -4,9 +4,17 @@ import logging
 import time
 from datetime import timedelta
 
-from aioautomower import GetAccessToken, GetMowerData, RefreshAccessToken, Return
+from aioautomower import (
+    DeleteAccessToken,
+    GetAccessToken,
+    GetMowerData,
+    RefreshAccessToken,
+    Return,
+    TokenError,
+    ValidateAccessToken,
+)
 from aiohttp import ClientError
-
+from async_timeout import timeout
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -86,14 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                DOMAIN,
-                context={"source": SOURCE_REAUTH},
-                data=entry,
-            )
-        )
-        return False
+        raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
@@ -139,6 +140,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         if self.access_token_raw["expires_at"] < time.time():
             await self.async_update_token()
 
+        await self.async_validate_token()
+
         self.mower_api = GetMowerData(
             self.api_key,
             self.access_token_raw["access_token"],
@@ -149,8 +152,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             data = await self.mower_api.async_mower_state()
             _LOGGER.debug("Mower data: %s", data)
             return data
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except TimeoutError as exception:
+            raise UpdateFailed() from exception
 
     async def async_update_token(self):
         """Update token via library."""
@@ -171,6 +174,31 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
                 CONF_TOKEN: self.access_token_raw,
             },
         )
+
+    async def async_validate_token(self):
+        """Validating the token."""
+
+        _LOGGER.debug("Validating the token")
+        self.token_valid = ValidateAccessToken(
+            self.api_key,
+            self.access_token_raw["access_token"],
+            self.access_token_raw["provider"],
+        )
+        try:
+            async with timeout(10):
+                status = await self.token_valid.async_validate_access_token()
+                _LOGGER.debug("Validation: %s", status)
+        except TokenError as error:
+            self.hass.async_create_task(
+                self.hass.config_entries.flow.async_init(
+                    DOMAIN,
+                    context={"source": SOURCE_REAUTH},
+                    data=self.entry,
+                )
+            )
+            return False
+        except TimeoutError as error:
+            raise UpdateFailed(error) from exception
 
     async def async_send_command(self, payload, mower_id):
         """Send command to the mower."""
