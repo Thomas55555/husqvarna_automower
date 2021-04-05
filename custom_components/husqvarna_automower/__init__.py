@@ -212,3 +212,16 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle removal of an entry."""
+    api_key = entry.title
+    access_token_raw = entry.data.get(CONF_TOKEN)
+    delete_token = DeleteAccessToken(
+        api_key, access_token_raw["provider"], access_token_raw["access_token"]
+    )
+    try:
+        await delete_token.async_delete_access_token()
+    except Exception as exception:
+        raise UpdateFailed(exception) from exception
