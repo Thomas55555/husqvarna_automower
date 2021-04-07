@@ -188,8 +188,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         )
         try:
             async with timeout(10):
-                status = await self.token_valid.async_validate_access_token()
-                _LOGGER.debug("Validation: %s", status)
+                await self.token_valid.async_validate_access_token()
         except TokenError as error:
             self.hass.async_create_task(
                 self.hass.config_entries.flow.async_init(
