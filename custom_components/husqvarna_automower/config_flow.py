@@ -6,6 +6,7 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData
 from aiohttp import ClientError
 from aiohttp.client_exceptions import ClientConnectorError
+
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -31,7 +32,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _show_setup_form(self, errors):
         """Show the setup form to the user."""
-        _LOGGER.debug("Show the setup form to the user.")
+        _LOGGER.debug("Show the setup form to the user")
 
         fields = OrderedDict()
         fields[vol.Required(CONF_API_KEY)] = vol.All(str, vol.Length(min=36, max=36))
