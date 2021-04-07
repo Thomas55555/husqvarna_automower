@@ -118,18 +118,21 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def state(self):
         """Return the state of the mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        if (self.mower_attributes["mower"]["state"] in [
-            "FATAL_ERROR",
-            "ERROR",
-            "ERROR_AT_POWER_UP",
-            "NOT_APPLICABLE",
-            "UNKNOWN",
-            "STOPPED",
-            "OFF",
-        ]) or self.mower_attributes["mower"]["activity"] in [
+        if (
+            self.mower_attributes["mower"]["state"]
+            in [
+                "FATAL_ERROR",
+                "ERROR",
+                "ERROR_AT_POWER_UP",
+                "NOT_APPLICABLE",
+                "UNKNOWN",
+                "STOPPED",
+                "OFF",
+            ]
+        ) or self.mower_attributes["mower"]["activity"] in [
             "STOPPED_IN_GARDEN",
             "UNKNOWN",
-            "NOT_APPLICABLE"
+            "NOT_APPLICABLE",
         ]:
             return STATE_ERROR
         if self.mower_attributes["mower"]["state"] in [
