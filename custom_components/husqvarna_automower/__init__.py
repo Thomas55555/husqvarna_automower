@@ -15,6 +15,7 @@ from aioautomower import (
 )
 from aiohttp import ClientError
 from async_timeout import timeout
+
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -132,6 +133,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         self.mower_id = None
         self.payload = None
         self.mower_command = None
+        self.token_valid = None
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
@@ -198,7 +200,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             )
             return False
         except TimeoutError as error:
-            raise UpdateFailed(error) from exception
+            raise UpdateFailed(error) from error
 
     async def async_send_command(self, payload, mower_id):
         """Send command to the mower."""

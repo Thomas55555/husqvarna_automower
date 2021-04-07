@@ -15,7 +15,6 @@ from homeassistant.components.vacuum import (
     SUPPORT_SEND_COMMAND,
     SUPPORT_START,
     SUPPORT_STATE,
-    SUPPORT_STATUS,
     SUPPORT_STOP,
     StateVacuumEntity,
 )
@@ -75,12 +74,11 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.connected = self.mower_attributes["metadata"]["connected"]
         self.mower_id = self.mower["id"]
         self.mower_command = None
-        self.mower_timestamp = None
-        self.mower_local_timestamp = None
-        self.readable_mower_local_timestamp = None
+        self.state_time = None
         self.error_code = None
-        self.error_code_timestamp = None
-        self.next_start_timestamp = None
+        self.error_message = None
+        self.error_time = None
+        self.next_start = None
         self.attributes = None
         self.payload = None
         self.communication_not_possible_already_sent = False
@@ -120,14 +118,18 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def state(self):
         """Return the state of the mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        if self.mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
-            return STATE_CLEANING
-        if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
-            return STATE_RETURNING
-        if self.mower_attributes["mower"]["state"] in [
+        if (self.mower_attributes["mower"]["state"] in [
             "FATAL_ERROR",
             "ERROR",
             "ERROR_AT_POWER_UP",
+            "NOT_APPLICABLE",
+            "UNKNOWN",
+            "STOPPED",
+            "OFF",
+        ]) or self.mower_attributes["mower"]["activity"] in [
+            "STOPPED_IN_GARDEN",
+            "UNKNOWN",
+            "NOT_APPLICABLE"
         ]:
             return STATE_ERROR
         if self.mower_attributes["mower"]["state"] in [
@@ -135,11 +137,16 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "WAIT_POWER_UP",
         ]:
             return STATE_IDLE
-        if self.mower_attributes["mower"]["state"] == "PAUSED":
+        if self.mower_attributes["mower"]["state"] in ["PAUSED"]:
             return STATE_PAUSED
-        if self.mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
+        if (self.mower_attributes["mower"]["state"] == "RESTRICTED") or (
+            self.mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
+        ):
             return STATE_DOCKED
-        return f"{self.mower_attributes['mower']['state']}"
+        if self.mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
+            return STATE_CLEANING
+        if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
+            return STATE_RETURNING
 
     @property
     def icon(self):
@@ -168,58 +175,48 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        self.mower_timestamp = (
-            self.mower_attributes["metadata"]["statusTimestamp"]
-        ) / 1000
-        self.mower_local_timestamp = time.localtime(self.mower_timestamp)
-        self.readable_mower_local_timestamp = time.strftime(
-            "%Y-%m-%d %H:%M:%S", self.mower_local_timestamp
-        )
-
-        self.attributes = {
-            "mode": self.mower_attributes["mower"]["mode"],
-            "activity": self.mower_attributes["mower"]["activity"],
-            "action": self.mower_attributes["planner"]["override"]["action"],
-            "statusTimestamp": time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.localtime(
-                    (self.mower_attributes["metadata"]["statusTimestamp"]) / 1000
-                ),
+        self.state_time = time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.localtime(
+                (self.mower_attributes["metadata"]["statusTimestamp"]) / 1000
             ),
-            # "all_data": self.coordinator.data
-        }
-
-        if (
-            self.mower_attributes["mower"]["state"] == "RESTRICTED"
-            and self.mower_attributes["mower"]["mode"] != "HOME"
-        ):
-            self.attributes["restrictedReason"] = self.mower_attributes["planner"][
-                "restrictedReason"
-            ]
-
-        if self.mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            self.attributes["nextStart"] = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime(
-                    (self.mower_attributes["planner"]["nextStartTimestamp"]) / 1000
-                ),
+        )
+        if self.mower_attributes["mower"]["errorCode"] != 0:
+            self.error_message = ERRORCODES.get(
+                self.mower_attributes["mower"]["errorCode"]
             )
-
-        if self.mower_attributes["mower"]["errorCodeTimestamp"] != 0:
-            self.error_message = ERRORCODES.get(self.error_code)
-            self.error_code_timestamp = time.strftime(
+            self.error_time = time.strftime(
                 "%Y-%m-%d %H:%M:%S",
                 time.gmtime(
                     (self.mower_attributes["mower"]["errorCodeTimestamp"]) / 1000
                 ),
             )
+        if self.mower_attributes["mower"]["errorCode"] == 0:
+            self.error_message = None
+            self.error_time = None
 
-            self.error_attributes = {
-                "errorCode": self.mower_attributes["mower"]["errorCode"],
-                "errorCodeTimestamp": self.error_code_timestamp,
-                "errorMessage": self.error_message,
-            }
-            self.attributes.update(self.error_attributes)
+        if self.mower_attributes["planner"]["nextStartTimestamp"] != 0:
+            self.next_start = time.strftime(
+                "%Y-%m-%d %H:%M:%S",
+                time.gmtime(
+                    (self.mower_attributes["planner"]["nextStartTimestamp"]) / 1000
+                ),
+            )
+        if self.mower_attributes["planner"]["nextStartTimestamp"] == 0:
+            self.next_start = None
+
+        self.attributes = {
+            "mode": self.mower_attributes["mower"]["mode"],
+            "activity": self.mower_attributes["mower"]["activity"],
+            "state": self.mower_attributes["mower"]["state"],
+            "errorMessage": self.error_message,
+            "errorTime": self.error_time,
+            "nextStart": self.next_start,
+            "action": self.mower_attributes["planner"]["override"]["action"],
+            "restrictedReason": self.mower_attributes["planner"]["restrictedReason"],
+            "statusTimestamp": self.state_time
+            # "all_data": self.coordinator.data
+        }
 
         return self.attributes
 
