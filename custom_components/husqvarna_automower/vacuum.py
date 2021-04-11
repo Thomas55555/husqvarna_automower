@@ -96,13 +96,16 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     @property
     def available(self):
         """Return True if the device is available."""
-        if not self.connected and not self.communication_not_possible_already_sent:
+        self._connected = self.coordinator.data["data"][self.idx]["attributes"][
+            "metadata"
+        ]["connected"]
+        if not self._connected and not self.communication_not_possible_already_sent:
             self.communication_not_possible_already_sent = True
             _LOGGER.warning("Connection to %s lost", self.mower_name)
-        if self.connected and self.communication_not_possible_already_sent:
+        if self._connected and self.communication_not_possible_already_sent:
             self.communication_not_possible_already_sent = False
             _LOGGER.info("Connected to %s again", self.mower_name)
-        return self.connected
+        return self._connected
 
     @property
     def name(self):
