@@ -2,6 +2,8 @@
 import logging
 import time
 
+import voluptuous as vol
+
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -18,6 +20,8 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform, service
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
@@ -41,6 +45,12 @@ async def async_setup_entry(hass, entry, async_add_devices):
     async_add_devices(
         HusqvarnaAutomowerEntity(coordinator, idx)
         for idx, ent in enumerate(coordinator.data["data"])
+    )
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(
+        "blabla",
+        {},
+        "saffas",
     )
 
 
