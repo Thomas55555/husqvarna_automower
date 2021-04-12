@@ -1,9 +1,8 @@
 """Provide info to system health."""
-from homeassistant.components import system_health
-from homeassistant.core import HomeAssistant, callback
 from aioautomower import TOKEN_URL
 
-from .const import DOMAIN
+from homeassistant.components import system_health
+from homeassistant.core import HomeAssistant, callback
 
 
 @callback
@@ -16,7 +15,6 @@ def async_register(
 
 async def system_health_info(hass):
     """Get info for the info page."""
-    client = hass.data[DOMAIN]
 
     return {
         "can_reach_server": system_health.async_check_can_reach_url(hass, TOKEN_URL)
