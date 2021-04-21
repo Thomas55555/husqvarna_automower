@@ -1,7 +1,5 @@
-.storage/
-.vscode/
 blueprints/
-.HA_VERSION
+.*
 automations.yaml
 configuration.yaml
 groups.yaml
@@ -11,4 +9,3 @@ scenes.yaml
 scripts.yaml
 secrets.yaml
 __pycache__/
-.devcontainer/

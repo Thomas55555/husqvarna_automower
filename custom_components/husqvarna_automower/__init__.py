@@ -13,31 +13,16 @@ from aioautomower import (
     TokenError,
     ValidateAccessToken,
 )
-from aiohttp import ClientError
 from async_timeout import timeout
 
-from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_API_KEY,
-    CONF_PASSWORD,
-    CONF_TOKEN,
-    CONF_USERNAME,
-)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.entity_registry import async_migrate_entries
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import (
-    ACCESS_TOKEN_RAW,
-    CONF_PROVIDER,
-    CONF_REFRESH_TOKEN,
-    CONF_TOKEN_TYPE,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
@@ -92,10 +77,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         access_token_raw=access_token_raw,
     )
 
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
+    try:
+        await coordinator.async_refresh()
+    except TokenError as err:
+        raise ConfigEntryAuthFailed from err
+    except Exception as ex:
+        raise ConfigEntryNotReady from ex
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
@@ -165,6 +152,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token_raw = (
                 await self.api_refresh_token.async_refresh_access_token()
             )
+        except TokenError as ex:
+            raise ConfigEntryAuthFailed("Not authenticated with Husqvarna API") from ex
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
@@ -189,15 +178,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         try:
             async with timeout(10):
                 await self.token_valid.async_validate_access_token()
-        except TokenError as error:
-            self.hass.async_create_task(
-                self.hass.config_entries.flow.async_init(
-                    DOMAIN,
-                    context={"source": SOURCE_REAUTH},
-                    data=self.entry,
-                )
-            )
-            return False
+        except TokenError as err:
+            raise ConfigEntryAuthFailed from err
         except TimeoutError as error:
             raise UpdateFailed(error) from error
 

@@ -11,7 +11,7 @@
     "@Thomas55555"
   ],
   "requirements": [
-    "aioautomower==2021.4.2"
+    "aioautomower==2021.4.3"
   ],
   "version": "0.0.0"
 }
