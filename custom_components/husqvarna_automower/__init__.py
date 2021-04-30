@@ -28,28 +28,28 @@ SCAN_INTERVAL = timedelta(seconds=300)
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_migrate_entry(hass, config_entry: ConfigEntry):
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Migrate old entry."""
-    _LOGGER.debug("Migrating from version %s", config_entry.version)
+    _LOGGER.debug("Migrating from version %s", entry.version)
 
-    if config_entry.version == 1:
+    if entry.version == 1:
 
-        config_entry.title = config_entry.data.get(CONF_API_KEY)
-        username = config_entry.data.get(CONF_USERNAME)
-        password = config_entry.data.get(CONF_PASSWORD)
-        api_key = config_entry.data.get(CONF_API_KEY)
+        entry.title = entry.data.get(CONF_API_KEY)
+        username = entry.data.get(CONF_USERNAME)
+        password = entry.data.get(CONF_PASSWORD)
+        api_key = entry.data.get(CONF_API_KEY)
 
         get_token = GetAccessToken(api_key, username, password)
         access_token_raw = await get_token.async_get_access_token()
         hass.config_entries.async_update_entry(
-            config_entry,
+            entry,
             data={
                 CONF_TOKEN: access_token_raw,
             },
         )
-        config_entry.version = 2
+        entry.version = 2
 
-    _LOGGER.debug("Migration to version %s successful", config_entry.version)
+    _LOGGER.debug("Migration to version %s successful", entry.version)
 
     return True
 
