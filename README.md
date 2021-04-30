@@ -33,7 +33,7 @@ But the adavantage is, that Husqvarna won't close the offical API suddenly.
 
 ## Supported devices
 
-Only mowers with Automower® Connect are supported. e.g.
+Only mowers with built-in Automower® Connect or with the Automower® Connect Module are supported. e.g.
 
 - AUTOMOWER® 315X
 - AUTOMOWER® 405X
