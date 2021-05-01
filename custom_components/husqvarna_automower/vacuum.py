@@ -1,6 +1,9 @@
 """Creates a vacuum entity for the mower"""
+import json
 import logging
 import time
+
+import voluptuous as vol
 
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
@@ -18,6 +21,8 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform, service
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
@@ -41,6 +46,16 @@ async def async_setup_entry(hass, entry, async_add_devices):
     async_add_devices(
         HusqvarnaAutomowerEntity(coordinator, idx)
         for idx, ent in enumerate(coordinator.data["data"])
+    )
+    platform = entity_platform.current_platform.get()
+
+    platform.async_register_entity_service(
+        "park_and_start",
+        {
+            vol.Required("command"): cv.string,
+            vol.Required("duration"): vol.Coerce(int),
+        },
+        "async_custom_command",
     )
 
 
@@ -258,6 +273,22 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     async def async_return_to_base(self, **kwargs):
         """Parks the mower until further notice."""
         self.payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
+        try:
+            await self.coordinator.async_send_command(self.payload, self.mower_id)
+        except Exception as exception:
+            raise UpdateFailed(exception) from exception
+
+    async def async_custom_command(self, command, duration, **kwargs):
+        """Parks the mower until further notice."""
+        self.command = command
+        self.duration = duration
+        self.string = {
+            "data": {
+                "type": self.command,
+                "attributes": {"duration": self.duration},
+            }
+        }
+        self.payload = json.dumps(self.string)
         try:
             await self.coordinator.async_send_command(self.payload, self.mower_id)
         except Exception as exception:
