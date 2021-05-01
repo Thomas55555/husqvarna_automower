@@ -3,8 +3,7 @@ import logging
 from collections import OrderedDict
 
 import voluptuous as vol
-from aioautomower import GetAccessToken, GetMowerData
-from aiohttp import ClientError
+from aioautomower import GetAccessToken, GetMowerData, TokenError
 from aiohttp.client_exceptions import ClientConnectorError
 
 from homeassistant import config_entries
@@ -55,7 +54,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_PASSWORD],
             )
             access_token_raw = await get_token.async_get_access_token()
-        except (ClientConnectorError, ClientError):
+        except (ClientConnectorError, TokenError):
             errors["base"] = "auth"
             return await self._show_setup_form(errors)
         except Exception:  # pylint: disable=broad-except

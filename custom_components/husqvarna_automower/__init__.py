@@ -1,5 +1,4 @@
 """The Husqvarna Automower integration."""
-import asyncio
 import logging
 import time
 from datetime import timedelta
@@ -13,65 +12,45 @@ from aioautomower import (
     TokenError,
     ValidateAccessToken,
 )
-from aiohttp import ClientError
 from async_timeout import timeout
 
-from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_API_KEY,
-    CONF_PASSWORD,
-    CONF_TOKEN,
-    CONF_USERNAME,
-)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.entity_registry import async_migrate_entries
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import (
-    ACCESS_TOKEN_RAW,
-    CONF_PROVIDER,
-    CONF_REFRESH_TOKEN,
-    CONF_TOKEN_TYPE,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_migrate_entry(hass, config_entry: ConfigEntry):
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Migrate old entry."""
-    _LOGGER.debug("Migrating from version %s", config_entry.version)
+    _LOGGER.debug("Migrating from version %s", entry.version)
 
-    if config_entry.version == 1:
+    if entry.version == 1:
 
-        config_entry.title = config_entry.data.get(CONF_API_KEY)
-        username = config_entry.data.get(CONF_USERNAME)
-        password = config_entry.data.get(CONF_PASSWORD)
-        api_key = config_entry.data.get(CONF_API_KEY)
+        entry.title = entry.data.get(CONF_API_KEY)
+        username = entry.data.get(CONF_USERNAME)
+        password = entry.data.get(CONF_PASSWORD)
+        api_key = entry.data.get(CONF_API_KEY)
 
         get_token = GetAccessToken(api_key, username, password)
         access_token_raw = await get_token.async_get_access_token()
         hass.config_entries.async_update_entry(
-            config_entry,
+            entry,
             data={
                 CONF_TOKEN: access_token_raw,
             },
         )
-        config_entry.version = 2
-
+        entry.version = 2
+        
         _LOGGER.debug("Migration to version %s successful", config_entry.version)
 
-    return True
-
-
-async def async_setup(hass: HomeAssistant, config: Config):
-    """Set up this integration using YAML is not supported."""
     return True
 
 
@@ -92,19 +71,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         access_token_raw=access_token_raw,
     )
 
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
+    try:
+        await coordinator.async_refresh()
+    except TokenError as err:
+        raise ConfigEntryAuthFailed from err
+    except Exception as ex:
+        raise ConfigEntryNotReady from ex
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
+
     return True
 
 
@@ -165,6 +142,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token_raw = (
                 await self.api_refresh_token.async_refresh_access_token()
             )
+        except TokenError as ex:
+            raise ConfigEntryAuthFailed("Not authenticated with Husqvarna API") from ex
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
@@ -189,15 +168,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         try:
             async with timeout(10):
                 await self.token_valid.async_validate_access_token()
-        except TokenError as error:
-            self.hass.async_create_task(
-                self.hass.config_entries.flow.async_init(
-                    DOMAIN,
-                    context={"source": SOURCE_REAUTH},
-                    data=self.entry,
-                )
-            )
-            return False
+        except TokenError as err:
+            raise ConfigEntryAuthFailed from err
         except TimeoutError as error:
             raise UpdateFailed(error) from error
 
@@ -222,19 +194,10 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-                if platform in coordinator.platforms
-            ]
-        )
-    )
-    if unloaded:
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
-    return unloaded
+    return unload_ok
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):

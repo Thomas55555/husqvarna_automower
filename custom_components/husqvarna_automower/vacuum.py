@@ -98,6 +98,9 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.payload = None
         self.communication_not_possible_already_sent = False
         self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
+        self.model_string_splited = self.mower_attributes["system"]["model"].split(" ")
+        self.model = f"{self.model_string_splited[1]} {self.model_string_splited[2]}"
+        self.mower_name = f"{self.model}_{self.mower_attributes['system']['name']}"
 
     @property
     def device_info(self):
@@ -106,6 +109,8 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "name": self.mower_attributes["system"]["name"],
             "manufacturer": "Husqvarna",
             "model": self.mower_attributes["system"]["model"],
+            "manufacturer": self.model_string_splited[0],
+            "model": self.model,
         }
 
     @property

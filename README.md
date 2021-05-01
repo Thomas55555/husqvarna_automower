@@ -8,6 +8,7 @@ Custom component to support Automower.
 
 
 - [About](#about)
+- [Supported devices](#supported-devices)
 - [Installation](#installation)
   - [Installation through HACS](#installation-through-hacs)
   - [Manual installation](#manual-installation)
@@ -29,6 +30,17 @@ integration, which is based on the offical API: <https://developer.husqvarnagrou
 But the adavantage is, that Husqvarna won't close the offical API suddenly.
 
 ![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/master/screenshot_husqvarna_automower.PNG)
+
+## Supported devices
+
+Only mowers with built-in Automower® Connect or with the Automower® Connect Module are supported. e.g.
+
+- AUTOMOWER® 315X
+- AUTOMOWER® 405X
+- AUTOMOWER® 415X
+- AUTOMOWER® 430X
+- AUTOMOWER® 435X AWD
+- AUTOMOWER® 450X
 
 
 ## Installation
