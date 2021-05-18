@@ -62,7 +62,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    api_key = entry.title
+    api_key = entry.unique_id
     access_token_raw = entry.data.get(CONF_TOKEN)
 
     coordinator = AuthenticationUpdateCoordinator(
