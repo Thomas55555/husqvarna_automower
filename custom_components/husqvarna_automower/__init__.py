@@ -19,6 +19,7 @@ from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_US
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.entity_registry import async_migrate_entries
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
@@ -49,9 +50,9 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
         entry.version = 2
 
-        _LOGGER.debug("Migration to version %s successful", config_entry.version)
+        _LOGGER.debug("Migration to version %s successful", entry.version)
 
-    return True
+        return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -173,6 +174,11 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         except TimeoutError as error:
             raise UpdateFailed(error) from error
 
+    async def async_call_later_callback(self, *_) -> None:
+        """Perform refresh request on callback."""
+        self._refresh_callback = None
+        await self.async_request_refresh()
+
     async def async_send_command(self, payload, mower_id):
         """Send command to the mower."""
         self.mower_id = mower_id
@@ -187,9 +193,9 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         )
         try:
             await self.mower_command.async_mower_command()
-            await self.async_request_refresh()
         except Exception as exception:
             raise UpdateFailed(exception) from exception
+        async_call_later(self.hass, 5, self.async_call_later_callback)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
