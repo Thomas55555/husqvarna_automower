@@ -214,7 +214,7 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle removal of an entry."""
-    api_key = entry.title
+    api_key = entry.unique_id
     access_token_raw = entry.data.get(CONF_TOKEN)
     delete_token = DeleteAccessToken(
         api_key, access_token_raw["provider"], access_token_raw["access_token"]
