@@ -80,8 +80,6 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return await self._show_setup_form(errors)
         unique_id = user_input[CONF_API_KEY]
         data = {
-            CONF_USERNAME: user_input[CONF_USERNAME],
-            CONF_PASSWORD: user_input[CONF_PASSWORD],
             CONF_API_KEY: user_input[CONF_API_KEY],
             CONF_TOKEN: access_token_raw,
         }
