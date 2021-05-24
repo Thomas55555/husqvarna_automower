@@ -26,17 +26,6 @@
             "reauth_successful": "Die Re-Authentifizierung war erfolgreich"
         }
     },
-    "options": {
-        "step": {
-            "user": {
-                "data": {
-                    "binary_sensor": "Binary sensor enabled",
-                    "sensor": "Sensor enabled",
-                    "switch": "Switch enabled"
-                }
-            }
-        }
-    },
     "system_health": {
         "info": {
             "can_reach_server": "Husqvarna Token Server erreichbar"
