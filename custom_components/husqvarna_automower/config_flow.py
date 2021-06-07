@@ -27,7 +27,6 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow."""
 
     VERSION = 2
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     async def _show_setup_form(self, errors):
         """Show the setup form to the user."""
