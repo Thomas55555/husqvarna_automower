@@ -113,8 +113,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "identifiers": {(DOMAIN, self.mower_id)},
             "name": self.mower_attributes["system"]["name"],
             "manufacturer": "Husqvarna",
-            "model": self.mower_attributes["system"]["model"],
-            "manufacturer": self.model_string_splited[0],
             "model": self.model,
         }
 
