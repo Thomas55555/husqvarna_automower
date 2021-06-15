@@ -99,7 +99,12 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.communication_not_possible_already_sent = False
         self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
         self.model_string_splited = self.mower_attributes["system"]["model"].split(" ")
-        self.model = f"{self.model_string_splited[1]} {self.model_string_splited[2]}"
+        try:
+            self.model = (
+                f"{self.model_string_splited[1]} {self.model_string_splited[2]}"
+            )
+        except IndexError:
+            self.model = self.mower_attributes["system"]["model"]
         self.mower_name = f"{self.model}_{self.mower_attributes['system']['name']}"
 
     @property
