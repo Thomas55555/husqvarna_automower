@@ -144,6 +144,21 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def state(self):
         """Return the state of the mower."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
+        if self.mower_attributes["mower"]["state"] in ["PAUSED"]:
+            return STATE_PAUSED
+        if self.mower_attributes["mower"]["state"] in [
+            "WAIT_UPDATING",
+            "WAIT_POWER_UP",
+        ]:
+            return STATE_IDLE
+        if (self.mower_attributes["mower"]["state"] == "RESTRICTED") or (
+            self.mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
+        ):
+            return STATE_DOCKED
+        if self.mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
+            return STATE_CLEANING
+        if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
+            return STATE_RETURNING
         if (
             self.mower_attributes["mower"]["state"]
             in [
@@ -161,21 +176,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             "NOT_APPLICABLE",
         ]:
             return STATE_ERROR
-        if self.mower_attributes["mower"]["state"] in [
-            "WAIT_UPDATING",
-            "WAIT_POWER_UP",
-        ]:
-            return STATE_IDLE
-        if self.mower_attributes["mower"]["state"] in ["PAUSED"]:
-            return STATE_PAUSED
-        if (self.mower_attributes["mower"]["state"] == "RESTRICTED") or (
-            self.mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
-        ):
-            return STATE_DOCKED
-        if self.mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
-            return STATE_CLEANING
-        if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
-            return STATE_RETURNING
 
     @property
     def icon(self):
