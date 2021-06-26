@@ -98,7 +98,7 @@ The mower returns to the base and parks there until the next schedule starts
 `vacuum.return_to_base`
 The mower returns to the base and parks there until it gets a new start command
 
-# Services
+### Services
 
 With the `husqvarna_automower.park_and_start` service you can override the curent schedule for a specific time.
 Example for starting without the schedule for 120 minutes:
