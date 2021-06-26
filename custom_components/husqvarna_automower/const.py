@@ -13,9 +13,8 @@ ICON = "mdi:robot-mower"
 
 
 # Platforms
-##SENSOR = "sensor"
-VACUUM = "vacuum"
-PLATFORMS = [VACUUM]
+PLATFORMS = ["device_tracker", "vacuum"]
+# PLATFORMS = ["vacuum"]
 
 
 # Configuration and options

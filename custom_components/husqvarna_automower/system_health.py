@@ -1,6 +1,5 @@
 """Provide info to system health."""
 from aioautomower import TOKEN_URL
-
 from homeassistant.components import system_health
 from homeassistant.core import HomeAssistant, callback
 
