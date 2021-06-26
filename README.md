@@ -101,6 +101,7 @@ The mower returns to the base and parks there until it gets a new start command
 ### Services
 
 With the `husqvarna_automower.park_and_start` service you can override the curent schedule for a specific time.
+Possible values for the duration are 1...60480 minutes (6 weeks)
 Example for starting without the schedule for 120 minutes:
 ```
 service: husqvarna_automower.park_and_start
