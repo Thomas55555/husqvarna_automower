@@ -23,7 +23,6 @@ Custom component to support Automower.
 The idea for this component ist coming from the <https://github.com/walthowd/ha-automower> integration. As this integration doesn't use the offical API, I decided to create a
 integration, which is based on the offical API: <https://developer.husqvarnagroup.cloud/>. There are some disatvanteges between, the offical API and the unoffical API:
 
-- Offical API doesn't support GPS position
 - Offical API is limited to 10,000 accesses per 30 days. So state of the mower is only update every 5 minutes
 - API-Key is needed
 
@@ -99,6 +98,28 @@ The mower returns to the base and parks there until the next schedule starts
 `vacuum.return_to_base`
 The mower returns to the base and parks there until it gets a new start command
 
+# Services
+
+With the `husqvarna_automower.park_and_start` service you can override the curent schedule for a specific time.
+Example for starting without the schedule for 120 minutes:
+```
+service: husqvarna_automower.park_and_start
+data:
+  command: Start
+  duration: 120
+target:
+  entity_id: vacuum.automower_r_315x_haffi
+```
+
+Example for parking indepentend from the schedule for 5 minutes:
+```
+service: husqvarna_automower.park_and_start
+data:
+  command: Start
+  duration: 5
+target:
+  entity_id: vacuum.automower_r_315x_haffi
+```
 
 ## Debugging
 
