@@ -13,7 +13,6 @@ from aioautomower import (
     ValidateAccessToken,
 )
 from async_timeout import timeout
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
@@ -24,7 +23,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
-SCAN_INTERVAL = timedelta(seconds=300)
+SCAN_INTERVAL = timedelta(seconds=60)
 
 _LOGGER = logging.getLogger(__name__)
 

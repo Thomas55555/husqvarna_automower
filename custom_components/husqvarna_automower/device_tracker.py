@@ -1,9 +1,10 @@
 """Platform for Husqvarna Automower device tracker integration."""
+import logging
+
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
-import logging
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 
@@ -76,11 +77,6 @@ class AutomowerTracker(TrackerEntity, HusqvarnaEntity, CoordinatorEntity):
         """Return a unique identifier for this entity."""
         return "{self.coordinator.data['data'][self.idx]['id']}_dt"
 
-    # @property
-    # def icon(self):
-    #     """Return the icon to use in the frontend."""
-    #     return "mdi:car"
-
     @property
     def source_type(self):
         """Return the source type, eg gps or router, of the device."""
@@ -89,16 +85,15 @@ class AutomowerTracker(TrackerEntity, HusqvarnaEntity, CoordinatorEntity):
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        _LOGGER.debug("attr: %s ", self.mower_attributes["positions"][0]["latitude"])
-        self.lat = self.mower_attributes["positions"][0]["latitude"]
-        _LOGGER.debug("Latitude: %s ", self.lat)
+        self.lat = self.coordinator.data["data"][self.idx]["attributes"]["positions"][
+            0
+        ]["latitude"]
         return self.lat
 
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
-        self.long = self.mower_attributes["positions"][0]["longitude"]
-        _LOGGER.debug("Longitude: %s ", self.long)
+        self.long = self.coordinator.data["data"][self.idx]["attributes"]["positions"][
+            0
+        ]["longitude"]
         return self.long
