@@ -35,5 +35,5 @@ park_and_start:
       selector:
         number:
           min: 1
-          max: 1440
+          max: 60480
           unit_of_measurement: "min"
