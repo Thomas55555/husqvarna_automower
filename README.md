@@ -81,7 +81,10 @@ In order to use this integration you must get a API-Key from Husqvarna.
 
 ### Home Assistant
 
-Setup under Integrations in Home Assistant, search for "husqvarna_automower". You need to enter e-mail, password and your API-Key.
+Setup under Integrations in Home Assistant, search for "husqvarna_automower" and click on it, or use the My button:
+[![my_button](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=husqvarna_automower)
+
+You need to enter e-mail, password and your API-Key.
 If the integration is not shown, try to refresh your browser (F5) or (Shift+F5). Maybe you need to reopen your browser.
 
 ## Usage
