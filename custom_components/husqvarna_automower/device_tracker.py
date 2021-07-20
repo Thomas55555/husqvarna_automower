@@ -75,7 +75,7 @@ class AutomowerTracker(TrackerEntity, HusqvarnaEntity, CoordinatorEntity):
     @property
     def unique_id(self):
         """Return a unique identifier for this entity."""
-        return "{self.coordinator.data['data'][self.idx]['id']}_dt"
+        return f"{self.coordinator.data['data'][self.idx]['id']}_dt"
 
     @property
     def source_type(self):
