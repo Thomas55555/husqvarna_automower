@@ -168,8 +168,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         try:
             async with timeout(10):
                 await self.token_valid.async_validate_access_token()
-        except TokenError as err:
-            raise ConfigEntryAuthFailed from err
+        except TokenError:
+            await self.async_update_token()
         except TimeoutError as error:
             raise UpdateFailed(error) from error
 
