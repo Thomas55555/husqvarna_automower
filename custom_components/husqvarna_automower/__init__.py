@@ -10,9 +10,12 @@ from aioautomower import (
     RefreshAccessToken,
     Return,
     TokenError,
+    TokenRefreshError,
+    TokenValidationError,
     ValidateAccessToken,
 )
 from async_timeout import timeout
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
@@ -73,10 +76,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await coordinator.async_refresh()
-    except TokenError as err:
+    except (TokenError, TokenRefreshError) as err:
         raise ConfigEntryAuthFailed from err
-    except Exception as ex:
-        raise ConfigEntryNotReady from ex
+    except TokenValidationError as err:
+        await AuthenticationUpdateCoordinator.async_update_token()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
@@ -142,10 +145,8 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
             self.access_token_raw = (
                 await self.api_refresh_token.async_refresh_access_token()
             )
-        except TokenError as ex:
-            raise ConfigEntryAuthFailed("Not authenticated with Husqvarna API") from ex
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except TokenRefreshError as ex:
+            raise ConfigEntryAuthFailed(ex) from ex
 
         _LOGGER.debug("Token expires at %i UTC", self.access_token_raw["expires_at"])
 
@@ -168,7 +169,7 @@ class AuthenticationUpdateCoordinator(DataUpdateCoordinator):
         try:
             async with timeout(10):
                 await self.token_valid.async_validate_access_token()
-        except TokenError:
+        except TokenValidationError:
             await self.async_update_token()
         except TimeoutError as error:
             raise UpdateFailed(error) from error
