@@ -238,7 +238,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             return "Off"  # Not sure about this one
         if mower_attr["state"] == "STOPPED":
             return "Stopped"
-        if mower_attr["state"] in ["ERROR, FATAL_ERROR, ERROR_AT_POWER_UP"]:
+        if mower_attr["state"] in ["ERROR", "FATAL_ERROR", "ERROR_AT_POWER_UP"]:
             return ERRORCODES.get(mower_attr["errorCode"])
         return "Unknown"
 
