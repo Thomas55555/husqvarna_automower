@@ -204,43 +204,55 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
     def __get_status(self) -> str:
         """Return the status string of the mower, as presented in the native
         Automower app."""
-        mower_attr = self.coordinator.data["data"][self.idx]["attributes"]["mower"]
-        if mower_attr["state"] == "UNKNOWN":
+        self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
+        if self.mower_attributes["mower"]["state"] == "UNKNOWN":
             return "Unknown"
-        if mower_attr["state"] == "NOT_APPLICABLE":
+        if self.mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
             return "Not applicable"
-        if mower_attr["state"] == "PAUSED":
+        if self.mower_attributes["mower"]["state"] == "PAUSED":
             return "Paused"
-        if mower_attr["state"] == "IN_OPERATION":
-            if mower_attr["activity"] == "UNKNOWN":
+        if self.mower_attributes["mower"]["state"] == "IN_OPERATION":
+            if self.mower_attributes["mower"]["activity"] == "UNKNOWN":
                 return "Unknown"
-            if mower_attr["activity"] == "NOT_APPLICABLE":
+            if self.mower_attributes["mower"]["activity"] == "NOT_APPLICABLE":
                 return "Not applicable"
-            if mower_attr["activity"] == "MOWING":
+            if self.mower_attributes["mower"]["activity"] == "MOWING":
                 return "Mowing"
-            if mower_attr["activity"] == "GOING_HOME":
+            if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
                 return "Going to charging station"
-            if mower_attr["activity"] == "CHARGING":
+            if self.mower_attributes["mower"]["activity"] == "CHARGING":
                 return "Charging"
-            if mower_attr["activity"] == "LEAVING":
+            if self.mower_attributes["mower"]["activity"] == "LEAVING":
                 return "Leaving charging station"
-            if mower_attr["activity"] == "PARKED_IN_CS":
+            if self.mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
                 return "Parked"
-            if mower_attr["activity"] == "STOPPED_IN_GARDEN":
+            if self.mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
                 return "Stopped"
-        if mower_attr["state"] == "WAIT_UPDATING":
-            return "Updating"  # Not sure about this one
-        if mower_attr["state"] == "WAIT_POWER_UP":
-            return "Powering up"  # Not sure about this one
-        if mower_attr["state"] == "RESTRICTED`":
-            return "Parked due to timer"  # or override park, how is this visible?
-        if mower_attr["state"] == "OFF":
-            return "Off"  # Not sure about this one
-        if mower_attr["state"] == "STOPPED":
+        if self.mower_attributes["mower"]["state"] == "WAIT_UPDATING":
+            return "Updating"
+        if self.mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
+            return "Powering up"
+        if self.mower_attributes["mower"]["state"] == "RESTRICTED`":
+            if self.mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
+                return "Week schedule"
+            if self.mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
+                return "Park override"
+            if self.mower_attributes["planner"]["restrictedReason"] == "SENSOR":
+                return "Weather timer"
+            if self.mower_attributes["planner"]["restrictedReason"] == "DAILY_LIMIT":
+                return "Daily limit"
+        if self.mower_attributes["mower"]["state"] == "OFF":
+            return "Off"
+        if self.mower_attributes["mower"]["state"] == "STOPPED":
             return "Stopped"
-        if mower_attr["state"] in ["ERROR", "FATAL_ERROR", "ERROR_AT_POWER_UP"]:
-            return ERRORCODES.get(mower_attr["errorCode"])
+        if self.mower_attributes["mower"]["state"] in [
+            "ERROR",
+            "FATAL_ERROR",
+            "ERROR_AT_POWER_UP",
+        ]:
+            return ERRORCODES.get(self.mower_attributes["mower"]["errorCode"])
         return "Unknown"
+
 
     @property
     def extra_state_attributes(self):
