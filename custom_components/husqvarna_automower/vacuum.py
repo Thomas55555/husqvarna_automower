@@ -6,6 +6,7 @@ import time
 import voluptuous as vol
 
 from homeassistant.components.vacuum import (
+    ATTR_STATUS,
     STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
@@ -200,6 +201,65 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             ),
         )
 
+    def __get_status(self) -> str:
+        self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
+        if self.mower_attributes["planner"]["nextStartTimestamp"] != 0:
+            self.next_start_short = time.strftime(
+                "%a %H:%M",
+                time.gmtime(
+                    (self.mower_attributes["planner"]["nextStartTimestamp"]) / 1000
+                ),
+            )
+        if self.mower_attributes["mower"]["state"] == "UNKNOWN":
+            return "Unknown"
+        if self.mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
+            return "Not applicable"
+        if self.mower_attributes["mower"]["state"] == "PAUSED":
+            return "Paused"
+        if self.mower_attributes["mower"]["state"] == "IN_OPERATION":
+            if self.mower_attributes["mower"]["activity"] == "UNKNOWN":
+                return "Unknown"
+            if self.mower_attributes["mower"]["activity"] == "NOT_APPLICABLE":
+                return "Not applicable"
+            if self.mower_attributes["mower"]["activity"] == "MOWING":
+                return "Mowing"
+            if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
+                return "Going to charging station"
+            if self.mower_attributes["mower"]["activity"] == "CHARGING":
+                return f"Charging, next start: {self.next_start_short}"
+            if self.mower_attributes["mower"]["activity"] == "LEAVING":
+                return "Leaving charging station"
+            if self.mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
+                return "Parked"
+            if self.mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
+                return "Stopped"
+        if self.mower_attributes["mower"]["state"] == "WAIT_UPDATING":
+            return "Updating"
+        if self.mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
+            return "Powering up"
+        if self.mower_attributes["mower"]["state"] == "RESTRICTED":
+            if self.mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
+                return f"Schedule, next start: {self.next_start_short}"
+            if self.mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
+                return "Park override"
+            if self.mower_attributes["planner"]["restrictedReason"] == "SENSOR":
+                return "Weather timer"
+            if self.mower_attributes["planner"]["restrictedReason"] == "DAILY_LIMIT":
+                return "Daily limit"
+            if self.mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
+                return "Parked until further notice"
+        if self.mower_attributes["mower"]["state"] == "OFF":
+            return "Off"
+        if self.mower_attributes["mower"]["state"] == "STOPPED":
+            return "Stopped"
+        if self.mower_attributes["mower"]["state"] in [
+            "ERROR",
+            "FATAL_ERROR",
+            "ERROR_AT_POWER_UP",
+        ]:
+            return ERRORCODES.get(self.mower_attributes["mower"]["errorCode"])
+        return "Unknown"
+
     @property
     def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
@@ -235,6 +295,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             self.next_start = None
 
         self.attributes = {
+            ATTR_STATUS: self.__get_status(),
             "mode": self.mower_attributes["mower"]["mode"],
             "activity": self.mower_attributes["mower"]["activity"],
             "state": self.mower_attributes["mower"]["state"],
