@@ -202,9 +202,14 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         )
 
     def __get_status(self) -> str:
-        """Return the status string of the mower, as presented in the native
-        Automower app."""
         self.mower_attributes = self.coordinator.data["data"][self.idx]["attributes"]
+        if self.mower_attributes["planner"]["nextStartTimestamp"] != 0:
+            self.next_start_short = time.strftime(
+                "%a %H:%M",
+                time.gmtime(
+                    (self.mower_attributes["planner"]["nextStartTimestamp"]) / 1000
+                ),
+            )
         if self.mower_attributes["mower"]["state"] == "UNKNOWN":
             return "Unknown"
         if self.mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
@@ -221,7 +226,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             if self.mower_attributes["mower"]["activity"] == "GOING_HOME":
                 return "Going to charging station"
             if self.mower_attributes["mower"]["activity"] == "CHARGING":
-                return "Charging"
+                return f"Charging, next start: {self.next_start_short}"
             if self.mower_attributes["mower"]["activity"] == "LEAVING":
                 return "Leaving charging station"
             if self.mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
@@ -234,13 +239,15 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             return "Powering up"
         if self.mower_attributes["mower"]["state"] == "RESTRICTED":
             if self.mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
-                return "Week schedule"
+                return f"Schedule, next start: {self.next_start_short}"
             if self.mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
                 return "Park override"
             if self.mower_attributes["planner"]["restrictedReason"] == "SENSOR":
                 return "Weather timer"
             if self.mower_attributes["planner"]["restrictedReason"] == "DAILY_LIMIT":
                 return "Daily limit"
+            if self.mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
+                return "Parked until further notice"
         if self.mower_attributes["mower"]["state"] == "OFF":
             return "Off"
         if self.mower_attributes["mower"]["state"] == "STOPPED":
