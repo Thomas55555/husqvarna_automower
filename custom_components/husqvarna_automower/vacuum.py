@@ -6,6 +6,7 @@ import time
 import voluptuous as vol
 
 from homeassistant.components.vacuum import (
+    ATTR_STATUS,
     STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
@@ -200,6 +201,47 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             ),
         )
 
+    def __get_status(self) -> str:
+        """Return the status string of the mower, as presented in the native
+        Automower app."""
+        mower_attr = self.coordinator.data["data"][self.idx]["attributes"]["mower"]
+        if mower_attr["state"] == "UNKNOWN":
+            return "Unknown"
+        if mower_attr["state"] == "NOT_APPLICABLE":
+            return "Not applicable"
+        if mower_attr["state"] == "PAUSED":
+            return "Paused"
+        if mower_attr["state"] == "IN_OPERATION":
+            if mower_attr["activity"] == "UNKNOWN":
+                return "Unknown"
+            if mower_attr["activity"] == "NOT_APPLICABLE":
+                return "Not applicable"
+            if mower_attr["activity"] == "MOWING":
+                return "Mowing"
+            if mower_attr["activity"] == "GOING_HOME":
+                return "Going to charging station"
+            if mower_attr["activity"] == "CHARGING":
+                return "Charging"
+            if mower_attr["activity"] == "LEAVING":
+                return "Leaving charging station"
+            if mower_attr["activity"] == "PARKED_IN_CS":
+                return "Parked"
+            if mower_attr["activity"] == "STOPPED_IN_GARDEN":
+                return "Stopped"
+        if mower_attr["state"] == "WAIT_UPDATING":
+            return "Updating"  # Not sure about this one
+        if mower_attr["state"] == "WAIT_POWER_UP":
+            return "Powering up"  # Not sure about this one
+        if mower_attr["state"] == "RESTRICTED`":
+            return "Parked due to timer"  # or override park, how is this visible?
+        if mower_attr["state"] == "OFF":
+            return "Off"  # Not sure about this one
+        if mower_attr["state"] == "STOPPED":
+            return "Stopped"
+        if mower_attr["state"] in ["ERROR, FATAL_ERROR, ERROR_AT_POWER_UP"]:
+            return ERRORCODES.get(mower_attr["errorCode"])
+        return "Unknown"
+
     @property
     def extra_state_attributes(self):
         """Return the specific state attributes of this mower."""
@@ -235,6 +277,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             self.next_start = None
 
         self.attributes = {
+            ATTR_STATUS: self.__get_status(),
             "mode": self.mower_attributes["mower"]["mode"],
             "activity": self.mower_attributes["mower"]["activity"],
             "state": self.mower_attributes["mower"]["state"],
