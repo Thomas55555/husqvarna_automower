@@ -232,7 +232,7 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
             return "Updating"
         if self.mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
             return "Powering up"
-        if self.mower_attributes["mower"]["state"] == "RESTRICTED`":
+        if self.mower_attributes["mower"]["state"] == "RESTRICTED":
             if self.mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
                 return "Week schedule"
             if self.mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
@@ -252,7 +252,6 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         ]:
             return ERRORCODES.get(self.mower_attributes["mower"]["errorCode"])
         return "Unknown"
-
 
     @property
     def extra_state_attributes(self):
