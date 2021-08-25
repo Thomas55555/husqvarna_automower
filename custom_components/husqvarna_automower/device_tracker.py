@@ -63,7 +63,7 @@ class AutomowerTracker(TrackerEntity, HusqvarnaEntity, CoordinatorEntity):
     @property
     def name(self):
         """Return the name of the entity."""
-        return f"{self.mower_name}_Device Tracker"
+        return self.mower_name
 
     @property
     def unique_id(self):
