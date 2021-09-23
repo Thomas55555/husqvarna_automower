@@ -98,21 +98,14 @@ class HusqvarnaAutomowerEntity(HusqvarnaEntity, StateVacuumEntity, CoordinatorEn
         self.attributes = None
         self.payload = None
         self.communication_not_possible_already_sent = False
-        self.mower_name = f"{self.mower_attributes['system']['model']}_{self.mower_attributes['system']['name']}"
-        self.model_string_splited = self.mower_attributes["system"]["model"].split(" ")
-        try:
-            self.model = (
-                f"{self.model_string_splited[1]} {self.model_string_splited[2]}"
-            )
-        except IndexError:
-            self.model = self.mower_attributes["system"]["model"]
-        self.mower_name = f"{self.model}_{self.mower_attributes['system']['name']}"
+        self.mower_name = self.mower_attributes["system"]["name"]
+        self.model = self.mower_attributes["system"]["model"]
 
     @property
     def device_info(self):
         return {
             "identifiers": {(DOMAIN, self.mower_id)},
-            "name": self.mower_attributes["system"]["name"],
+            "name": self.mower_name,
             "manufacturer": "Husqvarna",
             "model": self.model,
         }
