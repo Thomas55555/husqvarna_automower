@@ -14,7 +14,6 @@ ICON = "mdi:robot-mower"
 
 # Platforms
 PLATFORMS = ["device_tracker", "vacuum"]
-# PLATFORMS = ["vacuum"]
 
 
 # Configuration and options
