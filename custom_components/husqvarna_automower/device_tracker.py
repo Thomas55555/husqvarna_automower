@@ -4,6 +4,7 @@ from homeassistant.components.device_tracker.config_entry import TrackerEntity
 
 from .const import DOMAIN
 
+
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     session = hass.data[DOMAIN][entry.entry_id]
