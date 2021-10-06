@@ -1,10 +1,7 @@
 """The Husqvarna Automower integration."""
 import logging
 
-from aioautomower import (
-    AutomowerSession,
-    GetAccessToken,
-)
+import aioautomower
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
@@ -27,7 +24,7 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
         password = entry.data.get(CONF_PASSWORD)
         api_key = entry.data.get(CONF_API_KEY)
 
-        get_token = GetAccessToken(api_key, username, password)
+        get_token = aioautomower.GetAccessToken(api_key, username, password)
         access_token = await get_token.async_get_access_token()
         hass.config_entries.async_update_entry(
             entry,
@@ -52,10 +49,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     api_key = entry.unique_id
     access_token = entry.data.get(CONF_TOKEN)
 
-    session = AutomowerSession(api_key, access_token)
+    session = aioautomower.AutomowerSession(api_key, access_token)
 
-    if not await session.connect():
-        raise ConfigEntryAuthFailed
+    try:
+        await session.connect()
+    except (AttributeError, aioautomower.TokenRefreshError) as e:
+        # If we haven't used the refresh_token (ie. been offline) for 10 days,
+        # we need to login using username and password in the config flow again.
+        raise ConfigEntryAuthFailed(e)
 
     hass.data[DOMAIN][entry.entry_id] = session
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
