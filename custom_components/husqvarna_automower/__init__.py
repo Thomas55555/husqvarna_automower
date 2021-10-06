@@ -10,7 +10,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -65,11 +64,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Handle removal of an entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
-    return unload_ok
+    """Handle unload of an entry."""
+    session = hass.data[DOMAIN].pop(entry.entry_id)
+    try:
+        await session.invalidate_token()
+    except Exception as exception:
+        _LOGGER.warning("Failed to invalidate token: %s", exception)
+        pass
+
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -80,8 +83,3 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle removal of an entry."""
-    session = hass.data[DOMAIN][entry.entry_id]
-    try:
-        await session.invalidate_token()
-    except Exception as exception:
-        raise UpdateFailed(exception) from exception
