@@ -26,7 +26,9 @@ class AutomowerTracker(TrackerEntity):
         self.mower_name = mower_attributes["system"]["name"]
         self.model = mower_attributes["system"]["model"]
 
-        self.session.register_cb(lambda _: self.async_write_ha_state())
+        self.session.register_cb(
+            lambda _: self.async_write_ha_state(), schedule_immediately=True
+        )
 
     def __get_mower_attributes(self):
         return self.session.data["data"][self.idx]["attributes"]
