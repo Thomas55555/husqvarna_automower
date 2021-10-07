@@ -53,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await session.connect()
-    except (AttributeError, aioautomower.TokenRefreshError) as e:
+    except Exception as e:
         # If we haven't used the refresh_token (ie. been offline) for 10 days,
         # we need to login using username and password in the config flow again.
         raise ConfigEntryAuthFailed(e)
