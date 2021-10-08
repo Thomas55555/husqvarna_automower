@@ -188,9 +188,10 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
 
     def __get_status(self) -> str:
         mower_attributes = self.__get_mower_attributes()
+        next_start_short = ""
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            self.next_start_short = time.strftime(
-                "%a %H:%M",
+            next_start_short = time.strftime(
+                ", next start: %a %H:%M",
                 time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
             )
         if mower_attributes["mower"]["state"] == "UNKNOWN":
@@ -209,7 +210,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             if mower_attributes["mower"]["activity"] == "GOING_HOME":
                 return "Going to charging station"
             if mower_attributes["mower"]["activity"] == "CHARGING":
-                return f"Charging, next start: {self.next_start_short}"
+                return f"Charging{next_start_short}"
             if mower_attributes["mower"]["activity"] == "LEAVING":
                 return "Leaving charging station"
             if mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
@@ -222,7 +223,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             return "Powering up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
             if mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
-                return f"Schedule, next start: {self.next_start_short}"
+                return f"Schedule{next_start_short}"
             if mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
                 return "Park override"
             if mower_attributes["planner"]["restrictedReason"] == "SENSOR":
