@@ -4,7 +4,7 @@ automations.yaml
 configuration.yaml
 groups.yaml
 *.db*
-home-assistant.log
+**.log**
 scenes.yaml
 scripts.yaml
 secrets.yaml
