@@ -1,16 +1,12 @@
 """The Husqvarna Automower integration."""
 import logging
 
-from aioautomower import (
-    AutomowerSession,
-    GetAccessToken,
-)
+import aioautomower
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -28,7 +24,7 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
         password = entry.data.get(CONF_PASSWORD)
         api_key = entry.data.get(CONF_API_KEY)
 
-        get_token = GetAccessToken(api_key, username, password)
+        get_token = aioautomower.GetAccessToken(api_key, username, password)
         access_token = await get_token.async_get_access_token()
         hass.config_entries.async_update_entry(
             entry,
@@ -53,10 +49,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     api_key = entry.unique_id
     access_token = entry.data.get(CONF_TOKEN)
 
-    session = AutomowerSession(api_key, access_token)
+    session = aioautomower.AutomowerSession(api_key, access_token)
 
-    if not await session.connect():
-        raise ConfigEntryAuthFailed
+    try:
+        await session.connect()
+    except Exception as e:
+        # If we haven't used the refresh_token (ie. been offline) for 10 days,
+        # we need to login using username and password in the config flow again.
+        raise ConfigEntryAuthFailed(e)
 
     hass.data[DOMAIN][entry.entry_id] = session
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
@@ -65,11 +65,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Handle removal of an entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
-    return unload_ok
+    """Handle unload of an entry."""
+    session = hass.data[DOMAIN].pop(entry.entry_id)
+    try:
+        await session.invalidate_token()
+    except Exception as exception:
+        _LOGGER.warning("Failed to invalidate token: %s", exception)
+        pass
+
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -80,8 +84,3 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle removal of an entry."""
-    session = hass.data[DOMAIN][entry.entry_id]
-    try:
-        await session.invalidate_token()
-    except Exception as exception:
-        raise UpdateFailed(exception) from exception

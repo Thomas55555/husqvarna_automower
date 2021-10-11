@@ -20,13 +20,12 @@ Custom component to support Automower.
 
 ## About
 
-The idea for this component ist coming from the <https://github.com/walthowd/ha-automower> integration. As this integration doesn't use the offical API, I decided to create a
-integration, which is based on the offical API: <https://developer.husqvarnagroup.cloud/>. There are some disatvanteges between, the offical API and the unoffical API:
-
-- Offical API is limited to 10,000 accesses per 30 days. So state of the mower is only update every 5 minutes
-- API-Key is needed
-
-But the adavantage is, that Husqvarna won't close the offical API suddenly.
+This integration is based on the offical
+[API](https://developer.husqvarnagroup.cloud/). The integration is using the
+Husqvarna websocket API for pushed updates, so no polling is performed. You
+need a API key to use this integration, refer to [this
+guide](https://developer.husqvarnagroup.cloud/docs/getting-started) on how to
+get one.
 
 ![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/master/screenshot_husqvarna_automower.PNG)
 
