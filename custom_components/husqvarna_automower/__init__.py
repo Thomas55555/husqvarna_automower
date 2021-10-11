@@ -24,7 +24,7 @@ from homeassistant.helpers.entity_registry import async_migrate_entries
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, HUSQVARNA_URL
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
@@ -66,6 +66,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     api_key = entry.unique_id
     access_token_raw = entry.data.get(CONF_TOKEN)
+
+    if "amc:api" not in access_token_raw["scope"]:
+        _LOGGER.warning(
+            "Your API-Key is not compatible to the websocket. For version 2021.10.1 of husqvarna_automower you need websocket support. Please refresh your API-Key on %s",
+            HUSQVARNA_URL,
+        )
 
     coordinator = AuthenticationUpdateCoordinator(
         hass,
