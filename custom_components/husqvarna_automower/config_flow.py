@@ -31,7 +31,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.debug("Show the setup form to the user")
 
         data_schema = {
-            vol.Required(CONF_API_KEY): str,
+            vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
         }
