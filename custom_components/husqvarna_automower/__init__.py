@@ -58,6 +58,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         # we need to login using username and password in the config flow again.
         raise ConfigEntryAuthFailed(e)
 
+    if "amc:api" not in access_token["scope"]:
+        raise ConfigEntryAuthFailed(
+            "Your API-Key is not compatible to websocket, please renew it on https://developer.husqvarnagroup.cloud/"
+        )
+
     hass.data[DOMAIN][entry.entry_id] = session
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
