@@ -18,6 +18,7 @@
         },
         "error": {
             "auth": "Benutzername, Password und/oder API-Key ist falsch.",
+            "api_key": "Ihr API-Key ist nicht kompatibel mit websocket, bitte erneuern sie ihn hier: https://developer.husqvarnagroup.cloud/",
             "mower": "Stellen sie sicher, dass ihr API-Key mit der Authentication API und der Automower-Connect API verbunden sind: https://developer.husqvarnagroup.cloud/",
             "unknown": "Es ist ein unbekannter Fehler aufgetreten"
         },

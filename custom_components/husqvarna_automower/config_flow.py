@@ -1,6 +1,5 @@
 """Config flow to add the integration via the UI."""
 import logging
-from collections import OrderedDict
 
 import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData, TokenError
@@ -31,13 +30,14 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Show the setup form to the user."""
         _LOGGER.debug("Show the setup form to the user")
 
-        fields = OrderedDict()
-        fields[vol.Required(CONF_API_KEY)] = vol.All(str, vol.Length(min=36, max=36))
-        fields[vol.Required(CONF_USERNAME)] = str
-        fields[vol.Required(CONF_PASSWORD)] = str
+        data_schema = {
+            vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
+            vol.Required(CONF_USERNAME): str,
+            vol.Required(CONF_PASSWORD): str,
+        }
 
         return self.async_show_form(
-            step_id="user", data_schema=vol.Schema(fields), errors=errors
+            step_id="user", data_schema=vol.Schema(data_schema), errors=errors
         )
 
     async def async_step_user(self, user_input=None):
@@ -58,6 +58,10 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "auth"
+            return await self._show_setup_form(errors)
+
+        if "amc:api" not in access_token_raw["scope"]:
+            errors["base"] = "api_key"
             return await self._show_setup_form(errors)
 
         try:
