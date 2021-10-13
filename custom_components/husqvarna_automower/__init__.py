@@ -50,6 +50,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     access_token = entry.data.get(CONF_TOKEN)
 
     session = aioautomower.AutomowerSession(api_key, access_token)
+    session.register_token_callback(
+        lambda token: hass.config_entries.async_update_entry(
+            entry,
+            data={
+                CONF_TOKEN: token,
+            },
+        )
+    )
 
     try:
         await session.connect()
