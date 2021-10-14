@@ -104,10 +104,10 @@ With the this command you can override the curent schedule for a specific time. 
 
 ### Services
 
-| Name          | Type          | Possible values | Description
-| ------------- | ------------- | -------------   | -------------
-| command       | string        | `Start | Park`  | Start or park the mower
-| duration      | int           | `1...60480`     | Duration for this command in minutes
+| Name          | Type          | Possible values   | Description
+| ------------- | ------------- | -------------     | -------------
+| command       | string        | `Start` \| `Park` | Start or park the mower
+| duration      | int           | `1...60480`       | Duration for this command in minutes
 | target        | string        |                 | The `entity_id` of your mower
 
 Example for starting without the schedule for 120 minutes:
