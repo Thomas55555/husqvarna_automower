@@ -53,15 +53,12 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             )
             access_token_raw = await get_token.async_get_access_token()
         except (ClientConnectorError, TokenError):
+            """On 400 credentials could be wrong, or (Authentication API && Automower Connect API) are not connected."""
             errors["base"] = "auth"
             return await self._show_setup_form(errors)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "auth"
-            return await self._show_setup_form(errors)
-
-        if "amc:api" not in access_token_raw["scope"]:
-            errors["base"] = "api_key"
             return await self._show_setup_form(errors)
 
         try:
@@ -74,12 +71,20 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             mower_data = await get_mower_data.async_mower_state()
             _LOGGER.debug("config: %s", mower_data)
         except (ClientConnectorError, ClientResponseError):
-            errors["base"] = "mower"
+            if "amc:api" in access_token_raw["scope"]:
+                errors["base"] = "api_key"  ## Something's wrong with the key
+            errors["base"] = "mower"  ## Automower Connect API not connected
             return await self._show_setup_form(errors)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
             return await self._show_setup_form(errors)
+
+        if "amc:api" not in access_token_raw["scope"]:
+            """If the API-Key is old."""
+            errors["base"] = "api_key"
+            return await self._show_setup_form(errors)
+
         CONF_UNIQUE_ID = user_input[CONF_API_KEY]
         data = {
             CONF_API_KEY: user_input[CONF_API_KEY],
