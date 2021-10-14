@@ -16,7 +16,6 @@ Custom component to support Automower.
   - [Husqvarna API-Key](#husqvarna-api-key)
   - [Home Assistant](#home-assistant)
 - [Usage](#usage)
-- [TODO](#todo)
 
 ## About
 
@@ -100,10 +99,17 @@ The mower returns to the base and parks there until the next schedule starts
 `vacuum.return_to_base`
 The mower returns to the base and parks there until it gets a new start command
 
+`husqvarna_automower.park_and_start`
+With the this command you can override the curent schedule for a specific time. For more details see the [Services](https://github.com/Thomas55555/husqvarna_automower#services) chapter
+
 ### Services
 
-With the `husqvarna_automower.park_and_start` service you can override the curent schedule for a specific time.
-Possible values for the duration are 1...60480 minutes (6 weeks)
+| Name          | Type          | Possible values   | Description
+| ------------- | ------------- | -------------     | -------------
+| command       | string        | `Start` \| `Park` | Start or park the mower
+| duration      | int           | `1...60480`       | Duration for this command in minutes
+| target        | string        |                 | The `entity_id` of your mower
+
 Example for starting without the schedule for 120 minutes:
 ```
 service: husqvarna_automower.park_and_start
@@ -118,7 +124,7 @@ Example for parking indepentend from the schedule for 5 minutes:
 ```
 service: husqvarna_automower.park_and_start
 data:
-  command: Start
+  command: Park
   duration: 5
 target:
   entity_id: vacuum.automower_r_315x_haffi
@@ -134,9 +140,7 @@ file. Example:
 logger:
   default: info
   logs:
-    custom_components.husqvarna_automower: debug
-    custom_components.husqvarna_automower.vacuum: debug
-    custom_components.husqvarna_automower.config_flow: debug
+    husqvarna_automower: debug
     aioautomower: debug
 ```
 
