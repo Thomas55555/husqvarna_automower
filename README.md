@@ -100,13 +100,13 @@ The mower returns to the base and parks there until the next schedule starts
 The mower returns to the base and parks there until it gets a new start command
 
 `husqvarna_automower.park_and_start`
-With the this command you can override the curent schedule for a specific time. For more details see the [Services] (https://github.com/Thomas55555/husqvarna_automower#services) chapter
+With the this command you can override the curent schedule for a specific time. For more details see the [Services](https://github.com/Thomas55555/husqvarna_automower#services) chapter
 
 ### Services
 
 | Name          | Type          | Possible values | Description
 | ------------- | ------------- | -------------   | -------------
-| command       | string        | `Start` | `Park`| Start or park the mower
+| command       | string        | `Start | Park`  | Start or park the mower
 | duration      | int           | `1...60480`     | Duration for this command in minutes
 | target        | string        |                 | The `entity_id` of your mower
 
