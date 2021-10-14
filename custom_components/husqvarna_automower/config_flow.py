@@ -73,7 +73,8 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         except (ClientConnectorError, ClientResponseError):
             if "amc:api" in access_token_raw["scope"]:
                 errors["base"] = "api_key"  ## Something's wrong with the key
-            errors["base"] = "mower"  ## Automower Connect API not connected
+            else:
+                errors["base"] = "mower"  ## Automower Connect API not connected
             return await self._show_setup_form(errors)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
