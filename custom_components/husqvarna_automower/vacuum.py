@@ -26,7 +26,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .const import DOMAIN, ERRORCODES, ICON
+from .const import DOMAIN, ERRORCODES, ICON, HUSQVARNA_URL
 
 SUPPORT_STATE_SERVICES = (
     SUPPORT_STATE
@@ -88,6 +88,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "name": self.mower_name,
             "manufacturer": "Husqvarna",
             "model": self.model,
+            "configuration_url": HUSQVARNA_URL,
         }
 
     @property
