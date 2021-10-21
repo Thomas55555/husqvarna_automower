@@ -5,15 +5,23 @@ import time
 
 import voluptuous as vol
 
-from homeassistant.components.vacuum import (ATTR_STATUS, STATE_CLEANING,
-                                             STATE_DOCKED, STATE_ERROR,
-                                             STATE_IDLE, STATE_PAUSED,
-                                             STATE_RETURNING, SUPPORT_BATTERY,
-                                             SUPPORT_PAUSE,
-                                             SUPPORT_RETURN_HOME,
-                                             SUPPORT_SEND_COMMAND,
-                                             SUPPORT_START, SUPPORT_STATE,
-                                             SUPPORT_STOP, StateVacuumEntity)
+from homeassistant.components.vacuum import (
+    ATTR_STATUS,
+    STATE_CLEANING,
+    STATE_DOCKED,
+    STATE_ERROR,
+    STATE_IDLE,
+    STATE_PAUSED,
+    STATE_RETURNING,
+    SUPPORT_BATTERY,
+    SUPPORT_PAUSE,
+    SUPPORT_RETURN_HOME,
+    SUPPORT_SEND_COMMAND,
+    SUPPORT_START,
+    SUPPORT_STATE,
+    SUPPORT_STOP,
+    StateVacuumEntity,
+)
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.update_coordinator import UpdateFailed
