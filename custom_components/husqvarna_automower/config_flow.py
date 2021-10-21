@@ -6,14 +6,9 @@ from aioautomower import GetAccessToken, GetMowerData, TokenError
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 
 from homeassistant import config_entries
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_API_KEY,
-    CONF_PASSWORD,
-    CONF_TOKEN,
-    CONF_UNIQUE_ID,
-    CONF_USERNAME,
-)
+from homeassistant.const import (CONF_ACCESS_TOKEN, CONF_API_KEY,
+                                 CONF_PASSWORD, CONF_TOKEN, CONF_UNIQUE_ID,
+                                 CONF_USERNAME)
 
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 
