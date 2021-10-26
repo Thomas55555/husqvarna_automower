@@ -96,6 +96,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             manufacturer="Husqvarna",
             model=self.model,
             configuration_url=HUSQVARNA_URL,
+            suggested_area="Garden",
         )
 
     @property

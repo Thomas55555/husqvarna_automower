@@ -36,13 +36,7 @@ class AutomowerTracker(TrackerEntity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        return DeviceInfo(
-            identifiers={(DOMAIN, self.mower_id)},
-            name=self.mower_name,
-            manufacturer="Husqvarna",
-            model=self.model,
-            configuration_url=HUSQVARNA_URL,
-        )
+        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
 
     @property
     def name(self) -> str:
