@@ -24,6 +24,7 @@ from homeassistant.components.vacuum import (
 )
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
@@ -82,14 +83,14 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         return self.session.data["data"][self.idx]["attributes"]
 
     @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.mower_id)},
-            "name": self.mower_name,
-            "manufacturer": "Husqvarna",
-            "model": self.model,
-            "configuration_url": HUSQVARNA_URL,
-        }
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.mower_id)},
+            name=self.mower_name,
+            manufacturer="Husqvarna",
+            model=self.model,
+            configuration_url=HUSQVARNA_URL,
+        )
 
     @property
     def available(self):

@@ -1,6 +1,7 @@
 """Platform for Husqvarna Automower device tracker integration."""
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from homeassistant.helpers.entity import DeviceInfo
 
 from .const import DOMAIN, HUSQVARNA_URL
 
@@ -34,14 +35,14 @@ class AutomowerTracker(TrackerEntity):
         return self.session.data["data"][self.idx]["attributes"]
 
     @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.mower_id)},
-            "name": self.mower_name,
-            "manufacturer": "Husqvarna",
-            "model": self.model,
-            "configuration_url": HUSQVARNA_URL,
-        }
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.mower_id)},
+            name=self.mower_name,
+            manufacturer="Husqvarna",
+            model=self.model,
+            configuration_url=HUSQVARNA_URL,
+        )
 
     @property
     def name(self):
