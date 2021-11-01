@@ -3,7 +3,7 @@ from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.entity import DeviceInfo
 
-from .const import DOMAIN, HUSQVARNA_URL
+from .const import DOMAIN
 
 
 async def async_setup_entry(hass, entry, async_add_devices) -> None:
