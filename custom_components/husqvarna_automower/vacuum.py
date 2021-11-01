@@ -284,7 +284,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "nextStart": next_start,
             "action": mower_attributes["planner"]["override"]["action"],
             "restrictedReason": mower_attributes["planner"]["restrictedReason"],
-            "statusTimestamp": state_time
+            "cuttingHeight": mower_attributes["settings"]["cuttingHeight"],
+            "headlight": mower_attributes["settings"]["headlight"]["mode"]
             # "all_data": self.session.data
         }
 
