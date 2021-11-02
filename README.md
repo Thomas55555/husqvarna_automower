@@ -73,7 +73,7 @@ In order to use this integration you must get a API-Key from Husqvarna.
 
 4.  Create an new application, name it for example "My Home Assistant" (doesn't matter), leave the other fields empty.
 
-5.  Click on "+Connect new API" and connect the Authentication API and the Husqvarna Automower API.
+5.  Click on "**+ Connect new API**" and connect the **Authentication API** and the **Husqvarna Automower API**.
 
 6.  Copy your Application Key, this is what you need when you add the integration in Home Assistant.
 
