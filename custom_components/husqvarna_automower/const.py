@@ -5,7 +5,7 @@ DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
 INTEGRATION_VERSION = "master"
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
-HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/"
+HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/apps"
 
 
 # Icons
