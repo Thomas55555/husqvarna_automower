@@ -14,33 +14,40 @@ from homeassistant.components.vacuum import (
     STATE_PAUSED,
     STATE_RETURNING,
     SUPPORT_BATTERY,
+    SUPPORT_MAP,
     SUPPORT_PAUSE,
     SUPPORT_RETURN_HOME,
     SUPPORT_SEND_COMMAND,
     SUPPORT_START,
     SUPPORT_STATE,
+    SUPPORT_STATUS,
     SUPPORT_STOP,
     StateVacuumEntity,
 )
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .const import DOMAIN, ERRORCODES, ICON
+from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
 SUPPORT_STATE_SERVICES = (
     SUPPORT_STATE
-    | SUPPORT_PAUSE
-    | SUPPORT_STOP
-    | SUPPORT_RETURN_HOME
     | SUPPORT_BATTERY
+    | SUPPORT_MAP
+    | SUPPORT_PAUSE
+    | SUPPORT_RETURN_HOME
+    | SUPPORT_SEND_COMMAND
     | SUPPORT_START
+    | SUPPORT_STATE
+    | SUPPORT_STATUS
+    | SUPPORT_STOP
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass, entry, async_add_devices) -> None:
     """Setup sensor platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
@@ -62,7 +69,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class HusqvarnaAutomowerEntity(StateVacuumEntity):
     """Defining each mower Entity."""
 
-    def __init__(self, session, idx):
+    def __init__(self, session, idx) -> None:
         self.session = session
         self.idx = idx
 
@@ -82,16 +89,18 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         return self.session.data["data"][self.idx]["attributes"]
 
     @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.mower_id)},
-            "name": self.mower_name,
-            "manufacturer": "Husqvarna",
-            "model": self.model,
-        }
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.mower_id)},
+            name=self.mower_name,
+            manufacturer="Husqvarna",
+            model=self.model,
+            configuration_url=HUSQVARNA_URL,
+            suggested_area="Garden",
+        )
 
     @property
-    def available(self):
+    def available(self) -> bool:
         """Return True if the device is available."""
         available = False
         try:
@@ -113,17 +122,17 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         return available
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the mower."""
         return self.mower_name
 
     @property
-    def unique_id(self):
+    def unique_id(self) -> str:
         """Return a unique ID to use for this mower."""
         return self.session.data["data"][self.idx]["id"]
 
     @property
-    def state(self):
+    def state(self) -> str:
         """Return the state of the mower."""
         mower_attributes = self.__get_mower_attributes()
         if mower_attributes["mower"]["state"] in ["PAUSED"]:
@@ -160,7 +169,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             return STATE_ERROR
 
     @property
-    def error(self):
+    def error(self) -> str:
         """An error message if the vacuum is in STATE_ERROR."""
         if self.state == STATE_ERROR:
             mower_attributes = self.__get_mower_attributes()
@@ -168,17 +177,17 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         return ""
 
     @property
-    def icon(self):
+    def icon(self) -> str:
         """Return the icon of the mower."""
         return ICON
 
     @property
-    def supported_features(self):
+    def supported_features(self) -> int:
         """Flag supported features."""
         return SUPPORT_STATE_SERVICES
 
     @property
-    def battery_level(self):
+    def battery_level(self) -> int:
         """Return the current battery level of the mower."""
         return max(
             0,
@@ -247,7 +256,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         return "Unknown"
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
         mower_attributes = self.__get_mower_attributes()
         error_message = None
@@ -288,7 +297,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
 
         return attributes
 
-    async def async_start(self):
+    async def async_start(self) -> None:
         """Resume schedule."""
         payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
@@ -296,7 +305,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
-    async def async_pause(self):
+    async def async_pause(self) -> None:
         """Pauses the mower."""
         payload = '{"data": {"type": "Pause"}}'
         try:
@@ -304,7 +313,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
-    async def async_stop(self, **kwargs):
+    async def async_stop(self, **kwargs) -> None:
         """Parks the mower until next schedule."""
         payload = '{"data": {"type": "ParkUntilNextSchedule"}}'
         try:
@@ -312,7 +321,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
-    async def async_return_to_base(self, **kwargs):
+    async def async_return_to_base(self, **kwargs) -> None:
         """Parks the mower until further notice."""
         payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
         try:
@@ -320,7 +329,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
-    async def async_custom_command(self, command, duration, **kwargs):
+    async def async_custom_command(self, command, duration, **kwargs) -> None:
         """Parks the mower until further notice."""
         string = {
             "data": {

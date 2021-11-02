@@ -56,7 +56,7 @@ Install the new integration through Configuration -> Integrations in HA (see bel
 
 ### Manual installation
 
-Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the path `/config/custom_components/husqvarna_automower` of your HA installation.
+Download the `husqvarna_automower.zip` file from the [release section](https://github.com/Thomas55555/husqvarna_automower/releases). Extract it and copy the content into the path `/config/custom_components/husqvarna_automower` of your HA installation. Do **not** download directly from the `main` branch.
 
 ## Configuration
 
@@ -73,7 +73,7 @@ In order to use this integration you must get a API-Key from Husqvarna.
 
 4.  Create an new application, name it for example "My Home Assistant" (doesn't matter), leave the other fields empty.
 
-5.  Click on "+Connect new API" and connect the Authentication API and the Husqvarna Automower API.
+5.  Click on "**+ Connect new API**" and connect the **Authentication API** and the **Husqvarna Automower API**.
 
 6.  Copy your Application Key, this is what you need when you add the integration in Home Assistant.
 

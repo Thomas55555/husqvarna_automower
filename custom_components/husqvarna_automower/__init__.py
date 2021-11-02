@@ -61,10 +61,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await session.connect()
-    except Exception as e:
+    except Exception:
         # If we haven't used the refresh_token (ie. been offline) for 10 days,
         # we need to login using username and password in the config flow again.
-        raise ConfigEntryAuthFailed(e)
+        raise ConfigEntryAuthFailed from Exception
 
     if "amc:api" not in access_token["scope"]:
         raise ConfigEntryAuthFailed(
@@ -84,7 +84,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         await session.invalidate_token()
     except Exception as exception:
         _LOGGER.warning("Failed to invalidate token: %s", exception)
-        pass
 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
