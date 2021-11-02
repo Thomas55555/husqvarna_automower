@@ -7,6 +7,7 @@ from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 
 from homeassistant import config_entries
 from homeassistant.const import (
+    ATTR_CREDENTIALS,
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_PASSWORD,
@@ -34,6 +35,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
+            vol.Required(ATTR_CREDENTIALS): bool,
         }
 
         return self.async_show_form(
@@ -91,6 +93,11 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_API_KEY: user_input[CONF_API_KEY],
             CONF_TOKEN: access_token_raw,
         }
+
+        if user_input[ATTR_CREDENTIALS] == True:
+            data[CONF_USERNAME] = user_input[CONF_USERNAME]
+            data[CONF_PASSWORD] = user_input[CONF_PASSWORD]
+
         existing_entry = await self.async_set_unique_id(CONF_UNIQUE_ID)
 
         if existing_entry:
