@@ -56,7 +56,7 @@ Install the new integration through Configuration -> Integrations in HA (see bel
 
 ### Manual installation
 
-Copy the sub-path `/custom_components/husqvarna_automower` of this repo into the path `/config/custom_components/husqvarna_automower` of your HA installation.
+Download the `husqvarna_automower.zip` file from the [release section](https://github.com/Thomas55555/husqvarna_automower/releases). Extract it and copy the content into the path `/config/custom_components/husqvarna_automower` of your HA installation. Do **not** download directly from the `main` branch.
 
 ## Configuration
 
