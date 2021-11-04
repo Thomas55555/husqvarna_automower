@@ -42,7 +42,7 @@ Only mowers with built-in Automower® Connect or with the Automower® Connect Mo
 
 ## Installation
 
-Requires Home Assistant 2021.4.0 or newer.
+Requires Home Assistant 2021.11.0 or newer.
 
 ### Installation through HACS
 

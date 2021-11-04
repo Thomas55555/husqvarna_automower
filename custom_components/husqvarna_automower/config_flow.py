@@ -90,6 +90,7 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_API_KEY: user_input[CONF_API_KEY],
             CONF_TOKEN: access_token_raw,
         }
+
         existing_entry = await self.async_set_unique_id(unique_id)
 
         if existing_entry:

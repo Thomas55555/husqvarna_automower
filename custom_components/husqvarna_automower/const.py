@@ -13,7 +13,7 @@ ICON = "mdi:robot-mower"
 
 
 # Platforms
-PLATFORMS = ["device_tracker", "vacuum"]
+PLATFORMS = ["device_tracker", "vacuum", "select"]
 
 
 # Configuration and options
@@ -132,3 +132,6 @@ ERRORCODES = {
     88: "Angular sensor problem",
     89: "Invalid system configuration",
 }
+
+# Headlight modes
+HEADLIGHTMODES = ["ALWAYS_ON", "ALWAYS_OFF", "EVENING_ONLY", "EVENING_AND_NIGHT"]
