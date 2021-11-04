@@ -299,38 +299,43 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
 
     async def async_start(self) -> None:
         """Resume schedule."""
+        command_type = "actions"
         payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
-            await self.session.action(self.mower_id, payload)
+            await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
     async def async_pause(self) -> None:
         """Pauses the mower."""
+        command_type = "actions"
         payload = '{"data": {"type": "Pause"}}'
         try:
-            await self.session.action(self.mower_id, payload)
+            await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
     async def async_stop(self, **kwargs) -> None:
         """Parks the mower until next schedule."""
+        command_type = "actions"
         payload = '{"data": {"type": "ParkUntilNextSchedule"}}'
         try:
-            await self.session.action(self.mower_id, payload)
+            await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
     async def async_return_to_base(self, **kwargs) -> None:
         """Parks the mower until further notice."""
+        command_type = "actions"
         payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
         try:
-            await self.session.action(self.mower_id, payload)
+            await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 
     async def async_custom_command(self, command, duration, **kwargs) -> None:
-        """Parks the mower until further notice."""
+        """Sends a custom command to the mower."""
+        command_type = "actions"
         string = {
             "data": {
                 "type": command,
@@ -339,6 +344,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         }
         payload = json.dumps(string)
         try:
-            await self.session.action(self.mower_id, payload)
+            await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
