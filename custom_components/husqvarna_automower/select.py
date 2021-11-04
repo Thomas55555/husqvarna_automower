@@ -1,11 +1,12 @@
 """Platform for Husqvarna Automower device tracker integration."""
+import json
+
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, HEADLIGHTMODES
-import json
 
 
 async def async_setup_entry(hass, entry, async_add_devices) -> None:
