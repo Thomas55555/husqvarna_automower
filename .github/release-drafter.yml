@@ -1,15 +1,3 @@
-categories:
-  - title: '🚀 Features'
-    labels:
-      - 'feature'
-      - 'enhancement'
-  - title: '🐛 Bug Fixes'
-    labels:
-      - 'fix'
-      - 'bugfix'
-      - 'bug'
-  - title: '🧰 Maintenance'
-    label: 'chore'
 template: |
   ![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/$RESOLVED_VERSION/total.svg)
   ## What’s Changed
