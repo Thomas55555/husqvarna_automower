@@ -8,8 +8,7 @@
                 "data": {
                     "api_key": "36 digits API Key",
                     "username": "Username",
-                    "password": "Password",
-                    "credentials": "Remember Password and Username (allows this component to get a new token if it can't get renewed)"
+                    "password": "Password"
                 }
             },
             "reauth_confirm": {
