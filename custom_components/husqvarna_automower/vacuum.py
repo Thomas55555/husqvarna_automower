@@ -279,7 +279,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
                 time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
             )
 
-        return {
+        attributes = {
             ATTR_STATUS: self.__get_status(),
             "mode": mower_attributes["mower"]["mode"],
             "activity": mower_attributes["mower"]["activity"],
@@ -289,7 +289,13 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "nextStart": next_start,
             "action": mower_attributes["planner"]["override"]["action"],
             "restrictedReason": mower_attributes["planner"]["restrictedReason"],
+            "headlight": mower_attributes["settings"]["headlight"]["mode"],
         }
+
+        if "4" in self.model:
+            attributes["cuttingHeight"] = mower_attributes["settings"]["cuttingHeight"]
+
+        return attributes
 
     async def async_start(self) -> None:
         """Resume schedule."""
