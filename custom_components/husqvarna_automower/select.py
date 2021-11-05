@@ -17,7 +17,7 @@ async def async_setup_entry(hass, entry, async_add_devices) -> None:
 
 
 class AutomowerSelect(SelectEntity):
-    """Defining the Device Tracker Entity."""
+    """Defining the Headlight Mode Select Entity."""
 
     def __init__(self, session, idx) -> None:
         self.session = session
@@ -45,17 +45,21 @@ class AutomowerSelect(SelectEntity):
     @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return self.mower_name
+        return f"{self.mower_name}_headlight_mode"
 
     @property
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_select"
+        return f"{self.mower_id}_headlight_mode_select"
 
     @property
     def options(self) -> list[str]:
         """Return a set of selectable options."""
         return HEADLIGHTMODES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:car-light-high"
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
