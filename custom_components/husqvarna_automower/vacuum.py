@@ -65,6 +65,22 @@ async def async_setup_entry(hass, entry, async_add_devices) -> None:
         "async_custom_command",
     )
 
+    platform.async_register_entity_service(
+        "calendar",
+        {
+            vol.Required("start"): vol.Coerce(int),
+            vol.Required("duration"): vol.Coerce(int),
+            vol.Required("monday"): cv.boolean,
+            vol.Required("tuesday"): cv.boolean,
+            vol.Required("wednesday"): cv.boolean,
+            vol.Required("thursday"): cv.boolean,
+            vol.Required("friday"): cv.boolean,
+            vol.Required("saturday"): cv.boolean,
+            vol.Required("sunday"): cv.boolean,
+        },
+        "async_custom_calendar_command",
+    )
+
 
 class HusqvarnaAutomowerEntity(StateVacuumEntity):
     """Defining each mower Entity."""
@@ -340,6 +356,48 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "data": {
                 "type": command,
                 "attributes": {"duration": duration},
+            }
+        }
+        payload = json.dumps(string)
+        try:
+            await self.session.action(self.mower_id, payload, command_type)
+        except Exception as exception:
+            raise UpdateFailed(exception) from exception
+
+    async def async_custom_calendar_command(
+        self,
+        start,
+        duration,
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
+        **kwargs,
+    ) -> None:
+        """Sends a custom calendar command to the mower."""
+        _LOGGER.debug("Monday as string: %s", monday)
+        command_type = "calendar"
+        string = {
+            "data": {
+                "type": "calendar",
+                "attributes": {
+                    "tasks": [
+                        {
+                            "start": start,
+                            "duration": duration,
+                            "monday": monday,
+                            "tuesday": tuesday,
+                            "wednesday": wednesday,
+                            "thursday": thursday,
+                            "friday": friday,
+                            "saturday": saturday,
+                            "sunday": sunday,
+                        }
+                    ]
+                },
             }
         }
         payload = json.dumps(string)

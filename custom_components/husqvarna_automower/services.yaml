@@ -37,3 +37,125 @@ park_and_start:
           min: 1
           max: 60480
           unit_of_measurement: "min"
+
+calendar:
+  name: Calendar
+  description: Send a custom command to the mower for parking and starting. The schedule will be overriden for the selected time.
+  target:
+    entity:
+      integration: "husqvarna_automower"
+  fields:
+    start:
+      # Field name as shown in UI
+      name: Start
+      # Description of the field
+      description: Custom command
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "300"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        number:
+          min: 0
+          max: 1439
+          unit_of_measurement: "min"
+    duration:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        number:
+          min: 1
+          max: 1440
+          unit_of_measurement: "min"
+    monday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    tuesday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    wednesday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    thursday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    friday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    saturday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
+    sunday:
+      # Field name as shown in UI
+      name: Duration for the command
+      # Description of the field
+      description: Duration of the command (only for 'Start' and 'Park')
+      # Whether or not field is required
+      required: true
+      # Example value that can be passed for this field
+      example: "60"
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      selector:
+        boolean:
