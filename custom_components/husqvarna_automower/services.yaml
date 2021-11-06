@@ -6,6 +6,7 @@ park_and_start:
   target:
     entity:
       integration: "husqvarna_automower"
+      domain: "vacuum"
   fields:
     command:
       # Field name as shown in UI
@@ -17,23 +18,102 @@ park_and_start:
       # Example value that can be passed for this field
       example: "Start"
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: "Start"
       selector:
         select:
           options:
             - "Start"
             - "Park"
     duration:
-      # Field name as shown in UI
       name: Duration for the command
-      # Description of the field
       description: Duration of the command (only for 'Start' and 'Park')
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
-      example: "60"
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      example: 60
+      default: 100
       selector:
         number:
           min: 1
           max: 60480
           unit_of_measurement: "min"
+
+calendar:
+  name: Calendar
+  description: This service deletes all of your calendar tasks and replaces it with a new one.
+  target:
+    entity:
+      integration: "husqvarna_automower"
+      domain: "vacuum"
+  fields:
+    start:
+      name: Starting time
+      description: When the mower should start mowing (seconds will be ignored)
+      required: true
+      example: "11:11:00"
+      default: "12:00:00"
+      selector:
+        time:
+    end:
+      name: Ending time
+      description: When the mower should return to the dock (seconds will be ignored)
+      required: true
+      example: "17:30:00"
+      default: "18:00:00"
+      selector:
+        time:
+    monday:
+      name: Monday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    tuesday:
+      name: Tuesday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    wednesday:
+      name: Wednesday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    thursday:
+      name: Thursday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    friday:
+      name: Friday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    saturday:
+      name: Saturday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    sunday:
+      name: Sunday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: false
+      default: true
+      selector:
+        boolean:

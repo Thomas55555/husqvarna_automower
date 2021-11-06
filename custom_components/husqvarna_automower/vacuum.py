@@ -2,7 +2,6 @@
 import json
 import logging
 import time
-
 import voluptuous as vol
 
 from homeassistant.components.vacuum import (
@@ -63,6 +62,22 @@ async def async_setup_entry(hass, entry, async_add_devices) -> None:
             vol.Required("duration"): vol.Coerce(int),
         },
         "async_custom_command",
+    )
+
+    platform.async_register_entity_service(
+        "calendar",
+        {
+            vol.Required("start"): cv.time,
+            vol.Required("end"): cv.time,
+            vol.Required("monday"): cv.boolean,
+            vol.Required("tuesday"): cv.boolean,
+            vol.Required("wednesday"): cv.boolean,
+            vol.Required("thursday"): cv.boolean,
+            vol.Required("friday"): cv.boolean,
+            vol.Required("saturday"): cv.boolean,
+            vol.Required("sunday"): cv.boolean,
+        },
+        "async_custom_calendar_command",
     )
 
 
@@ -340,6 +355,53 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "data": {
                 "type": command,
                 "attributes": {"duration": duration},
+            }
+        }
+        payload = json.dumps(string)
+        try:
+            await self.session.action(self.mower_id, payload, command_type)
+        except Exception as exception:
+            raise UpdateFailed(exception) from exception
+
+    async def async_custom_calendar_command(
+        self,
+        start,
+        end,
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
+        **kwargs,
+    ) -> None:
+        """Sends a custom calendar command to the mower."""
+        start_in_minutes = start.hour * 60 + start.minute
+        _LOGGER.debug("start in minutes int: %i", start_in_minutes)
+        end_in_minutes = end.hour * 60 + end.minute
+        _LOGGER.debug("end in minutes: %i", end_in_minutes)
+        duration = end_in_minutes - start_in_minutes
+        _LOGGER.debug("duration: %i ", duration)
+        command_type = "calendar"
+        string = {
+            "data": {
+                "type": "calendar",
+                "attributes": {
+                    "tasks": [
+                        {
+                            "start": start_in_minutes,
+                            "duration": duration,
+                            "monday": monday,
+                            "tuesday": tuesday,
+                            "wednesday": wednesday,
+                            "thursday": thursday,
+                            "friday": friday,
+                            "saturday": saturday,
+                            "sunday": sunday,
+                        }
+                    ]
+                },
             }
         }
         payload = json.dumps(string)
