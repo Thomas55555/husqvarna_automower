@@ -6,6 +6,7 @@ park_and_start:
   target:
     entity:
       integration: "husqvarna_automower"
+      domain: "vacuum"
   fields:
     command:
       # Field name as shown in UI
@@ -40,122 +41,120 @@ park_and_start:
 
 calendar:
   name: Calendar
-  description: Send a custom command to the mower for parking and starting. The schedule will be overriden for the selected time.
+  description: This service deletes all of your calendar tasks and replaces it with this one.
   target:
     entity:
       integration: "husqvarna_automower"
+      domain: "vacuum"
   fields:
     start:
       # Field name as shown in UI
-      name: Start
+      name: Starting time
       # Description of the field
-      description: Custom command
+      description: When the mower should start mowing
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "300"
+      example: "12:00:00"
+      default: "12:00:00"
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
-        number:
-          min: 0
-          max: 1439
-          unit_of_measurement: "min"
-    duration:
+        time:
+    end:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Ending time
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: When the mower should stop mowing
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: "18:00:00"
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
-        number:
-          min: 1
-          max: 1440
-          unit_of_measurement: "min"
+        time:
     monday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Monday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: true
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     tuesday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Tuesday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: false
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     wednesday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Wednesday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: true
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     thursday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Thursday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: true
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     friday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Friday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: true
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     saturday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Saturday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: true
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:
     sunday:
       # Field name as shown in UI
-      name: Duration for the command
+      name: Sunday
       # Description of the field
-      description: Duration of the command (only for 'Start' and 'Park')
+      description: Do you wish, that your lawn is mowed on this day?
       # Whether or not field is required
       required: true
       # Example value that can be passed for this field
-      example: "60"
+      example: false
+      # The default field value
+      default: false
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         boolean:

@@ -2,7 +2,6 @@
 import json
 import logging
 import time
-
 import voluptuous as vol
 
 from homeassistant.components.vacuum import (
@@ -68,8 +67,8 @@ async def async_setup_entry(hass, entry, async_add_devices) -> None:
     platform.async_register_entity_service(
         "calendar",
         {
-            vol.Required("start"): vol.Coerce(int),
-            vol.Required("duration"): vol.Coerce(int),
+            vol.Required("start"): cv.time,
+            vol.Required("end"): cv.time,
             vol.Required("monday"): cv.boolean,
             vol.Required("tuesday"): cv.boolean,
             vol.Required("wednesday"): cv.boolean,
@@ -367,7 +366,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
     async def async_custom_calendar_command(
         self,
         start,
-        duration,
+        end,
         monday,
         tuesday,
         wednesday,
@@ -378,7 +377,12 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         **kwargs,
     ) -> None:
         """Sends a custom calendar command to the mower."""
-        _LOGGER.debug("Monday as string: %s", monday)
+        start_in_minutes = start.hour * 60 + start.minute
+        _LOGGER.debug("start in minutes int: %i", start_in_minutes)
+        end_in_minutes = end.hour * 60 + end.minute
+        _LOGGER.debug("end in minutes: %i", end_in_minutes)
+        duration = end_in_minutes - start_in_minutes
+        _LOGGER.debug("duration: %i ", duration)
         command_type = "calendar"
         string = {
             "data": {
@@ -386,7 +390,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
                 "attributes": {
                     "tasks": [
                         {
-                            "start": start,
+                            "start": start_in_minutes,
                             "duration": duration,
                             "monday": monday,
                             "tuesday": tuesday,
