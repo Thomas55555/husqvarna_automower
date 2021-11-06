@@ -45,12 +45,12 @@ class AutomowerSelect(SelectEntity):
     @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return f"{self.mower_name}_headlight_mode"
+        return f"{self.mower_name} Headlight mode"
 
     @property
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_headlight_mode_select"
+        return f"{self.mower_id}_headlight_mode"
 
     @property
     def options(self) -> list[str]:
@@ -59,6 +59,7 @@ class AutomowerSelect(SelectEntity):
 
     @property
     def icon(self) -> str:
+        """Return a the icon for the entity."""
         return "mdi:car-light-high"
 
     async def async_select_option(self, option: str) -> None:
