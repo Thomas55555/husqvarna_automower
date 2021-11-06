@@ -18,21 +18,18 @@ park_and_start:
       # Example value that can be passed for this field
       example: "Start"
       # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: "Start"
       selector:
         select:
           options:
             - "Start"
             - "Park"
     duration:
-      # Field name as shown in UI
       name: Duration for the command
-      # Description of the field
       description: Duration of the command (only for 'Start' and 'Park')
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
-      example: "60"
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      example: 60
+      default: 100
       selector:
         number:
           min: 1
@@ -41,120 +38,82 @@ park_and_start:
 
 calendar:
   name: Calendar
-  description: This service deletes all of your calendar tasks and replaces it with this one.
+  description: This service deletes all of your calendar tasks and replaces it with a new one.
   target:
     entity:
       integration: "husqvarna_automower"
       domain: "vacuum"
   fields:
     start:
-      # Field name as shown in UI
       name: Starting time
-      # Description of the field
-      description: When the mower should start mowing
-      # Whether or not field is required
+      description: When the mower should start mowing (seconds will be ignored)
       required: true
-      # Example value that can be passed for this field
-      example: "12:00:00"
+      example: "11:11:00"
       default: "12:00:00"
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
       selector:
         time:
     end:
-      # Field name as shown in UI
       name: Ending time
-      # Description of the field
-      description: When the mower should stop mowing
-      # Whether or not field is required
+      description: When the mower should return to the dock (seconds will be ignored)
       required: true
-      # Example value that can be passed for this field
-      example: "18:00:00"
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      example: "17:30:00"
+      default: "18:00:00"
       selector:
         time:
     monday:
-      # Field name as shown in UI
       name: Monday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
       example: true
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
     tuesday:
-      # Field name as shown in UI
       name: Tuesday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
-      example: false
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      example: true
+      default: true
       selector:
         boolean:
     wednesday:
-      # Field name as shown in UI
       name: Wednesday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
       example: true
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
     thursday:
-      # Field name as shown in UI
       name: Thursday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
       example: true
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
     friday:
-      # Field name as shown in UI
       name: Friday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
       example: true
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
     saturday:
-      # Field name as shown in UI
       name: Saturday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
       example: true
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
     sunday:
-      # Field name as shown in UI
       name: Sunday
-      # Description of the field
       description: Do you wish, that your lawn is mowed on this day?
-      # Whether or not field is required
       required: true
-      # Example value that can be passed for this field
-      example: false
-      # The default field value
+      example: true
       default: false
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      default: true
       selector:
         boolean:
