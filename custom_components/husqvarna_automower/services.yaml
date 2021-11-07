@@ -113,7 +113,6 @@ calendar:
       description: Do you wish, that your lawn is mowed on this day?
       required: true
       example: true
-      default: false
       default: true
       selector:
         boolean:
