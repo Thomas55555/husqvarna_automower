@@ -46,7 +46,7 @@ calendar:
   fields:
     start:
       name: Starting time
-      description: When the mower should start mowing (seconds will be ignored)
+      description: When the mower should start mowing (must be earlier than the ending time, seconds will be ignored)
       required: true
       example: "11:11:00"
       default: "12:00:00"
@@ -54,7 +54,7 @@ calendar:
         time:
     end:
       name: Ending time
-      description: When the mower should return to the dock (seconds will be ignored)
+      description: When the mower should return to the dock (must be later than the starting time, seconds will be ignored)
       required: true
       example: "17:30:00"
       default: "18:00:00"

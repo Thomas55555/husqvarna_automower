@@ -27,7 +27,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.exceptions import ConditionErrorMessage, ConditionError
+from homeassistant.exceptions import ConditionErrorMessage
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
 SUPPORT_STATE_SERVICES = (
@@ -382,9 +382,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         end_in_minutes = end.hour * 60 + end.minute
         _LOGGER.debug("end in minutes: %i", end_in_minutes)
         duration = end_in_minutes - start_in_minutes
-        if duration < 0:
+        if duration <= 0:
             raise ConditionErrorMessage("<", "StartingTime must be before EndingTime")
-        _LOGGER.debug("duration: %i ", duration)
         command_type = "calendar"
         string = {
             "data": {
