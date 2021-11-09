@@ -27,7 +27,8 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
-
+from homeassistant.exceptions import ConditionErrorMessage
+from aiohttp import ClientResponseError
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
 SUPPORT_STATE_SERVICES = (
@@ -318,8 +319,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = '{"data": {"type": "ResumeSchedule"}}'
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
 
     async def async_pause(self) -> None:
         """Pauses the mower."""
@@ -327,8 +328,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = '{"data": {"type": "Pause"}}'
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
 
     async def async_stop(self, **kwargs) -> None:
         """Parks the mower until next schedule."""
@@ -336,8 +337,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = '{"data": {"type": "ParkUntilNextSchedule"}}'
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
 
     async def async_return_to_base(self, **kwargs) -> None:
         """Parks the mower until further notice."""
@@ -345,8 +346,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = '{"data": {"type": "ParkUntilFurtherNotice"}}'
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
 
     async def async_custom_command(self, command, duration, **kwargs) -> None:
         """Sends a custom command to the mower."""
@@ -360,8 +361,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = json.dumps(string)
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
 
     async def async_custom_calendar_command(
         self,
@@ -382,7 +383,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         end_in_minutes = end.hour * 60 + end.minute
         _LOGGER.debug("end in minutes: %i", end_in_minutes)
         duration = end_in_minutes - start_in_minutes
-        _LOGGER.debug("duration: %i ", duration)
+        if duration <= 0:
+            raise ConditionErrorMessage("<", "StartingTime must be before EndingTime")
         command_type = "calendar"
         string = {
             "data": {
@@ -407,5 +409,5 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = json.dumps(string)
         try:
             await self.session.action(self.mower_id, payload, command_type)
-        except Exception as exception:
-            raise UpdateFailed(exception) from exception
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
