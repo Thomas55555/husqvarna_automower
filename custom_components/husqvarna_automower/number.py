@@ -6,8 +6,6 @@ from homeassistant.components.number import NumberEntity
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from homeassistant.const import CONF_TOKEN
-
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,13 +16,11 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 
     session = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
-
-    for idx, ent in enumerate(session.data["data"]):
-        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]:
-            entities.append(AutomowerNumber(session, idx))
-
-    async_add_entities(entities)
+    async_add_entities(
+        AutomowerNumber(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
+    )
 
 
 class AutomowerNumber(NumberEntity):
@@ -86,15 +82,19 @@ class AutomowerNumber(NumberEntity):
     async def async_set_value(self, value: float) -> None:
         """Change the selected option."""
         mower_attributes = self.__get_mower_attributes()
+        try:
+            hl_mode = mower_attributes["headlight"]["mode"]  ## return of the websocket
+        except KeyError:
+            hl_mode = mower_attributes["settings"]["headlight"][
+                "mode"
+            ]  ## return from REST, just for start-up
         command_type = "settings"
         string = {
             "data": {
                 "type": "settings",
                 "attributes": {
                     "cuttingHeight": value,
-                    "headlight": {
-                        "mode": mower_attributes["settings"]["headlight"]["mode"]
-                    },
+                    "headlight": {"mode": hl_mode},
                 },
             }
         }
