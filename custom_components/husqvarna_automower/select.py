@@ -8,10 +8,10 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from .const import DOMAIN, HEADLIGHTMODES
 
 
-async def async_setup_entry(hass, entry, async_add_devices) -> None:
+async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices(
+    async_add_entities(
         AutomowerSelect(session, idx) for idx, ent in enumerate(session.data["data"])
     )
 
@@ -32,8 +32,6 @@ class AutomowerSelect(SelectEntity):
         self.session.register_cb(
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
-
-        self._attr_current_option = mower_attributes["settings"]["headlight"]["mode"]
 
     def __get_mower_attributes(self) -> dict:
         return self.session.data["data"][self.idx]["attributes"]
@@ -62,15 +60,33 @@ class AutomowerSelect(SelectEntity):
         """Return a the icon for the entity."""
         return "mdi:car-light-high"
 
+    @property
+    def current_option(self) -> str:
+        """Return a the current option for the entity."""
+        mower_attributes = self.__get_mower_attributes()
+        try:
+            test = mower_attributes["headlight"]["mode"]  ## return of the websocket
+        except KeyError:
+            test = mower_attributes["settings"]["headlight"][
+                "mode"
+            ]  ## return from REST, just for start-up
+        return test
+
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         mower_attributes = self.__get_mower_attributes()
+        try:
+            c_height = mower_attributes["cuttingHeight"]  ## return of the websocket
+        except KeyError:
+            c_height = mower_attributes["settings"][
+                "cuttingHeight"
+            ]  ## return from REST, just for start-up
         command_type = "settings"
         string = {
             "data": {
                 "type": "settings",
                 "attributes": {
-                    "cuttingHeight": mower_attributes["settings"]["cuttingHeight"],
+                    "cuttingHeight": c_height,  ##if only changing the headlight_mode it gives an Bad request. Husqvarna is informed about that
                     "headlight": {"mode": option},
                 },
             }
