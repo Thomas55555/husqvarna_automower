@@ -75,14 +75,18 @@ class AutomowerSelect(SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         mower_attributes = self.__get_mower_attributes()
+        try:
+            c_height = mower_attributes["cuttingHeight"]  ## return of the websocket
+        except KeyError:
+            c_height = mower_attributes["settings"][
+                "cuttingHeight"
+            ]  ## return from REST, just for start-up
         command_type = "settings"
         string = {
             "data": {
                 "type": "settings",
                 "attributes": {
-                    "cuttingHeight": mower_attributes["settings"][
-                        "cuttingHeight"
-                    ],  ##if only changing the headlight_mode it gives an Bad request. Husqvarna is informed about that
+                    "cuttingHeight": c_height,  ##if only changing the headlight_mode it gives an Bad request. Husqvarna is informed about that
                     "headlight": {"mode": option},
                 },
             }
