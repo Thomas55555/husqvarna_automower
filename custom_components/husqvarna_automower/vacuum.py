@@ -47,10 +47,10 @@ SUPPORT_STATE_SERVICES = (
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_devices) -> None:
+async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices(
+    async_add_entities(
         HusqvarnaAutomowerEntity(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
