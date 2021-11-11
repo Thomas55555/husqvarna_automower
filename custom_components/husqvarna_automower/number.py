@@ -24,7 +24,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 
 
 class AutomowerNumber(NumberEntity):
-    """Defining the Device Tracker Entity."""
+    """Defining the CuttingHeight Entity."""
 
     def __init__(self, session, idx) -> None:
         self.session = session
@@ -80,7 +80,7 @@ class AutomowerNumber(NumberEntity):
         return test
 
     async def async_set_value(self, value: float) -> None:
-        """Change the selected option."""
+        """Change the value."""
         mower_attributes = self.__get_mower_attributes()
         try:
             hl_mode = mower_attributes["headlight"]["mode"]  ## return of the websocket
