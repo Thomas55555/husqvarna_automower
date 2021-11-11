@@ -8,10 +8,10 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from .const import DOMAIN, HEADLIGHTMODES
 
 
-async def async_setup_entry(hass, entry, async_add_devices) -> None:
+async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices(
+    async_add_entities(
         AutomowerSelect(session, idx) for idx, ent in enumerate(session.data["data"])
     )
 
