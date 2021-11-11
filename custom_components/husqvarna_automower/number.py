@@ -50,7 +50,7 @@ class AutomowerNumber(NumberEntity):
     @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return f"{self.mower_name} Cutting Height"
+        return f"{self.mower_name} Cutting height"
 
     @property
     def unique_id(self) -> str:
