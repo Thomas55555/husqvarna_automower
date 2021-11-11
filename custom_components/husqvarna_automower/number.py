@@ -5,7 +5,7 @@ import json
 from homeassistant.components.number import NumberEntity
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
-import aioautomower
+
 from homeassistant.const import CONF_TOKEN
 
 from .const import DOMAIN
@@ -13,14 +13,18 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_devices) -> None:
-    """Setup sensor platform."""
+async def async_setup_entry(hass, entry, async_add_entities) -> None:
+    """Setup number platform."""
 
     session = hass.data[DOMAIN][entry.entry_id]
-    _LOGGER.debug("Model %s", session.data["data"])
-    async_add_devices(
-        AutomowerNumber(session, idx) for idx in enumerate(session.data["data"])
-    )
+
+    entities = []
+
+    for idx, ent in enumerate(session.data["data"]):
+        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]:
+            entities.append(AutomowerNumber(session, idx))
+
+    async_add_entities(entities)
 
 
 class AutomowerNumber(NumberEntity):
@@ -40,8 +44,6 @@ class AutomowerNumber(NumberEntity):
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
 
-        self._attr_current_option = mower_attributes["settings"]["headlight"]["mode"]
-
     def __get_mower_attributes(self) -> dict:
         return self.session.data["data"][self.idx]["attributes"]
 
@@ -52,7 +54,7 @@ class AutomowerNumber(NumberEntity):
     @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return f"{self.mower_name}_cuttingheight"
+        return f"{self.mower_name} Cutting Height"
 
     @property
     def unique_id(self) -> str:
@@ -73,7 +75,13 @@ class AutomowerNumber(NumberEntity):
     def value(self) -> int:
         """Return the entity value."""
         mower_attributes = self.__get_mower_attributes()
-        return mower_attributes["settings"]["cuttingHeight"]
+        try:
+            test = mower_attributes["cuttingHeight"]  ## return of the websocket
+        except KeyError:
+            test = mower_attributes["settings"][
+                "cuttingHeight"
+            ]  ## return from REST, just for start-up
+        return test
 
     async def async_set_value(self, value: float) -> None:
         """Change the selected option."""
