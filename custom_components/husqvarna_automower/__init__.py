@@ -77,14 +77,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_setup(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up the demo environment."""
-    hass.async_create_task(
-        hass.helpers.discovery.async_load_platform("calendar", DOMAIN, {}, entry)
-    )
-    return True
-
-
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle unload of an entry."""
     session = hass.data[DOMAIN].pop(entry.entry_id)
