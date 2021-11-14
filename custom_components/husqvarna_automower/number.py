@@ -1,8 +1,9 @@
 """Platform for Husqvarna Automower number integration."""
-import logging
 import json
+import logging
 
 from homeassistant.components.number import NumberEntity
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
@@ -78,6 +79,11 @@ class AutomowerNumber(NumberEntity):
                 "cuttingHeight"
             ]  ## return from REST, just for start-up
         return test
+
+    @property
+    def entity_category(self) -> str:
+        """Return a unique identifier for this entity."""
+        return ENTITY_CATEGORY_CONFIG
 
     async def async_set_value(self, value: float) -> None:
         """Change the value."""
