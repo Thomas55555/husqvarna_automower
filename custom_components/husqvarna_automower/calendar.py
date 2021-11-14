@@ -24,7 +24,7 @@ class AutomowerCalendarData:
 
     event = None
 
-    def __init__(self, session, idx):
+    def __init__(self, session, idx) -> None:
         """Initialize demo calendar."""
         self.session = session
         self.idx = idx
@@ -33,7 +33,7 @@ class AutomowerCalendarData:
         self.mower_id = self.mower["id"]
         self._name = mower_attributes["system"]["name"]
 
-    async def async_get_events(self, hass, start_date, end_date):
+    async def async_get_events(self, hass, start_date, end_date) -> dict:
         """Get all events in a specific time frame."""
         event_list = []
         self.event = {}
@@ -76,7 +76,7 @@ class AutomowerCalendarData:
 class AutomowerCalendar(CalendarEventDevice):
     """Representation of a Demo Calendar element."""
 
-    def __init__(self, hass, session, idx):
+    def __init__(self, hass, session, idx) -> None:
         """Initialize demo calendar."""
         self.data = AutomowerCalendarData(session, idx)
         self.session = session
@@ -93,12 +93,12 @@ class AutomowerCalendar(CalendarEventDevice):
         return self.session.data["data"][self.idx]["attributes"]
 
     @property
-    def event(self):
+    def event(self) -> dict:
         """Return the next upcoming event."""
         return self.data.event
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the entity."""
         return self._name
 
@@ -107,6 +107,6 @@ class AutomowerCalendar(CalendarEventDevice):
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_calendar"
 
-    async def async_get_events(self, hass, start_date, end_date):
+    async def async_get_events(self, hass, start_date, end_date) -> dict:
         """Return calendar events within a datetime range."""
         return await self.data.async_get_events(hass, self.session, self.idx)
