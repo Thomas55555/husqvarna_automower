@@ -3,6 +3,7 @@ import logging
 
 import homeassistant.util.dt as dt_util
 from homeassistant.components.calendar import CalendarEventDevice
+from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.helpers.entity import DeviceInfo
 
 from .const import DOMAIN, WEEKDAYS
@@ -111,6 +112,11 @@ class AutomowerCalendar(CalendarEventDevice):
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_calendar"
+
+    @property
+    def entity_category(self) -> str:
+        """Return a unique identifier for this entity."""
+        return ENTITY_CATEGORY_DIAGNOSTIC
 
     async def async_get_events(self, hass, start_date, end_date) -> dict:
         """Return calendar events within a datetime range."""

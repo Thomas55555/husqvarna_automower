@@ -2,6 +2,7 @@
 import json
 
 from homeassistant.components.select import SelectEntity
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
@@ -71,6 +72,11 @@ class AutomowerSelect(SelectEntity):
                 "mode"
             ]  ## return from REST, just for start-up
         return test
+
+    @property
+    def entity_category(self) -> str:
+        """Return a unique identifier for this entity."""
+        return ENTITY_CATEGORY_CONFIG
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
