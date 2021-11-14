@@ -13,7 +13,7 @@ ICON = "mdi:robot-mower"
 
 
 # Platforms
-PLATFORMS = ["device_tracker", "vacuum", "select", "number"]
+PLATFORMS = ["device_tracker", "vacuum", "select", "number", "calendar"]
 
 
 # Configuration and options
@@ -169,3 +169,14 @@ ERRORCODES = {
 
 # Headlight modes
 HEADLIGHTMODES = ["ALWAYS_ON", "ALWAYS_OFF", "EVENING_ONLY", "EVENING_AND_NIGHT"]
+
+# Weekdays
+WEEKDAYS = (
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+)
