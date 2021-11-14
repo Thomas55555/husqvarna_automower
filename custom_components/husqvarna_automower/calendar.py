@@ -3,6 +3,7 @@ import logging
 
 import homeassistant.util.dt as dt_util
 from homeassistant.components.calendar import CalendarEventDevice
+from homeassistant.helpers.entity import DeviceInfo
 
 from .const import DOMAIN, WEEKDAYS
 
@@ -91,6 +92,10 @@ class AutomowerCalendar(CalendarEventDevice):
 
     def __get_mower_attributes(self) -> dict:
         return self.session.data["data"][self.idx]["attributes"]
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
 
     @property
     def event(self) -> dict:
