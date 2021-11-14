@@ -63,7 +63,7 @@ class AutomowerCalendarData:
                                 end_mowing + dt_util.dt.timedelta(days=days)
                             ).isoformat()
                         },
-                        "summary": "Mowing schedule",
+                        "summary": f"Mowing schedule {task + 1}",
                     }
 
                     event_list.append(self.event)
