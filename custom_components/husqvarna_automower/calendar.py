@@ -1,92 +1,93 @@
-from .const import DOMAIN
-from homeassistant.components.calendar import CalendarEventDevice, get_date
-from homeassistant.config_entries import ConfigEntry
-import homeassistant.util.dt as dt_util
+"""Platform for Husqvarna Automower calendar integration."""
 import logging
 
-from homeassistant.const import CONF_TOKEN
+import homeassistant.util.dt as dt_util
+from homeassistant.components.calendar import CalendarEventDevice
+
+from .const import DOMAIN, WEEKDAYS
 
 _LOGGER = logging.getLogger(__name__)
-
-
-# def setup_platform(
-#     hass, config, entry: ConfigEntry, async_add_entities, discovery_info=None
-# ):
-#     """Set up the Demo Calendar platform."""
-#     _LOGGER.debug("entry: %s", entry)
-#     api_key = entry.unique_id
-#     access_token = entry.data.get(CONF_TOKEN)
-
-#     session = aioautomower.AutomowerSession(api_key, access_token)
-#     session.register_token_callback(
-#         lambda token: hass.config_entries.async_update_entry(
-#             entry,
-#             data={
-#                 CONF_TOKEN: token,
-#             },
-#         )
-#     )
-#     session = hass.data[DOMAIN][entry.entry_id]
-#     calendar_data_current = DemoGoogleCalendarData()
-#     async_add_entities(
-#         [
-#             DemoGoogleCalendar(hass, calendar_data_current, "Mower 1"),
-#         ]
-#     )
 
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
     _LOGGER.debug("entry: %s", entry)
     session = hass.data[DOMAIN][entry.entry_id]
-    calendar_data_current = DemoGoogleCalendarData()
-    # async_add_entities(
-    #     [
-    #         DemoGoogleCalendar(hass, calendar_data_current, session),
-    #     ]
-    # )
     async_add_entities(
-        DemoGoogleCalendar(hass, calendar_data_current, session, idx)
+        AutomowerCalendar(hass, session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
 
 
-class DemoGoogleCalendarData:
-    """Representation of a Demo Calendar element."""
+class AutomowerCalendarData:
+    """Supplies AutomowerCalendar with CalendarData."""
 
     event = None
 
-    async def async_get_events(self, hass, start_date, end_date):
-        """Get all events in a specific time frame."""
-        event = None
-        # event = copy.copy(self.event)
-        # start = get_date(event["start"])
-        # _LOGGER.debug("start %s", start)
-        start_of_day = dt_util.start_of_local_day()
-        _LOGGER.debug("dt url now %s", start_of_day)
-        start_mowing = start_of_day + dt_util.dt.timedelta(minutes=30)
-        end_mowing = start_of_day + dt_util.dt.timedelta(minutes=300)
-        self.event = {
-            "start": {"dateTime": start_mowing},
-            "end": {"dateTime": end_mowing},
-            "summary": "Mowing",
-        }
-
-        return [self.event]
-
-
-class DemoGoogleCalendar(CalendarEventDevice):
-    """Representation of a Demo Calendar element."""
-
-    def __init__(self, hass, calendar_data, session, idx):
+    def __init__(self, session, idx):
         """Initialize demo calendar."""
-        self.data = calendar_data
         self.session = session
         self.idx = idx
         self.mower = self.session.data["data"][self.idx]
         mower_attributes = self.__get_mower_attributes()
         self.mower_id = self.mower["id"]
         self._name = mower_attributes["system"]["name"]
+
+    async def async_get_events(self, hass, start_date, end_date):
+        """Get all events in a specific time frame."""
+        event_list = []
+        self.event = {}
+        mower_attributes = self.__get_mower_attributes()
+        for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
+            calendar = mower_attributes["calendar"]["tasks"][task]
+            start_of_day = dt_util.start_of_local_day()
+            start_mowing = start_of_day + dt_util.dt.timedelta(
+                minutes=calendar["start"]
+            )
+            end_mowing = start_of_day + dt_util.dt.timedelta(
+                minutes=calendar["start"] + calendar["duration"]
+            )
+
+            for days in range(7):
+                today = (start_of_day + dt_util.dt.timedelta(days=days)).weekday()
+                today_as_string = WEEKDAYS[today]
+                if calendar[today_as_string] is True:
+                    self.event = {
+                        "start": {
+                            "dateTime": (
+                                start_mowing + dt_util.dt.timedelta(days=days)
+                            ).isoformat()
+                        },
+                        "end": {
+                            "dateTime": (
+                                end_mowing + dt_util.dt.timedelta(days=days)
+                            ).isoformat()
+                        },
+                        "summary": "Mowing schedule",
+                    }
+
+                    event_list.append(self.event)
+        return event_list
+
+    def __get_mower_attributes(self) -> dict:
+        return self.session.data["data"][self.idx]["attributes"]
+
+
+class AutomowerCalendar(CalendarEventDevice):
+    """Representation of a Demo Calendar element."""
+
+    def __init__(self, hass, session, idx):
+        """Initialize demo calendar."""
+        self.data = AutomowerCalendarData(session, idx)
+        self.session = session
+        self.idx = idx
+        self.mower = self.session.data["data"][self.idx]
+        mower_attributes = self.__get_mower_attributes()
+        self.mower_id = self.mower["id"]
+        self._name = mower_attributes["system"]["name"]
+        self.session.register_cb(
+            lambda _: self.async_write_ha_state(), schedule_immediately=True
+        )
 
     def __get_mower_attributes(self) -> dict:
         return self.session.data["data"][self.idx]["attributes"]
@@ -101,6 +102,11 @@ class DemoGoogleCalendar(CalendarEventDevice):
         """Return the name of the entity."""
         return self._name
 
+    @property
+    def unique_id(self) -> str:
+        """Return a unique identifier for this entity."""
+        return f"{self.mower_id}_calendar"
+
     async def async_get_events(self, hass, start_date, end_date):
         """Return calendar events within a datetime range."""
-        return await self.data.async_get_events(hass, start_date, end_date)
+        return await self.data.async_get_events(hass, self.session, self.idx)
