@@ -106,7 +106,7 @@ class AutomowerCalendar(CalendarEventDevice):
     @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return self._name
+        return f"{self._name} Schedule"
 
     @property
     def unique_id(self) -> str:
