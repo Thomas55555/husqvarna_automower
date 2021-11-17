@@ -1,6 +1,0 @@
-{
-    "name": "Husqvarna Automower",
-    "zip_release": true,
-    "hacs": "1.6.0",
-    "homeassistant": "2021.11.0"
-}
