@@ -1,8 +1,10 @@
 """Creates a vacuum entity for the mower"""
 import json
 import logging
-import time
+from datetime import datetime
+
 import voluptuous as vol
+from aiohttp import ClientResponseError
 
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
@@ -23,12 +25,12 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
+from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.exceptions import ConditionErrorMessage
-from aiohttp import ClientResponseError
+
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
 SUPPORT_STATE_SERVICES = (
@@ -217,10 +219,10 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         mower_attributes = self.__get_mower_attributes()
         next_start_short = ""
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start_short = time.strftime(
-                ", next start: %a %H:%M",
-                time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
+            next_start_dt_obj = datetime.fromtimestamp(
+                (mower_attributes["planner"]["nextStartTimestamp"]) / 1000
             )
+            next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
         if mower_attributes["mower"]["state"] == "UNKNOWN":
             return "Unknown"
         if mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
@@ -283,16 +285,14 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "ERROR_AT_POWER_UP",
         ]:
             error_message = ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-            error_time = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime((mower_attributes["mower"]["errorCodeTimestamp"]) / 1000),
-            )
 
+            error_time = datetime.fromtimestamp(
+                mower_attributes["mower"]["errorCodeTimestamp"] / 1000
+            )
         next_start = None
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
+            next_start = datetime.fromtimestamp(
+                (mower_attributes["planner"]["nextStartTimestamp"]) / 1000
             )
 
         return {
