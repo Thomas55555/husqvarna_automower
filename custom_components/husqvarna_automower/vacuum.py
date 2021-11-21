@@ -72,7 +72,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
             vol.Required("command"): cv.string,
             vol.Required("duration"): vol.Coerce(int),
         },
-        "async_custom_command",
+        "async_park_and_start",
     )
 
     platform.async_register_entity_service(
@@ -89,6 +89,15 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
             vol.Required("sunday"): cv.boolean,
         },
         "async_custom_calendar_command",
+    )
+
+    platform.async_register_entity_service(
+        "custom_command",
+        {
+            vol.Required("command_type"): cv.string,
+            vol.Required("json_string"): cv.string,
+        },
+        "async_custom_command",
     )
 
 
@@ -361,7 +370,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que")
 
-    async def async_custom_command(self, command, duration, **kwargs) -> None:
+    async def async_park_and_start(self, command, duration, **kwargs) -> None:
         """Sends a custom command to the mower."""
         command_type = "actions"
         string = {
@@ -421,5 +430,12 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         payload = json.dumps(string)
         try:
             await self.session.action(self.mower_id, payload, command_type)
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que")
+
+    async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
+        """Sends a custom command to the mower."""
+        try:
+            await self.session.action(self.mower_id, json_string, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que")
