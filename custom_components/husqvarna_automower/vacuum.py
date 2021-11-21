@@ -1,8 +1,11 @@
 """Creates a vacuum entity for the mower"""
 import json
 import logging
-import time
+from datetime import datetime
+
+import pytz
 import voluptuous as vol
+from aiohttp import ClientResponseError
 
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
@@ -23,12 +26,13 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
+from homeassistant.core import Config
+from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.exceptions import ConditionErrorMessage
-from aiohttp import ClientResponseError
+
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
 SUPPORT_STATE_SERVICES = (
@@ -49,9 +53,15 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
+    try:
+        Config.async_load
+        hass_config = hass.config.as_dict()
+        time_zone = hass_config["time_zone"]
+    except Exception:
+        time_zone = "UTC"
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        HusqvarnaAutomowerEntity(session, idx)
+        HusqvarnaAutomowerEntity(session, idx, time_zone)
         for idx, ent in enumerate(session.data["data"])
     )
     platform = entity_platform.current_platform.get()
@@ -85,10 +95,10 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 class HusqvarnaAutomowerEntity(StateVacuumEntity):
     """Defining each mower Entity."""
 
-    def __init__(self, session, idx) -> None:
+    def __init__(self, session, idx, time_zone) -> None:
         self.session = session
         self.idx = idx
-
+        self.time_zone = time_zone
         mower = self.session.data["data"][self.idx]
         mower_attributes = self.__get_mower_attributes()
 
@@ -217,10 +227,10 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
         mower_attributes = self.__get_mower_attributes()
         next_start_short = ""
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start_short = time.strftime(
-                ", next start: %a %H:%M",
-                time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
+            next_start_dt_obj = datetime.fromtimestamp(
+                (mower_attributes["planner"]["nextStartTimestamp"]) / 1000
             )
+            next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
         if mower_attributes["mower"]["state"] == "UNKNOWN":
             return "Unknown"
         if mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
@@ -271,6 +281,14 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return "Unknown"
 
+    def __datetime_object(self, timestamp) -> datetime:
+        """Converts the mower local timestamp to a UTC datetime object"""
+        self.timestamp = timestamp
+        self.timezone = pytz.timezone(self.time_zone)
+        self.naive = datetime.fromtimestamp(self.timestamp / 1000)
+        self.local = self.timezone.localize(self.naive, is_dst=None)
+        return self.local.astimezone()
+
     @property
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
@@ -283,16 +301,16 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
             "ERROR_AT_POWER_UP",
         ]:
             error_message = ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-            error_time = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime((mower_attributes["mower"]["errorCodeTimestamp"]) / 1000),
+
+            error_time = self.__datetime_object(
+                mower_attributes["mower"]["errorCodeTimestamp"]
             )
 
         next_start = None
+
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start = time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.gmtime((mower_attributes["planner"]["nextStartTimestamp"]) / 1000),
+            next_start = self.__datetime_object(
+                mower_attributes["planner"]["nextStartTimestamp"]
             )
 
         return {
