@@ -116,3 +116,60 @@ calendar:
       default: true
       selector:
         boolean:
+
+custom_command:
+  name: Custom command
+  description: Send a highly individual command to the mower, like a multiple calendar task or a command for a new feature, which is not implemented yet by this integration.
+  target:
+    entity:
+      integration: "husqvarna_automower"
+      domain: "vacuum"
+  fields:
+    command_type:
+      name: Command Type
+      description: Command type
+      required: true
+      example: "calendar"
+      default: "actions"
+      selector:
+        select:
+          options:
+            - "actions"
+            - "calendar"
+            - "settings"
+    json_string:
+      name: JSON
+      description: "Custom command as JSON. You can get examples from https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger"
+      required: true
+      example: >-
+        '{
+          "data":{
+              "type":"calendar",
+              "attributes":{
+                "tasks":[
+                    {
+                      "start":300,
+                      "duration":360,
+                      "monday":false,
+                      "tuesday":true,
+                      "wednesday":false,
+                      "thursday":false,
+                      "friday":false,
+                      "saturday":false,
+                      "sunday":false
+                    },
+                    {
+                      "start":500,
+                      "duration":60,
+                      "monday":true,
+                      "tuesday":false,
+                      "wednesday":false,
+                      "thursday":false,
+                      "friday":false,
+                      "saturday":false,
+                      "sunday":false
+                    }
+                ]
+              }
+          }
+        }'
