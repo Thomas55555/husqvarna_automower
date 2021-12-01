@@ -148,7 +148,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
                     _LOGGER.warning("Connection to %s lost", self.mower_name)
             self._available = available
 
-        return self._available
+        return available
 
     @property
     def name(self) -> str:
