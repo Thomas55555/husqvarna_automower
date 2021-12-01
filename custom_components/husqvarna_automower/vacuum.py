@@ -54,7 +54,6 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
 
-    # time_zone = hass.config.time_zone
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         HusqvarnaAutomowerEntity(session, idx)
@@ -149,7 +148,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
                     _LOGGER.warning("Connection to %s lost", self.mower_name)
             self._available = available
 
-        return True
+        return self._available
 
     @property
     def name(self) -> str:
