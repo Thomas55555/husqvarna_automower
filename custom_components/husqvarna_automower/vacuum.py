@@ -3,7 +3,6 @@ import json
 import logging
 from datetime import datetime
 
-from homeassistant.util import dt as dt_util
 import voluptuous as vol
 from aiohttp import ClientResponseError
 
@@ -32,6 +31,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
