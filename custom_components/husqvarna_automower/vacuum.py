@@ -3,7 +3,7 @@ import json
 import logging
 from datetime import datetime
 
-import pytz
+from homeassistant.util import dt as dt_util
 import voluptuous as vol
 from aiohttp import ClientResponseError
 
@@ -53,15 +53,11 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
-    try:
-        Config.async_load
-        hass_config = hass.config.as_dict()
-        time_zone = hass_config["time_zone"]
-    except Exception:
-        time_zone = "UTC"
+
+    # time_zone = hass.config.time_zone
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        HusqvarnaAutomowerEntity(session, idx, time_zone)
+        HusqvarnaAutomowerEntity(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
     platform = entity_platform.current_platform.get()
@@ -104,10 +100,9 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 class HusqvarnaAutomowerEntity(StateVacuumEntity):
     """Defining each mower Entity."""
 
-    def __init__(self, session, idx, time_zone) -> None:
+    def __init__(self, session, idx) -> None:
         self.session = session
         self.idx = idx
-        self.time_zone = time_zone
         mower = self.session.data["data"][self.idx]
         mower_attributes = self.__get_mower_attributes()
 
@@ -154,7 +149,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
                     _LOGGER.warning("Connection to %s lost", self.mower_name)
             self._available = available
 
-        return available
+        return True
 
     @property
     def name(self) -> str:
@@ -293,10 +288,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
     def __datetime_object(self, timestamp) -> datetime:
         """Converts the mower local timestamp to a UTC datetime object"""
         self.timestamp = timestamp
-        self.timezone = pytz.timezone(self.time_zone)
         self.naive = datetime.fromtimestamp(self.timestamp / 1000)
-        self.local = self.timezone.localize(self.naive, is_dst=None)
-        return self.local.astimezone()
+        return dt_util.as_local(self.naive)
 
     @property
     def extra_state_attributes(self) -> dict:
