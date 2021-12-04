@@ -3,7 +3,6 @@ import json
 import logging
 from datetime import datetime
 
-import pytz
 import voluptuous as vol
 from aiohttp import ClientResponseError
 
@@ -32,6 +31,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
 
@@ -53,15 +53,10 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Setup sensor platform."""
-    try:
-        Config.async_load
-        hass_config = hass.config.as_dict()
-        time_zone = hass_config["time_zone"]
-    except Exception:
-        time_zone = "UTC"
+
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        HusqvarnaAutomowerEntity(session, idx, time_zone)
+        HusqvarnaAutomowerEntity(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
     platform = entity_platform.current_platform.get()
@@ -104,10 +99,9 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 class HusqvarnaAutomowerEntity(StateVacuumEntity):
     """Defining each mower Entity."""
 
-    def __init__(self, session, idx, time_zone) -> None:
+    def __init__(self, session, idx) -> None:
         self.session = session
         self.idx = idx
-        self.time_zone = time_zone
         mower = self.session.data["data"][self.idx]
         mower_attributes = self.__get_mower_attributes()
 
@@ -293,10 +287,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity):
     def __datetime_object(self, timestamp) -> datetime:
         """Converts the mower local timestamp to a UTC datetime object"""
         self.timestamp = timestamp
-        self.timezone = pytz.timezone(self.time_zone)
         self.naive = datetime.fromtimestamp(self.timestamp / 1000)
-        self.local = self.timezone.localize(self.naive, is_dst=None)
-        return self.local.astimezone()
+        return dt_util.as_local(self.naive)
 
     @property
     def extra_state_attributes(self) -> dict:
