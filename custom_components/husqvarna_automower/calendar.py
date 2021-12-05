@@ -1,13 +1,14 @@
 """Platform for Husqvarna Automower calendar integration."""
 import copy
 import logging
+
+from geopy.geocoders import Nominatim
+
 import homeassistant.util.dt as dt_util
-from homeassistant.components.calendar import (
-    CalendarEventDevice,
-)
+from homeassistant.components.calendar import CalendarEventDevice
 from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.helpers.entity import DeviceInfo
-from geopy.geocoders import Nominatim
+
 from .const import DOMAIN, WEEKDAYS
 
 _LOGGER = logging.getLogger(__name__)
