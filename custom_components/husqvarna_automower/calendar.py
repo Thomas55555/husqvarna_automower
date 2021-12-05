@@ -1,11 +1,13 @@
 """Platform for Husqvarna Automower calendar integration."""
+import copy
 import logging
-
 import homeassistant.util.dt as dt_util
-from homeassistant.components.calendar import CalendarEventDevice
+from homeassistant.components.calendar import (
+    CalendarEventDevice,
+)
 from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.helpers.entity import DeviceInfo
-
+from geopy.geocoders import Nominatim
 from .const import DOMAIN, WEEKDAYS
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,24 +23,46 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
 
 
-class AutomowerCalendarData:
-    """Supplies AutomowerCalendar with CalendarData."""
+class AutomowerCalendar(CalendarEventDevice):
+    """Representation of a Demo Calendar element."""
 
-    event = None
-
-    def __init__(self, session, idx) -> None:
+    def __init__(self, hass, session, idx) -> None:
         """Initialize demo calendar."""
+        self.hass = hass
         self.session = session
         self.idx = idx
         self.mower = self.session.data["data"][self.idx]
         mower_attributes = self.__get_mower_attributes()
         self.mower_id = self.mower["id"]
         self._name = mower_attributes["system"]["name"]
+        self.session.register_cb(
+            lambda _: self.async_write_ha_state(), schedule_immediately=True
+        )
 
-    async def async_get_events(self, hass, start_date, end_date) -> dict:
+        self._event = None
+        self._next_event = None
+
+    def __get_mower_attributes(self) -> dict:
+        return self.session.data["data"][self.idx]["attributes"]
+
+    async def async_get_events_data(self, hass) -> dict:
         """Get all events in a specific time frame."""
+        mower_attributes = self.__get_mower_attributes()
+        lat = mower_attributes["positions"][0]["latitude"]
+        long = mower_attributes["positions"][0]["longitude"]
+        position = f"{lat}, {long}"
+        geolocator = Nominatim(user_agent="homeassistant")
+        result = await hass.async_add_executor_job(geolocator.reverse, position)
         event_list = []
-        self.event = {}
+        self._next_event = {
+            "start": {
+                "dateTime": (
+                    dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7)
+                ).isoformat()
+            },
+            "end": {"dateTime": ""},
+            "summary": "",
+        }
         mower_attributes = self.__get_mower_attributes()
         for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
             calendar = mower_attributes["calendar"]["tasks"][task]
@@ -54,7 +78,7 @@ class AutomowerCalendarData:
                 today = (start_of_day + dt_util.dt.timedelta(days=days)).weekday()
                 today_as_string = WEEKDAYS[today]
                 if calendar[today_as_string] is True:
-                    self.event = {
+                    self._event = {
                         "start": {
                             "dateTime": (
                                 start_mowing + dt_util.dt.timedelta(days=days)
@@ -66,42 +90,21 @@ class AutomowerCalendarData:
                             ).isoformat()
                         },
                         "summary": f"Mowing schedule {task + 1}",
+                        "location": result.address,
                     }
-
-                    event_list.append(self.event)
+                    if (
+                        self._event["start"]["dateTime"]
+                        < self._next_event["start"]["dateTime"]
+                    ):
+                        self._next_event = copy.deepcopy(self._event)
+                        _LOGGER.debug("self._next_event %s", self._next_event)
+                    event_list.append(self._event)
+        _LOGGER.debug("event_list_unsorted: %s", event_list)
         return event_list
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
-
-
-class AutomowerCalendar(CalendarEventDevice):
-    """Representation of a Demo Calendar element."""
-
-    def __init__(self, hass, session, idx) -> None:
-        """Initialize demo calendar."""
-        self.data = AutomowerCalendarData(session, idx)
-        self.session = session
-        self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-        mower_attributes = self.__get_mower_attributes()
-        self.mower_id = self.mower["id"]
-        self._name = mower_attributes["system"]["name"]
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
 
     @property
     def device_info(self) -> DeviceInfo:
         return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
-
-    @property
-    def event(self) -> dict:
-        """Return the next upcoming event."""
-        return self.data.event
 
     @property
     def name(self) -> str:
@@ -120,4 +123,10 @@ class AutomowerCalendar(CalendarEventDevice):
 
     async def async_get_events(self, hass, start_date, end_date) -> dict:
         """Return calendar events within a datetime range."""
-        return await self.data.async_get_events(hass, self.session, self.idx)
+        events = await self.async_get_events_data(hass)
+        return events
+
+    @property
+    def event(self) -> dict:
+        """Return the next upcoming event."""
+        return self._next_event
