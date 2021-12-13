@@ -87,21 +87,11 @@ class AutomowerNumber(NumberEntity):
 
     async def async_set_value(self, value: float) -> None:
         """Change the value."""
-        mower_attributes = self.__get_mower_attributes()
-        try:
-            hl_mode = mower_attributes["headlight"]["mode"]  ## return of the websocket
-        except KeyError:
-            hl_mode = mower_attributes["settings"]["headlight"][
-                "mode"
-            ]  ## return from REST, just for start-up
         command_type = "settings"
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {
-                    "cuttingHeight": value,
-                    "headlight": {"mode": hl_mode},
-                },
+                "attributes": {"cuttingHeight": value},
             }
         }
         payload = json.dumps(string)
