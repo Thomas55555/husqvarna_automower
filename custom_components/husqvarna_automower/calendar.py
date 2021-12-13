@@ -54,6 +54,10 @@ class AutomowerCalendar(CalendarEventDevice):
         position = f"{lat}, {long}"
         geolocator = Nominatim(user_agent=self._name)
         result = await hass.async_add_executor_job(geolocator.reverse, position)
+        try:
+            location = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
+        except Exception:
+            location = None
         event_list = []
         self._next_event = {
             "start": {
@@ -91,7 +95,7 @@ class AutomowerCalendar(CalendarEventDevice):
                             ).isoformat()
                         },
                         "summary": f"Mowing schedule {task + 1}",
-                        "location": result.address,
+                        "location": location,
                     }
                     if (
                         self._event["start"]["dateTime"]
