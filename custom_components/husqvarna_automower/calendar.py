@@ -52,7 +52,7 @@ class AutomowerCalendar(CalendarEventDevice):
         lat = mower_attributes["positions"][0]["latitude"]
         long = mower_attributes["positions"][0]["longitude"]
         position = f"{lat}, {long}"
-        geolocator = Nominatim(user_agent="homeassistant")
+        geolocator = Nominatim(user_agent=self._name)
         result = await hass.async_add_executor_job(geolocator.reverse, position)
         event_list = []
         self._next_event = {
