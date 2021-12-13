@@ -104,7 +104,6 @@ class AutomowerCalendar(CalendarEventDevice):
                         self._next_event = copy.deepcopy(self._event)
                         _LOGGER.debug("self._next_event %s", self._next_event)
                     event_list.append(self._event)
-        _LOGGER.debug("event_list_unsorted: %s", event_list)
         return event_list
 
     @property
