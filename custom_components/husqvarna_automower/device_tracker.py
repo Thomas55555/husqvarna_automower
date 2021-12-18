@@ -1,9 +1,9 @@
 """Platform for Husqvarna Automower device tracker integration."""
 from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
-from homeassistant.helpers.entity import DeviceInfo
 
 from .const import DOMAIN
+from .entity import AutomowerEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
@@ -14,29 +14,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
 
 
-class AutomowerTracker(TrackerEntity):
+class AutomowerTracker(TrackerEntity, AutomowerEntity):
     """Defining the Device Tracker Entity."""
-
-    def __init__(self, session, idx) -> None:
-        self.session = session
-        self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-
-        mower_attributes = self.__get_mower_attributes()
-        self.mower_id = self.mower["id"]
-        self.mower_name = mower_attributes["system"]["name"]
-        self.model = mower_attributes["system"]["model"]
-
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
 
     @property
     def name(self) -> str:
@@ -56,11 +35,11 @@ class AutomowerTracker(TrackerEntity):
     @property
     def latitude(self) -> float:
         """Return latitude value of the device."""
-        lat = self.__get_mower_attributes()["positions"][0]["latitude"]
+        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
         return lat
 
     @property
     def longitude(self) -> float:
         """Return longitude value of the device."""
-        lon = self.__get_mower_attributes()["positions"][0]["longitude"]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
         return lon

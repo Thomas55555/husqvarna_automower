@@ -4,12 +4,12 @@ import logging
 
 from geopy.geocoders import Nominatim
 
-import homeassistant.util.dt as dt_util
 from homeassistant.components.calendar import CalendarEventDevice
 from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
-from homeassistant.helpers.entity import DeviceInfo
+import homeassistant.util.dt as dt_util
 
 from .const import DOMAIN, WEEKDAYS
+from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,40 +19,20 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     _LOGGER.debug("entry: %s", entry)
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerCalendar(hass, session, idx)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerCalendar(session, idx) for idx, ent in enumerate(session.data["data"])
     )
 
 
-class AutomowerCalendar(CalendarEventDevice):
+class AutomowerCalendar(CalendarEventDevice, AutomowerEntity):
     """Representation of a Demo Calendar element."""
-
-    def __init__(self, hass, session, idx) -> None:
-        """Initialize demo calendar."""
-        self.hass = hass
-        self.session = session
-        self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-        mower_attributes = self.__get_mower_attributes()
-        self.mower_id = self.mower["id"]
-        self._name = mower_attributes["system"]["name"]
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
-        self._event = None
-        self._next_event = None
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
 
     async def async_get_events_data(self, hass) -> dict:
         """Get all events in a specific time frame."""
-        mower_attributes = self.__get_mower_attributes()
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
         lat = mower_attributes["positions"][0]["latitude"]
         long = mower_attributes["positions"][0]["longitude"]
         position = f"{lat}, {long}"
-        geolocator = Nominatim(user_agent=self._name)
+        geolocator = Nominatim(user_agent=self.name)
         result = await hass.async_add_executor_job(geolocator.reverse, position)
         try:
             location = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
@@ -68,7 +48,7 @@ class AutomowerCalendar(CalendarEventDevice):
             "end": {"dateTime": ""},
             "summary": "",
         }
-        mower_attributes = self.__get_mower_attributes()
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
         for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
             calendar = mower_attributes["calendar"]["tasks"][task]
             start_of_day = dt_util.start_of_local_day()
@@ -107,13 +87,9 @@ class AutomowerCalendar(CalendarEventDevice):
         return event_list
 
     @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
-
-    @property
     def name(self) -> str:
         """Return the name of the entity."""
-        return f"{self._name} Schedule"
+        return f"{self.mower_name}"
 
     @property
     def unique_id(self) -> str:
