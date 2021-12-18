@@ -3,10 +3,10 @@ import json
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import ENTITY_CATEGORY_CONFIG
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, HEADLIGHTMODES
+from .entity import AutomowerEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
@@ -17,29 +17,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
 
 
-class AutomowerSelect(SelectEntity):
+class AutomowerSelect(SelectEntity, AutomowerEntity):
     """Defining the Headlight Mode Select Entity."""
-
-    def __init__(self, session, idx) -> None:
-        self.session = session
-        self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-
-        mower_attributes = self.__get_mower_attributes()
-        self.mower_id = self.mower["id"]
-        self.mower_name = mower_attributes["system"]["name"]
-        self.model = mower_attributes["system"]["model"]
-
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
 
     @property
     def name(self) -> str:
@@ -64,7 +43,7 @@ class AutomowerSelect(SelectEntity):
     @property
     def current_option(self) -> str:
         """Return a the current option for the entity."""
-        mower_attributes = self.__get_mower_attributes()
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
         try:
             test = mower_attributes["headlight"]["mode"]  ## return of the websocket
         except KeyError:

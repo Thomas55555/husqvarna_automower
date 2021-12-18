@@ -4,10 +4,10 @@ import logging
 
 from homeassistant.components.number import NumberEntity
 from homeassistant.const import ENTITY_CATEGORY_CONFIG
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN
+from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,29 +24,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
 
 
-class AutomowerNumber(NumberEntity):
+class AutomowerNumber(NumberEntity, AutomowerEntity):
     """Defining the CuttingHeight Entity."""
-
-    def __init__(self, session, idx) -> None:
-        self.session = session
-        self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-
-        mower_attributes = self.__get_mower_attributes()
-        self.mower_id = self.mower["id"]
-        self.mower_name = mower_attributes["system"]["name"]
-        self.model = mower_attributes["system"]["model"]
-
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
-    def __get_mower_attributes(self) -> dict:
-        return self.session.data["data"][self.idx]["attributes"]
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(identifiers={(DOMAIN, self.mower_id)})
 
     @property
     def name(self) -> str:
@@ -71,7 +50,7 @@ class AutomowerNumber(NumberEntity):
     @property
     def value(self) -> int:
         """Return the entity value."""
-        mower_attributes = self.__get_mower_attributes()
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
         try:
             test = mower_attributes["cuttingHeight"]  ## return of the websocket
         except KeyError:
