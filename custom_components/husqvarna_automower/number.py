@@ -27,6 +27,10 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 class AutomowerNumber(NumberEntity, AutomowerEntity):
     """Defining the CuttingHeight Entity."""
 
+    _attr_min_value = 1
+    _attr_max_value = 9
+    _attr_entity_category = ENTITY_CATEGORY_CONFIG
+
     @property
     def name(self) -> str:
         """Return the name of the entity."""
@@ -36,16 +40,6 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_cuttingheight"
-
-    @property
-    def min_value(self) -> float:
-        """Return the minimum value."""
-        return 1
-
-    @property
-    def max_value(self) -> float:
-        """Return the maximum value."""
-        return 9
 
     @property
     def value(self) -> int:
@@ -58,11 +52,6 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
                 "cuttingHeight"
             ]  ## return from REST, just for start-up
         return test
-
-    @property
-    def entity_category(self) -> str:
-        """Return a unique identifier for this entity."""
-        return ENTITY_CATEGORY_CONFIG
 
     async def async_set_value(self, value: float) -> None:
         """Change the value."""

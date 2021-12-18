@@ -30,15 +30,9 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_headlight_mode"
 
-    @property
-    def options(self) -> list[str]:
-        """Return a set of selectable options."""
-        return HEADLIGHTMODES
-
-    @property
-    def icon(self) -> str:
-        """Return a the icon for the entity."""
-        return "mdi:car-light-high"
+    _attr_options = HEADLIGHTMODES
+    _attr_icon = "mdi:car-light-high"
+    _attr_entity_category = ENTITY_CATEGORY_CONFIG
 
     @property
     def current_option(self) -> str:
@@ -51,11 +45,6 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
                 "mode"
             ]  ## return from REST, just for start-up
         return test
-
-    @property
-    def entity_category(self) -> str:
-        """Return a unique identifier for this entity."""
-        return ENTITY_CATEGORY_CONFIG
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
