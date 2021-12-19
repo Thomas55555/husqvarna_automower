@@ -4,6 +4,7 @@ import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
 
+from homeassistant.util import dt as dt_util
 from .const import DOMAIN, HUSQVARNA_URL
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ class AutomowerEntity(Entity):
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
 
-        self._available = None
+        self._available = self.get_mower_attributes()["metadata"]["connected"]
 
         self._event = None
         self._next_event = None
@@ -48,21 +49,20 @@ class AutomowerEntity(Entity):
     @property
     def available(self) -> bool:
         """Return True if the device is available."""
-        available = False
-        try:
-            available = (
-                self.get_mower_attributes()["metadata"]["connected"]
-                and self.session.data["data"][self.idx]["id"] == self.mower_id
-            )
-        except (IndexError, KeyError):
-            pass
-
+        timestamp = self.get_mower_attributes()["metadata"]["statusTimestamp"]
+        age = dt_util.utcnow() - dt_util.utc_from_timestamp(timestamp / 1000)
+        if age > dt_util.dt.timedelta(minutes=30):
+            available = False
+        if age < dt_util.dt.timedelta(minutes=30):
+            available = True
+        warning_sent = False
         if self._available != available:
             if self._available is not None:
-                if available:
+                if available and not warning_sent:
                     _LOGGER.info("Connected to %s again", self.mower_name)
-                else:
+                if not available:
                     _LOGGER.warning("Connection to %s lost", self.mower_name)
+                    warning_sent = True
             self._available = available
 
         return available
