@@ -3,8 +3,8 @@
 import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
-
 from homeassistant.util import dt as dt_util
+
 from .const import DOMAIN, HUSQVARNA_URL
 
 _LOGGER = logging.getLogger(__name__)
