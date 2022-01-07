@@ -5,7 +5,10 @@ import logging
 from geopy.geocoders import Nominatim
 
 from homeassistant.components.calendar import CalendarEventDevice
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.dt as dt_util
 
 from .const import DOMAIN, WEEKDAYS
@@ -14,7 +17,9 @@ from .entity import AutomowerEntity
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_entities) -> None:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
     """Setup sensor platform."""
     _LOGGER.debug("entry: %s", entry)
     session = hass.data[DOMAIN][entry.entry_id]
