@@ -25,10 +25,11 @@ from homeassistant.components.vacuum import (
     SUPPORT_STOP,
     StateVacuumEntity,
 )
-from homeassistant.core import Config
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
@@ -50,8 +51,10 @@ SUPPORT_STATE_SERVICES = (
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_entities) -> None:
-    """Setup sensor platform."""
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    """Setup vacuum platform."""
 
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(

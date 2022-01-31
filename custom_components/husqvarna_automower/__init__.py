@@ -8,12 +8,12 @@ from homeassistant.const import CONF_API_KEY, CONF_PASSWORD, CONF_TOKEN, CONF_US
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 
-from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import DOMAIN, HUSQVARNA_URL, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", entry.version)
 
@@ -39,7 +39,7 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
         return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
 
     if hass.data.get(DOMAIN) is None:
@@ -68,7 +68,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     if "amc:api" not in access_token["scope"]:
         raise ConfigEntryAuthFailed(
-            "Your API-Key is not compatible to websocket, please renew it on https://developer.husqvarnagroup.cloud/"
+            f"Your API-Key is not compatible to websocket, please renew it on {HUSQVARNA_URL}"
         )
 
     hass.data[DOMAIN][entry.entry_id] = session
@@ -77,22 +77,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle unload of an entry."""
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
+    return unload_ok
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle removal of an entry."""
     session = hass.data[DOMAIN].pop(entry.entry_id)
     try:
         await session.invalidate_token()
     except Exception as exception:
         _LOGGER.warning("Failed to invalidate token: %s", exception)
-
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-
-
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
-
-
-async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Handle removal of an entry."""
