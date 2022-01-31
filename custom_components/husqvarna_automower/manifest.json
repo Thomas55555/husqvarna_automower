@@ -15,5 +15,6 @@
     "geopy"
   ],
   "iot_class": "cloud_push",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "loggers": ["aioautomower, geopy"]
 }
