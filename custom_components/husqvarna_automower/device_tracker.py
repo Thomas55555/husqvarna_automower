@@ -12,7 +12,7 @@ from .entity import AutomowerEntity
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup sensor platform."""
+    """Setup device_tracker platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerTracker(session, idx) for idx, ent in enumerate(session.data["data"])
