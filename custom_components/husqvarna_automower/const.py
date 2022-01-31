@@ -1,4 +1,6 @@
 """The constants for the Husqvarna Automower integration."""
+from homeassistant.const import Platform
+
 # Base component constants
 NAME = "husqvarna_automower"
 DOMAIN = "husqvarna_automower"
@@ -13,8 +15,13 @@ ICON = "mdi:robot-mower"
 
 
 # Platforms
-PLATFORMS = ["device_tracker", "vacuum", "select", "number", "calendar"]
-
+PLATFORMS = [
+    Platform.DEVICE_TRACKER,
+    Platform.VACUUM,
+    Platform.SELECT,
+    Platform.NUMBER,
+    Platform.CALENDAR,
+]
 
 # Configuration and options
 CONF_ENABLED = "enabled"
