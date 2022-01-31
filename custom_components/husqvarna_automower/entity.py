@@ -66,3 +66,8 @@ class AutomowerEntity(Entity):
             self._available = available
 
         return available
+
+    @property
+    def should_poll(self) -> bool:
+        """Return False because websocket is used."""
+        return False
