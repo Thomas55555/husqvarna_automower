@@ -3,6 +3,7 @@ import copy
 import logging
 
 from geopy.geocoders import Nominatim
+from homeassistant.backports.enum import StrEnum
 
 from homeassistant.components.calendar import CalendarEventDevice
 from homeassistant.config_entries import ConfigEntry
@@ -102,7 +103,7 @@ class AutomowerCalendar(CalendarEventDevice, AutomowerEntity):
         return f"{self.mower_id}_calendar"
 
     @property
-    def entity_category(self) -> str:
+    def entity_category(self) -> StrEnum:
         """Return a unique identifier for this entity."""
         return EntityCategory.DIAGNOSTIC
 
