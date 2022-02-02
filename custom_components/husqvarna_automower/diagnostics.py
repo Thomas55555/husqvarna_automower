@@ -14,7 +14,7 @@ TO_REDACT = {CONF_ACCESS_TOKEN, CONF_REFRESH_TOKEN, POSITIONS}
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant, entry: ConfigEntry
 ) -> dict:
-    """Return diagnostics for a config entry."""
+    """Return diagnostics of the config entry and mower data."""
     session = hass.data[DOMAIN][entry.entry_id].data["data"]
     diag_data = {
         "config_entry": async_redact_data(entry.as_dict(), TO_REDACT),
