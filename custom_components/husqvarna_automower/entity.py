@@ -33,10 +33,12 @@ class AutomowerEntity(Entity):
         self._next_event = None
 
     def get_mower_attributes(self) -> dict:
+        """Get the mower attributes of the current mower."""
         return self.session.data["data"][self.idx]["attributes"]
 
     @property
     def device_info(self) -> DeviceInfo:
+        """Defines the DeviceInfo for the mower."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.mower_id)},
             name=self.mower_name,
