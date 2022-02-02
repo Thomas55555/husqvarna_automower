@@ -38,6 +38,7 @@ class AutomowerEntity(Entity):
 
     @property
     def device_info(self) -> DeviceInfo:
+        """Defines the DeviceInfo for the mower."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.mower_id)},
             name=self.mower_name,
