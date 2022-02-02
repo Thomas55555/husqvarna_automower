@@ -3,8 +3,8 @@ import json
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
@@ -25,6 +25,10 @@ async def async_setup_entry(
 class AutomowerSelect(SelectEntity, AutomowerEntity):
     """Defining the Headlight Mode Select Entity."""
 
+    _attr_options = HEADLIGHTMODES
+    _attr_icon = "mdi:car-light-high"
+    _attr_entity_category = EntityCategory.CONFIG
+
     @property
     def name(self) -> str:
         """Return the name of the entity."""
@@ -34,10 +38,6 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_headlight_mode"
-
-    _attr_options = HEADLIGHTMODES
-    _attr_icon = "mdi:car-light-high"
-    _attr_entity_category = ENTITY_CATEGORY_CONFIG
 
     @property
     def current_option(self) -> str:

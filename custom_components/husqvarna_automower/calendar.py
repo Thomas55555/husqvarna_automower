@@ -3,11 +3,12 @@ import copy
 import logging
 
 from geopy.geocoders import Nominatim
+from homeassistant.backports.enum import StrEnum
 
 from homeassistant.components.calendar import CalendarEventDevice
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.dt as dt_util
 
@@ -102,9 +103,9 @@ class AutomowerCalendar(CalendarEventDevice, AutomowerEntity):
         return f"{self.mower_id}_calendar"
 
     @property
-    def entity_category(self) -> str:
+    def entity_category(self) -> StrEnum:
         """Return a unique identifier for this entity."""
-        return ENTITY_CATEGORY_DIAGNOSTIC
+        return EntityCategory.DIAGNOSTIC
 
     async def async_get_events(self, hass, start_date, end_date) -> dict:
         """Return calendar events within a datetime range."""
