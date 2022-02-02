@@ -30,6 +30,7 @@ CONF_PROVIDER = "provider"
 CONF_TOKEN_TYPE = "token_type"
 CONF_REFRESH_TOKEN = "refresh_token"
 ACCESS_TOKEN_RAW = "access_token_raw"
+POSITIONS = "positions"
 
 
 # Defaults
