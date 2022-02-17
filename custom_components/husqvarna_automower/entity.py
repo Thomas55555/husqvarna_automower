@@ -23,10 +23,6 @@ class AutomowerEntity(Entity):
         self.mower_name = mower_attributes["system"]["name"]
         self.model = mower_attributes["system"]["model"]
 
-        self.session.register_cb(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
-        )
-
         self._available = self.get_mower_attributes()["metadata"]["connected"]
 
         self._event = None
@@ -35,6 +31,18 @@ class AutomowerEntity(Entity):
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
         return self.session.data["data"][self.idx]["attributes"]
+
+    async def async_added_to_hass(self):
+        """Call when entity about to be added to Home Assistant."""
+        await super().async_added_to_hass()
+        self.session.register_data_callback(
+            lambda _: self.async_write_ha_state(), schedule_immediately=True
+        )
+
+    async def async_will_remove_from_hass(self):
+        """Call when entity is being removed from Home Assistant."""
+        await super().async_will_remove_from_hass()
+        self.session.unregister_data_callback(lambda _: self.async_write_ha_state())
 
     @property
     def device_info(self) -> DeviceInfo:
