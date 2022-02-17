@@ -1,10 +1,10 @@
 """Config flow to add the integration via the UI."""
 import logging
 
-from aioautomower import GetAccessToken, GetMowerData, TokenError
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
+from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,

@@ -1,6 +1,5 @@
 """Provide info to system health."""
 from aioautomower import TOKEN_URL
-
 from homeassistant.components.system_health import (
     SystemHealthRegistration,
     async_check_can_reach_url,
