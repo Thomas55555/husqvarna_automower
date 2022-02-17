@@ -32,14 +32,14 @@ class AutomowerEntity(Entity):
         """Get the mower attributes of the current mower."""
         return self.session.data["data"][self.idx]["attributes"]
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
         """Call when entity about to be added to Home Assistant."""
         await super().async_added_to_hass()
         self.session.register_data_callback(
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
 
-    async def async_will_remove_from_hass(self):
+    async def async_will_remove_from_hass(self) -> None:
         """Call when entity is being removed from Home Assistant."""
         await super().async_will_remove_from_hass()
         self.session.unregister_data_callback(lambda _: self.async_write_ha_state())
