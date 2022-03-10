@@ -11,7 +11,8 @@
     "@Thomas55555"
   ],
   "requirements": [
-    "aioautomower==2022.2.1"
+    "aioautomower==2022.2.1",
+    "geopy>=2.1.0"
   ],
   "iot_class": "cloud_push",
   "version": "0.0.0"
