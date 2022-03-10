@@ -181,8 +181,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         next_start_short = ""
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start_dt_obj = datetime.fromtimestamp(
-                (mower_attributes["planner"]["nextStartTimestamp"]) / 1000
+            next_start_dt_obj = self.__datetime_object(
+                mower_attributes["planner"]["nextStartTimestamp"]
             )
             next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
         if mower_attributes["mower"]["state"] == "UNKNOWN":
@@ -237,9 +237,11 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
 
     def __datetime_object(self, timestamp) -> datetime:
         """Converts the mower local timestamp to a UTC datetime object"""
-        self.timestamp = timestamp
-        self.naive = datetime.fromtimestamp(self.timestamp / 1000)
-        return dt_util.as_local(self.naive)
+        naive = datetime.utcfromtimestamp(timestamp / 1000)
+        _LOGGER.debug("naive: %s", naive)
+        local = dt_util.as_local(naive)
+        _LOGGER.debug("local: %s", local)
+        return local
 
     @property
     def extra_state_attributes(self) -> dict:
