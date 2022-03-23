@@ -104,7 +104,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     @property
     def device_class(self) -> str:
         """Return the name of the mower."""
-        return f"husqvarna__mower"
+        return f"{DOMAIN}__mower"
 
     @property
     def name(self) -> str:
