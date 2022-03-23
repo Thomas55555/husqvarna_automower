@@ -243,9 +243,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     def __datetime_object(self, timestamp) -> datetime:
         """Converts the mower local timestamp to a UTC datetime object"""
         naive = datetime.utcfromtimestamp(timestamp / 1000)
-        _LOGGER.debug("naive: %s", naive)
         local = dt_util.as_local(naive)
-        _LOGGER.debug("local: %s", local)
         return local
 
     @property
