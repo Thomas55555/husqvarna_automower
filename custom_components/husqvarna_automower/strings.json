@@ -16,7 +16,7 @@
     }
   },
   "state": {
-    "husqvarna_automower__mower": {
+    "husqvarna__mower": {
         "cleaning": "mowing"
       }
   }
