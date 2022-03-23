@@ -1,8 +1,7 @@
 {
-    "state": {
-      "_": {
-        "cleaning": "Tonte"
-        }
-      }
+  "state": {
+    "husqvarna_automower__mower": {
+      "cleaning": "Tonte"
     }
-  
+  }
+}
