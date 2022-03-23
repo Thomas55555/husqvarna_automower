@@ -14,5 +14,10 @@
     "info": {
       "can_reach_server": "Reach Husqvarna Token Server"
     }
+  },
+  "state": {
+    "husqvarna_automower__mower": {
+        "cleaning": "mowing"
+      }
   }
 }
