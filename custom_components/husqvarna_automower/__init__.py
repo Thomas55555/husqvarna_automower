@@ -65,7 +65,9 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle removal of an entry."""
-    session = hass.data[DOMAIN].pop(entry.entry_id)
+    api_key = entry.unique_id
+    access_token = entry.data.get(CONF_TOKEN)
+    session = aioautomower.AutomowerSession(api_key, access_token)
     try:
         await session.invalidate_token()
     except Exception as exception:
