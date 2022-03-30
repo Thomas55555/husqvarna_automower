@@ -12,32 +12,6 @@ from .const import DOMAIN, HUSQVARNA_URL, PLATFORMS, STARTUP_MESSAGE
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Migrate old entry."""
-    _LOGGER.debug("Migrating from version %s", entry.version)
-
-    if entry.version == 1:
-
-        entry.title = entry.data.get(CONF_API_KEY)
-        username = entry.data.get(CONF_USERNAME)
-        password = entry.data.get(CONF_PASSWORD)
-        api_key = entry.data.get(CONF_API_KEY)
-
-        get_token = aioautomower.GetAccessToken(api_key, username, password)
-        access_token = await get_token.async_get_access_token()
-        hass.config_entries.async_update_entry(
-            entry,
-            data={
-                CONF_TOKEN: access_token,
-            },
-        )
-        entry.version = 2
-
-        _LOGGER.debug("Migration to version %s successful", entry.version)
-
-        return True
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
 
