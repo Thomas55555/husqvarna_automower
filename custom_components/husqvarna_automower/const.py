@@ -16,11 +16,12 @@ ICON = "mdi:robot-mower"
 
 # Platforms
 PLATFORMS = [
-    Platform.DEVICE_TRACKER,
-    Platform.VACUUM,
-    Platform.SELECT,
-    Platform.NUMBER,
+    Platform.BUTTON,
     Platform.CALENDAR,
+    Platform.DEVICE_TRACKER,
+    Platform.NUMBER,
+    Platform.SELECT,
+    Platform.VACUUM,
 ]
 
 # Configuration and options
