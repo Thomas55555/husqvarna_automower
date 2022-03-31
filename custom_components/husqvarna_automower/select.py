@@ -1,5 +1,6 @@
 """Platform for Husqvarna Automower device tracker integration."""
 import json
+import logging
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
@@ -10,6 +11,8 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN, HEADLIGHTMODES
 from .entity import AutomowerEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(

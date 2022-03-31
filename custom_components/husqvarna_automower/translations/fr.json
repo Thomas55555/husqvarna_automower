@@ -2,7 +2,6 @@
     "config": {
         "step": {
             "user": {
-                "title": "Husqvarna Automower",
                 "description": "Si vous avez besoin d’aide avec la configuration, jetez un coup d’œil par là: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
                     "api_key": "La clé d’API de 36 chiffres",
