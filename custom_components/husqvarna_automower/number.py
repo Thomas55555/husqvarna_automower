@@ -32,9 +32,10 @@ async def async_setup_entry(
 class AutomowerNumber(NumberEntity, AutomowerEntity):
     """Defining the CuttingHeight Entity."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_icon = "mdi:grass"
     _attr_min_value = 1
     _attr_max_value = 9
-    _attr_entity_category = EntityCategory.CONFIG
 
     @property
     def name(self) -> str:
