@@ -3,7 +3,6 @@
 import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
-from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, HUSQVARNA_URL
 
@@ -59,20 +58,10 @@ class AutomowerEntity(Entity):
     @property
     def available(self) -> bool:
         """Return True if the device is available."""
-        timestamp = self.get_mower_attributes()["metadata"]["statusTimestamp"]
-        age = dt_util.utcnow() - dt_util.utc_from_timestamp(timestamp / 1000)
-        if age > dt_util.dt.timedelta(minutes=30):
-            available = False
-        if age < dt_util.dt.timedelta(minutes=30):
-            available = True
-        warning_sent = False
-        if self._available != available:
-            if self._available is not None:
-                if available and not warning_sent:
-                    _LOGGER.info("Connected to %s again", self.mower_name)
-                if not available:
-                    _LOGGER.warning("Connection to %s lost", self.mower_name)
-                    warning_sent = True
-            self._available = available
-
+        available = self.get_mower_attributes()["metadata"]["connected"]
         return available
+
+    @property
+    def should_poll(self) -> bool:
+        """Return True if the device is available."""
+        return False

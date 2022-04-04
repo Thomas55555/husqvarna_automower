@@ -14,16 +14,8 @@ from homeassistant.components.vacuum import (
     STATE_IDLE,
     STATE_PAUSED,
     STATE_RETURNING,
-    SUPPORT_BATTERY,
-    SUPPORT_MAP,
-    SUPPORT_PAUSE,
-    SUPPORT_RETURN_HOME,
-    SUPPORT_SEND_COMMAND,
-    SUPPORT_START,
-    SUPPORT_STATE,
-    SUPPORT_STATUS,
-    SUPPORT_STOP,
     StateVacuumEntity,
+    VacuumEntityFeature,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -32,20 +24,18 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
+from .const import DOMAIN, ERRORCODES, ICON
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
-    SUPPORT_STATE
-    | SUPPORT_BATTERY
-    | SUPPORT_MAP
-    | SUPPORT_PAUSE
-    | SUPPORT_RETURN_HOME
-    | SUPPORT_SEND_COMMAND
-    | SUPPORT_START
-    | SUPPORT_STATE
-    | SUPPORT_STATUS
-    | SUPPORT_STOP
+    VacuumEntityFeature.STATE
+    | VacuumEntityFeature.BATTERY
+    | VacuumEntityFeature.PAUSE
+    | VacuumEntityFeature.RETURN_HOME
+    | VacuumEntityFeature.SEND_COMMAND
+    | VacuumEntityFeature.START
+    | VacuumEntityFeature.STATUS
+    | VacuumEntityFeature.STOP
 )
 
 _LOGGER = logging.getLogger(__name__)
