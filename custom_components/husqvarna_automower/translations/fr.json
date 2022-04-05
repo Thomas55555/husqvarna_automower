@@ -1,0 +1,34 @@
+{
+    "config": {
+        "title": "Husqvarna Automower",
+        "step": {
+            "user": {
+                "title": "Husqvarna Automower",
+                "description": "Si vous avez besoin d'aide pour la configuration regardez ici : https://github.com/Thomas55555/husqvarna_automower",
+                "data": {
+                    "api_key": "Clé API à 36 chiffres",
+                    "username": "Identifiant",
+                    "password": "Mot de passe"
+                }
+            },
+            "reauth_confirm": {
+                "description": "L'intégration Husqvarna Automower doit se ré-authentifier auprès de Husqvarna",
+                "title": "Ré-authentifier l'intégration"
+            }
+        },
+        "error": {
+            "auth": "Identifiant/Mot de passe/Clé API est mauvais.",
+            "mower": "Assurez-vous que l'API d'authentification et l'API Automower-Connect sont connectées à votre clé API : https://developer.husqvarnagroup.cloud/",
+            "unknown": "Une erreur inconnue s'est produite"
+        },
+        "abort": {
+            "single_instance_allowed": "Seulement UNE configuration d'Husqvarna Automower est autorisée.",
+            "reauth_successful": "La ré-authentification à fonctionné"
+        }
+    },
+    "system_health": {
+        "info": {
+            "can_reach_server": "Atteindre le serveur Husqvarna Token"
+        }
+    }
+}
