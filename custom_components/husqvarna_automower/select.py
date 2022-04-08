@@ -46,13 +46,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     def current_option(self) -> str:
         """Return a the current option for the entity."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        try:
-            test = mower_attributes["headlight"]["mode"]  ## return of the websocket
-        except KeyError:
-            test = mower_attributes["settings"]["headlight"][
-                "mode"
-            ]  ## return from REST, just for start-up
-        return test
+        return mower_attributes["headlight"]["mode"]
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
