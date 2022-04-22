@@ -9,30 +9,39 @@ from homeassistant import config_entries
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
 )
+from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
+from .oauth_impl import OndiloOauth2Implementation
+
+OAUTH2_CLIENTID = "572bef0c-6e2f-4dd0-b7f6-2c96ea7de3b5"
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_entry_oauth2_flow
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class HusqvarnaConfigFlowHandler(
+    config_entry_oauth2_flow.AbstractOAuth2FlowHandler, domain=DOMAIN
+):
 
     """Handle a config flow."""
 
+    DOMAIN = DOMAIN
     VERSION = 2
 
     async def _show_setup_form(self, errors):
         """Show the setup form to the user."""
-        _LOGGER.debug("Show the setup form to the user")
 
         data_schema = {
             vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
-            vol.Required(CONF_USERNAME): str,
-            vol.Required(CONF_PASSWORD): str,
+            vol.Required(OAUTH2_CLIENTID): vol.All(str, vol.Length(min=36, max=36)),
         }
 
         return self.async_show_form(
@@ -41,77 +50,28 @@ class HusqvarnaConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
+
         errors = {}
-        if user_input is None:
-            return await self._show_setup_form(errors)
-        try:
-            get_token = GetAccessToken(
-                user_input[CONF_API_KEY],
-                user_input[CONF_USERNAME],
-                user_input[CONF_PASSWORD],
-            )
-            access_token_raw = await get_token.async_get_access_token()
-        except (ClientConnectorError, TokenError):
-            # On 400 credentials could be wrong, or (Authentication API && Automower Connect API) are not connected.
-            errors["base"] = "auth"
-            return await self._show_setup_form(errors)
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Unexpected exception")
-            errors["base"] = "auth"
-            return await self._show_setup_form(errors)
 
-        try:
-            get_mower_data = GetMowerData(
-                user_input[CONF_API_KEY],
-                access_token_raw[CONF_ACCESS_TOKEN],
-                access_token_raw[CONF_PROVIDER],
-                access_token_raw[CONF_TOKEN_TYPE],
-            )
-            mower_data = await get_mower_data.async_mower_state()
-            _LOGGER.debug("config: %s", mower_data)
-        except (ClientConnectorError, ClientResponseError):
-            if "amc:api" in access_token_raw["scope"]:
-                errors["base"] = "api_key"  ## Something's wrong with the key
-            else:
-                errors["base"] = "mower"  ## Automower Connect API not connected
-            return await self._show_setup_form(errors)
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Unexpected exception")
-            errors["base"] = "unknown"
-            return await self._show_setup_form(errors)
+        await self.async_set_unique_id(OAUTH2_CLIENTID)
 
-        if "amc:api" not in access_token_raw["scope"]:
-            # If the API-Key is old
-            errors["base"] = "api_key"
-            return await self._show_setup_form(errors)
+        if self._async_current_entries():
+            return self.async_abort(reason="single_instance_allowed")
 
-        unique_id = user_input[CONF_API_KEY]
-        data = {
-            CONF_API_KEY: user_input[CONF_API_KEY],
-            CONF_TOKEN: access_token_raw,
-        }
-
-        existing_entry = await self.async_set_unique_id(unique_id)
-
-        if existing_entry:
-            self.hass.config_entries.async_update_entry(existing_entry, data=data)
-            await self.hass.config_entries.async_reload(existing_entry.entry_id)
-            return self.async_abort(reason="reauth_successful")
-
-        return self.async_create_entry(
-            title=user_input[CONF_API_KEY],
-            data=data,
+        self.async_register_implementation(
+            self.hass, OndiloOauth2Implementation(self.hass)
         )
 
-    async def async_step_reauth(self, user_input=None):
-        """Perform reauth upon an API authentication error."""
-        return await self.async_step_reauth_confirm()
+        return await super().async_step_user(user_input)
 
-    async def async_step_reauth_confirm(self, user_input=None):
-        """Dialog that informs the user that reauth is required."""
-        if user_input is None:
-            return self.async_show_form(
-                step_id="reauth_confirm",
-                data_schema=vol.Schema({}),
-            )
-        return await self.async_step_user()
+
+
+    @property
+    def logger(self) -> logging.Logger:
+        """Return logger."""
+        return logging.getLogger(__name__)
+
+    @property
+    def extra_authorize_data(self) -> dict:
+        """Extra data that needs to be appended to the authorize url."""
+        return {"Content-Type": "application/x-www-form-urlencoded"}
