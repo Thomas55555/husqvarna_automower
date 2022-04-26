@@ -1,12 +1,18 @@
 {
   "config": {
     "step": {
-      "user": {
+      "password": {
         "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
         "data": {
             "api_key": "[%key:common::config_flow::data::api_key%]",
             "username": "[%key:common::config_flow::data::email%]",
             "password": "[%key:common::config_flow::data::password%]"
+        }
+      },
+      "user": {
+        "menu_options": {
+          "password" : "Log-in with passowrd",
+          "oauth2": "Login with Authorization Code Grant"
         }
       },
       "reauth_confirm": {

@@ -1,12 +1,18 @@
 {
     "config": {
         "step": {
-            "user": {
+            "password": {
                 "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
                     "api_key": "36 digits API Key",
                     "username": "Username",
                     "password": "Password"
+                }
+            },
+            "user": {
+                "menu_options": {
+                  "password": "Log-in with API-Key, username and password",
+                  "oauth2": "Login with Authorization Code Grant (yaml requiered)"
                 }
             },
             "reauth_confirm": {
