@@ -15,18 +15,20 @@ from homeassistant.const import (
     CONF_TOKEN,
     CONF_USERNAME,
 )
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
-from .oauth_impl import OndiloOauth2Implementation
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers import config_entry_oauth2_flow
-OAUTH2_CLIENTID = "client_id"
+from .oauth_impl import HusqvarnaOauth2Implementation
+
 _LOGGER = logging.getLogger(__name__)
 
 
 class HusqvarnaConfigFlowHandler(
-    config_entry_oauth2_flow.AbstractOAuth2FlowHandler, data_entry_flow.FlowHandler, domain=DOMAIN
+    config_entry_oauth2_flow.AbstractOAuth2FlowHandler,
+    data_entry_flow.FlowHandler,
+    domain=DOMAIN,
 ):
 
     """Handle a config flow."""
@@ -50,33 +52,30 @@ class HusqvarnaConfigFlowHandler(
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         _LOGGER.debug("test")
-        return self.async_show_menu(
-            step_id="user",
-            menu_options=["oauth2", "password"]
-        )
+        return self.async_show_menu(step_id="user", menu_options=["oauth2", "password"])
 
     async def async_step_oauth2(self, user_input=None):
-
+        """Handle the config-flow for Authorization Code Grant."""
         errors = {}
 
-        await self.async_set_unique_id(self.hass.data[DOMAIN][OAUTH2_CLIENTID])
+        await self.async_set_unique_id(self.hass.data[DOMAIN][CONF_CLIENT_ID])
 
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
         self.async_register_implementation(
-            self.hass, OndiloOauth2Implementation(self.hass)
+            self.hass, HusqvarnaOauth2Implementation(self.hass)
         )
 
         return await super().async_step_user(user_input)
 
     async def async_step_password(self, user_input=None):
-        """Handle the initial step."""
+        """Handle the config-flow with api-key, username and password."""
+
         errors = {}
         _LOGGER.debug("user input %s", user_input)
         if user_input is None:
             return await self._show_setup_form(errors)
-        _LOGGER.debug("Password2")
         try:
             get_token = GetAccessToken(
                 user_input[CONF_API_KEY],
@@ -84,7 +83,6 @@ class HusqvarnaConfigFlowHandler(
                 user_input[CONF_PASSWORD],
             )
             access_token_raw = await get_token.async_get_access_token()
-            _LOGGER.debug("Password23")
         except (ClientConnectorError, TokenError):
             # On 400 credentials could be wrong, or (Authentication API && Automower Connect API) are not connected.
             errors["base"] = "auth"
@@ -94,7 +92,7 @@ class HusqvarnaConfigFlowHandler(
             errors["base"] = "auth"
             return await self._show_setup_form(errors)
 
-        await self.async_test_mower(user_input,access_token_raw)
+        await self.async_test_mower(user_input[CONF_API_KEY], access_token_raw)
 
         unique_id = user_input[CONF_API_KEY]
         data = {
@@ -114,13 +112,11 @@ class HusqvarnaConfigFlowHandler(
             data=data,
         )
 
-
-
-    async def async_test_mower(self, user_input, access_token_raw):
-
+    async def async_test_mower(self, api_key, access_token_raw):
+        """Test if mower data can be fetched with Rest, and also check websocket capabilities."""
         try:
             get_mower_data = GetMowerData(
-                user_input[CONF_API_KEY],
+                api_key,
                 access_token_raw[CONF_ACCESS_TOKEN],
                 access_token_raw[CONF_PROVIDER],
                 access_token_raw[CONF_TOKEN_TYPE],
@@ -143,24 +139,6 @@ class HusqvarnaConfigFlowHandler(
             errors["base"] = "api_key"
             return await self._show_setup_form(errors)
 
-
-
-
-    async def async_step_finish (self, user_input=None):
-
-        existing_entry = await self.async_set_unique_id(unique_id)
-
-        if existing_entry:
-            self.hass.config_entries.async_update_entry(existing_entry, data=data)
-            await self.hass.config_entries.async_reload(existing_entry.entry_id)
-            return self.async_abort(reason="reauth_successful")
-
-        return self.async_create_entry(
-            title=user_input[CONF_API_KEY],
-            data=data,
-        )
-
-
     async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
@@ -178,8 +156,3 @@ class HusqvarnaConfigFlowHandler(
     def logger(self) -> logging.Logger:
         """Return logger."""
         return logging.getLogger(__name__)
-
-    @property
-    def extra_authorize_data(self) -> dict:
-        """Extra data that needs to be appended to the authorize url."""
-        return {"Content-Type": "application/x-www-form-urlencoded"}
