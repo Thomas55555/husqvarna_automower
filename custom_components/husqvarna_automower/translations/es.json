@@ -21,8 +21,8 @@
             "unknown": "Ha ocurrido un error"
         },
         "abort": {
-            "single_instance_allowed": "Solo se permite una configuración de Husqvarna Automower",
-            "reauth_successful": "Se ha reautenticado con éxito"
+            "reauth_successful": "Se ha reautenticado con éxito",
+            "single_instance_allowed": "Solo se permite una configuración de Husqvarna Automower"
         }
     },
     "system_health": {

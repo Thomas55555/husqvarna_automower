@@ -3,9 +3,8 @@
 import logging
 
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.config_entry_oauth2_flow import LocalOAuth2Implementation
-from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
 
@@ -18,9 +17,8 @@ _LOGGER = logging.getLogger(__name__)
 class HusqvarnaOauth2Implementation(LocalOAuth2Implementation):
     """Local implementation of OAuth2 specific to Husqvarna to hard code client id and secret and return a proper name."""
 
-    def __init__(self, hass: HomeAssistant):
+    def __init__(self, hass: HomeAssistant) -> None:
         """Just init default class with default values."""
-        _LOGGER.debug("1")
         super().__init__(
             hass,
             DOMAIN,

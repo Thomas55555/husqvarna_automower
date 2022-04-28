@@ -1,5 +1,4 @@
 """Config flow to add the integration via the UI."""
-import asyncio
 import logging
 
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
@@ -14,9 +13,10 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
+    CONF_CLIENT_SECRET,
 )
 from homeassistant.helpers import config_entry_oauth2_flow
-
+from homeassistant.helpers.network import get_url
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 from .oauth_impl import HusqvarnaOauth2Implementation
 
@@ -49,13 +49,24 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
-        _LOGGER.debug("test")
-        return self.async_show_menu(step_id="user", menu_options=["oauth2", "password"])
+
+        _LOGGER.debug("URL: %s", get_url(self.hass))
+        return self.async_show_menu(
+            step_id="user",
+            menu_options=["oauth2", "password"],
+            description_placeholders={
+                "model": "Example model",
+            },
+        )
 
     async def async_step_oauth2(self, user_input=None):
         """Handle the config-flow for Authorization Code Grant."""
 
-        await self.async_set_unique_id(self.hass.data[DOMAIN][CONF_CLIENT_ID])
+        try:
+            await self.async_set_unique_id(self.hass.data[DOMAIN][CONF_CLIENT_ID])
+            await self.async_set_unique_id(self.hass.data[DOMAIN][CONF_CLIENT_SECRET])
+        except KeyError:
+            return self.async_abort(reason="oauth2_missing_configuration")
 
         self.async_register_implementation(
             self.hass, HusqvarnaOauth2Implementation(self.hass)
@@ -84,7 +95,6 @@ class HusqvarnaConfigFlowHandler(
         """Handle the config-flow with api-key, username and password."""
 
         errors = {}
-        _LOGGER.debug("user input %s", user_input)
         if user_input is None:
             return await self._show_setup_form(errors)
         try:

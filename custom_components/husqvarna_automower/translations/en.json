@@ -27,8 +27,9 @@
             "unknown": "An unknown error occured"
         },
         "abort": {
-            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed.",
-            "reauth_successful": "The reauthentication was successful"
+            "oauth2_missing_configuration": "The component is not configured. Please follow the documentation.",
+            "reauth_successful": "The reauthentication was successful",
+            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
         }
     },
     "system_health": {

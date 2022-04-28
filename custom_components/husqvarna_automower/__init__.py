@@ -15,20 +15,22 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, HUSQVARNA_URL, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
-from homeassistant.helpers import config_entry_oauth2_flow
+
 
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_CLIENT_ID): cv.string,
-                vol.Required(CONF_CLIENT_SECRET): cv.string,
+                vol.Required(CONF_CLIENT_ID): vol.All(str, vol.Length(min=36, max=36)),
+                vol.Required(CONF_CLIENT_SECRET): vol.All(
+                    str, vol.Length(min=36, max=36)
+                ),
             }
         )
     },
