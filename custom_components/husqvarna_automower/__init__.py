@@ -74,17 +74,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         password = entry.data.get(CONF_PASSWORD)
         if username and password:
             get_token = aioautomower.GetAccessToken(
-                    api_key,
-                    username,
-                    password,
-                )
+                api_key,
+                username,
+                password,
+            )
             access_token = await get_token.async_get_access_token()
             _LOGGER.debug("access_token: %s", access_token)
             hass.config_entries.async_update_entry(
-            entry,
-            data={
-                CONF_TOKEN: access_token,
-            })
+                entry,
+                data={
+                    CONF_TOKEN: access_token,
+                },
+            )
             try:
                 session = aioautomower.AutomowerSession(api_key, access_token)
                 await session.connect()
