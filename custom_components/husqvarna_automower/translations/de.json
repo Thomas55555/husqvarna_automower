@@ -1,12 +1,18 @@
 {
     "config": {
         "step": {
-            "user": {
+            "password": {
                 "description": "Wenn du Hilfe zur Konfiguration benötigst, schaue hier nach: https://github.com/Thomas55555/husqvarna_automower",
                 "data": {
                     "api_key": "API-Key (36 Zeichen)",
                     "username": "Benutzername",
                     "password": "Passwort"
+                }
+            },
+            "user": {
+                "menu_options": {
+                  "password": "Einloggen mit API-Key, username and password",
+                  "oauth2": "Einloggen mit Authorization Code Grant (yaml benötigt)"
                 }
             },
             "reauth_confirm": {
@@ -21,8 +27,9 @@
             "unknown": "Ein unbekannter Fehler ist aufgetreten."
         },
         "abort": {
-            "single_instance_allowed": "Es kann nur eine Instanz der Husqvarna Automower eingerichtet werden.",
-            "reauth_successful": "Die erneute Authentifizierung war erfolgreich"
+            "oauth2_missing_configuration": "Die Komponente ist nicht konfiguriert. Bitte befolge die Dokumenation.",
+            "reauth_successful": "Die erneute Authentifizierung war erfolgreich",
+            "single_instance_allowed": "Es kann nur eine Instanz der Husqvarna Automower eingerichtet werden."
         }
     },
     "system_health": {

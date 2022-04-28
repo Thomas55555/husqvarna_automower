@@ -21,8 +21,8 @@
             "unknown": "Une erreur inconnue s'est produite."
         },
         "abort": {
-            "single_instance_allowed": "Une seule configuration de l’intégration Husqvarna Automower est autorisée.",
-            "reauth_successful": "La réauthentification a réussi."
+            "reauth_successful": "La réauthentification a réussi.",
+            "single_instance_allowed": "Une seule configuration de l’intégration Husqvarna Automower est autorisée."
         }
     },
     "system_health": {
