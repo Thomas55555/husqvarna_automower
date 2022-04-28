@@ -7,17 +7,18 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import data_entry_flow
 from homeassistant.const import (
+    ATTR_CREDENTIALS,
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
-    CONF_CLIENT_SECRET,
-    ATTR_CREDENTIALS,
 )
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.network import get_url
+
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 from .oauth_impl import HusqvarnaOauth2Implementation
 
