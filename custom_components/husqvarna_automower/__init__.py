@@ -36,11 +36,6 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 
-from .oauth_impl import OndiloOauth2Implementation
-
-DATA_CONF = "conf"
-
-
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Google component."""
     if hass.data.get(DOMAIN) is None:

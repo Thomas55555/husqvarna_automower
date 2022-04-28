@@ -1,23 +1,21 @@
 """Config flow to add the integration via the UI."""
+import asyncio
 import logging
 
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
 from aioautomower import GetAccessToken, GetMowerData, TokenError
-from homeassistant import config_entries, data_entry_flow
+from homeassistant import data_entry_flow
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
 )
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_entry_oauth2_flow
-from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 from .oauth_impl import HusqvarnaOauth2Implementation
@@ -56,18 +54,31 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_oauth2(self, user_input=None):
         """Handle the config-flow for Authorization Code Grant."""
-        errors = {}
 
         await self.async_set_unique_id(self.hass.data[DOMAIN][CONF_CLIENT_ID])
-
-        if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
 
         self.async_register_implementation(
             self.hass, HusqvarnaOauth2Implementation(self.hass)
         )
 
-        return await super().async_step_user(user_input)
+        result = await super().async_step_user(user_input)
+        _LOGGER.debug("result: %s", result)
+        return result
+
+    async def async_oauth_create_entry(self, data: dict) -> dict:
+        """Create an entry for the flow.
+        Ok to override if you want to fetch extra info or even add another step.
+        """
+        existing_entry = await self.async_set_unique_id(
+            self.hass.data[DOMAIN][CONF_CLIENT_ID]
+        )
+
+        if existing_entry:
+            self.hass.config_entries.async_update_entry(existing_entry, data=data)
+            await self.hass.config_entries.async_reload(existing_entry.entry_id)
+            return self.async_abort(reason="reauth_successful")
+        _LOGGER.debug("3")
+        return self.async_create_entry(title=self.flow_impl.name, data=data)
 
     async def async_step_password(self, user_input=None):
         """Handle the config-flow with api-key, username and password."""
@@ -114,6 +125,7 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_test_mower(self, api_key, access_token_raw):
         """Test if mower data can be fetched with Rest, and also check websocket capabilities."""
+        errors = {}
         try:
             get_mower_data = GetMowerData(
                 api_key,
@@ -146,10 +158,12 @@ class HusqvarnaConfigFlowHandler(
     async def async_step_reauth_confirm(self, user_input=None):
         """Dialog that informs the user that reauth is required."""
         if user_input is None:
+            _LOGGER.debug("USER INPUT NONE")
             return self.async_show_form(
                 step_id="reauth_confirm",
                 data_schema=vol.Schema({}),
             )
+        _LOGGER.debug("user_input: %s", user_input)
         return await self.async_step_user()
 
     @property

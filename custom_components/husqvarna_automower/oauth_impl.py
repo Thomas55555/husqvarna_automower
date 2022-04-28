@@ -20,6 +20,7 @@ class HusqvarnaOauth2Implementation(LocalOAuth2Implementation):
 
     def __init__(self, hass: HomeAssistant):
         """Just init default class with default values."""
+        _LOGGER.debug("1")
         super().__init__(
             hass,
             DOMAIN,
@@ -28,6 +29,8 @@ class HusqvarnaOauth2Implementation(LocalOAuth2Implementation):
             OAUTH2_AUTHORIZE,
             OAUTH2_TOKEN,
         )
+
+        _LOGGER.debug("2")
 
     @property
     def name(self) -> str:
