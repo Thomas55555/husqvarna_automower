@@ -27,7 +27,7 @@
       "unknown": "An unknown error occured"
     },
     "abort": {
-      "oauth2_missing_configuration": "[%key:common::config_flow::abort::oauth2_missing_configuration%]",
+      "missing_configuration": "[%key:common::config_flow::abort::missing_configuration%]",
       "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
     }
   },
