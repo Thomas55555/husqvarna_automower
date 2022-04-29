@@ -7,16 +7,18 @@ import voluptuous as vol
 from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import data_entry_flow
 from homeassistant.const import (
+    ATTR_CREDENTIALS,
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
-    CONF_CLIENT_SECRET,
 )
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.network import get_url
+
 from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
 from .oauth_impl import HusqvarnaOauth2Implementation
 
@@ -41,6 +43,7 @@ class HusqvarnaConfigFlowHandler(
             vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
+            vol.Required(ATTR_CREDENTIALS): bool,
         }
 
         return self.async_show_form(
@@ -120,6 +123,10 @@ class HusqvarnaConfigFlowHandler(
             CONF_API_KEY: user_input[CONF_API_KEY],
             CONF_TOKEN: access_token_raw,
         }
+
+        if user_input[ATTR_CREDENTIALS] == True:
+            data[CONF_USERNAME] = user_input[CONF_USERNAME]
+            data[CONF_PASSWORD] = user_input[CONF_PASSWORD]
 
         existing_entry = await self.async_set_unique_id(unique_id)
 

@@ -70,6 +70,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception:
         # If we haven't used the refresh_token (ie. been offline) for 10 days,
         # we need to login using username and password in the config flow again.
+        username = entry.data.get(CONF_USERNAME)
+        password = entry.data.get(CONF_PASSWORD)
+        if username and password:
+            get_token = aioautomower.GetAccessToken(
+                api_key,
+                username,
+                password,
+            )
+            access_token = await get_token.async_get_access_token()
+            _LOGGER.debug("access_token: %s", access_token)
+            hass.config_entries.async_update_entry(
+                entry,
+                data={
+                    CONF_TOKEN: access_token,
+                },
+            )
+            try:
+                session = aioautomower.AutomowerSession(api_key, access_token)
+                await session.connect()
+                hass.data[DOMAIN][entry.entry_id] = session
+                hass.config_entries.async_setup_platforms(entry, PLATFORMS)
+                return True
+            except Exception:
+                pass
         raise ConfigEntryAuthFailed from Exception
 
     if "amc:api" not in access_token["scope"]:
