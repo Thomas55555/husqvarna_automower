@@ -6,13 +6,14 @@
                 "data": {
                     "api_key": "36 digits API Key",
                     "username": "Username",
-                    "password": "Password"
+                    "password": "Password",
+                    "credentials": "Remember Password and Username (allows this component to get a new token if it can't get renewed)"
                 }
             },
             "user": {
                 "menu_options": {
-                  "password": "Log-in with API-Key, username and password",
-                  "oauth2": "Login with Authorization Code Grant (yaml requiered)"
+                    "password": "Log-in with API-Key, username and password",
+                    "oauth2": "Login with Authorization Code Grant (yaml requiered)"
                 }
             },
             "reauth_confirm": {
