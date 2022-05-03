@@ -77,12 +77,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     api_key = entry.unique_id
     access_token = entry.data.get(CONF_TOKEN)
+    username = entry.data.get(CONF_USERNAME)
+    password = entry.data.get(CONF_PASSWORD)
     session = aioautomower.AutomowerSession(api_key, access_token)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
             entry,
             data={
                 CONF_TOKEN: token,
+                CONF_USERNAME: username,
+                CONF_PASSWORD: password,
             },
         )
     )
