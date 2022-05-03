@@ -11,6 +11,7 @@ from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
@@ -41,6 +42,7 @@ class HusqvarnaConfigFlowHandler(
             vol.Required(CONF_API_KEY): vol.All(str, vol.Length(min=36, max=36)),
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
+            vol.Required(ATTR_CREDENTIALS): bool,
         }
 
         return self.async_show_form(
@@ -112,6 +114,7 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_finish(self, unique_id, data):
         """Complete the config entries."""
+
         existing_entry = await self.async_set_unique_id(unique_id)
 
         if existing_entry:

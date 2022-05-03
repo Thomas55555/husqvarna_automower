@@ -119,8 +119,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             try:
                 session = aioautomower.AutomowerSession(api_key, access_token)
                 await session.connect()
-
-                return True
             except Exception:
                 raise ConfigEntryAuthFailed from Exception
 
