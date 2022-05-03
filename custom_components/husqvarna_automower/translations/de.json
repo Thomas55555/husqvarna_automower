@@ -27,7 +27,7 @@
             "unknown": "Ein unbekannter Fehler ist aufgetreten."
         },
         "abort": {
-            "oauth2_missing_configuration": "Die Komponente ist nicht konfiguriert. Bitte befolge die Dokumenation.",
+            "missing_configuration": "Die Komponente ist nicht konfiguriert. Bitte befolge die Dokumenation.",
             "reauth_successful": "Die erneute Authentifizierung war erfolgreich",
             "single_instance_allowed": "Es kann nur eine Instanz der Husqvarna Automower eingerichtet werden."
         }
