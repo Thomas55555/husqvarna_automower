@@ -24,7 +24,7 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
+from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
@@ -91,6 +91,9 @@ async def async_setup_entry(
 class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     """Defining each mower Entity."""
 
+    _attr_icon = "mdi:robot-mower"
+    _attr_supported_features = SUPPORT_STATE_SERVICES
+
     @property
     def device_class(self) -> str:
         """Return the name of the mower."""
@@ -150,16 +153,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
             mower_attributes = AutomowerEntity.get_mower_attributes(self)
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return ""
-
-    @property
-    def icon(self) -> str:
-        """Return the icon of the mower."""
-        return ICON
-
-    @property
-    def supported_features(self) -> int:
-        """Flag supported features."""
-        return SUPPORT_STATE_SERVICES
 
     @property
     def battery_level(self) -> int:

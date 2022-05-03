@@ -12,10 +12,6 @@ OAUTH2_AUTHORIZE = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/auth
 OAUTH2_TOKEN = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token"
 
 
-# Icons
-ICON = "mdi:robot-mower"
-
-
 # Platforms
 PLATFORMS = [
     Platform.DEVICE_TRACKER,
