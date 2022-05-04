@@ -86,7 +86,7 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 You have two options to login.
 1.  Login with API-Key and Application Secret. You can find them on the Husqvarna site
-    [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)]
+    [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
     Additionally add your credentials to the `configuration.yaml`:
     ```
     husqvarna_automower:
