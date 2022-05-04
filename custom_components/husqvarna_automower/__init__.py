@@ -106,8 +106,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 username,
                 password,
             )
-            access_token = await get_token.async_get_access_token()
-            _LOGGER.debug("access_token: %s", access_token)
+            try:
+                access_token = await get_token.async_get_access_token()
+            except Exception:
+                raise ConfigEntryAuthFailed from Exception
             hass.config_entries.async_update_entry(
                 entry,
                 data={

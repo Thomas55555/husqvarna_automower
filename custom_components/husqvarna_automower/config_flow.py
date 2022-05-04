@@ -68,7 +68,6 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_oauth_create_entry(self, data: dict) -> dict:
         """Create an entry for the flow."""
-
         data["token"]["status"] = 200
         await self.async_test_mower(
             self.hass.data[DOMAIN][CONF_CLIENT_ID], data[CONF_TOKEN]
@@ -162,12 +161,10 @@ class HusqvarnaConfigFlowHandler(
     async def async_step_reauth_confirm(self, user_input=None):
         """Dialog that informs the user that reauth is required."""
         if user_input is None:
-            _LOGGER.debug("USER INPUT NONE")
             return self.async_show_form(
                 step_id="reauth_confirm",
                 data_schema=vol.Schema({}),
             )
-        _LOGGER.debug("user_input: %s", user_input)
         return await self.async_step_user()
 
     @property
