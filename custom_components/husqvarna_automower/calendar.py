@@ -48,11 +48,14 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         geolocator = Nominatim(user_agent=self.name)
         result = await hass.async_add_executor_job(geolocator.reverse, position)
         try:
-            loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
+            self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
         except Exception:
-            loc = None
-        event_list = []
+            self.loc = None
 
+        even_list, next_event = self.get_next_event()
+        return even_list
+
+    def get_next_event(self):
         self._next_event = CalendarEvent(
             summary="",
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
@@ -60,6 +63,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             location="",
             description="",
         )
+        event_list = []
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
             calendar = mower_attributes["calendar"]["tasks"][task]
@@ -79,7 +83,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         summary=f"Mowing schedule {task + 1}",
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
-                        location=loc,
+                        location=self.loc,
                     )
                     _LOGGER.debug("self._event %s", self._event)
                     if self._event.start < self._next_event.start:
@@ -88,7 +92,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
 
                     event_list.append(self._event)
 
-        return event_list
+        return event_list, self._next_event
 
     @property
     def name(self) -> str:
@@ -114,4 +118,5 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     @property
     def event(self) -> CalendarEvent:
         """Return the next upcoming event."""
-        return self._next_event
+        even_list, next_event = self.get_next_event()
+        return next_event
