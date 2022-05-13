@@ -152,7 +152,7 @@ file. Example:
 logger:
   default: info
   logs:
-    husqvarna_automower: debug
+    custom_components.husqvarna_automower: debug
     aioautomower: debug
 ```
 
