@@ -21,7 +21,10 @@ async def async_setup_entry(
     """Setup select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerSelect(session, idx) for idx, ent in enumerate(session.data["data"])
+        AutomowerSelect(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+        if not session.data["data"][idx]["attributes"]["system"]["model"]
+        in ["550", "Ceora"]
     )
 
 
