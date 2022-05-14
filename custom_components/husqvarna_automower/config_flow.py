@@ -11,7 +11,6 @@ from homeassistant.const import (
     CONF_ACCESS_TOKEN,
     CONF_API_KEY,
     CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_USERNAME,
@@ -142,10 +141,10 @@ class HusqvarnaConfigFlowHandler(
         except (ClientConnectorError, ClientResponseError):
             if "amc:api" in access_token_raw["scope"]:
                 errors["base"] = "api_key"  ## Something's wrong with the key
-                _LOGGER.error("Something's wrong with the API-key")
+                _LOGGER.warning("Something's wrong with the API-key")
             else:
                 errors["base"] = "mower"  ## Automower Connect API not connected
-                _LOGGER.error("Automower Connect API not connected")
+                _LOGGER.warning("Automower Connect API not connected")
             return await self._show_setup_form(errors)
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
@@ -154,7 +153,7 @@ class HusqvarnaConfigFlowHandler(
 
         if "amc:api" not in access_token_raw["scope"]:
             # If the API-Key is old
-            _LOGGER.error("The API-key is too old. Renew it.")
+            _LOGGER.warning("The API-key is too old. Renew it")
             errors["base"] = "api_key"
             return await self._show_setup_form(errors)
 
