@@ -14,9 +14,12 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
-
+from homeassistant.components.application_credentials import (
+    ClientCredential,
+    async_import_client_credential,
+)
 from . import config_flow
 from .const import (
     DOMAIN,
@@ -51,15 +54,12 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         return True
 
     if CONF_CLIENT_ID in config[DOMAIN]:
-        config_flow.HusqvarnaConfigFlowHandler.async_register_implementation(
+        await async_import_client_credential(
             hass,
-            config_entry_oauth2_flow.LocalOAuth2Implementation(
-                hass,
-                DOMAIN,
+            DOMAIN,
+            ClientCredential(
                 config[DOMAIN][CONF_CLIENT_ID],
                 config[DOMAIN][CONF_CLIENT_SECRET],
-                OAUTH2_AUTHORIZE,
-                OAUTH2_TOKEN,
             ),
         )
         conf = config.get(DOMAIN, {})
