@@ -1,4 +1,3 @@
-
 """Application credentials platform for Husqvarna Automower."""
 
 from homeassistant.components.application_credentials import AuthorizationServer

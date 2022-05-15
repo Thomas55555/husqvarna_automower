@@ -4,6 +4,10 @@ import logging
 import voluptuous as vol
 
 import aioautomower
+from homeassistant.components.application_credentials import (
+    ClientCredential,
+    async_import_client_credential,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_CLIENT_ID,
@@ -16,10 +20,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
-from homeassistant.components.application_credentials import (
-    ClientCredential,
-    async_import_client_credential,
-)
+
 from . import config_flow
 from .const import (
     DOMAIN,
