@@ -48,22 +48,28 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
     def native_value(self) -> str:
         """Return a the current problem of the mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        if mower_attributes["mower"]["state"] == "WAIT_UPDATING":
-            return "Updating"
-        if mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
-            return "Powering up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
+            if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
+                return None
             return mower_attributes["planner"]["restrictedReason"]
-        if mower_attributes["mower"]["state"] == "OFF":
-            return "Off"
-        if mower_attributes["mower"]["state"] == "STOPPED":
-            return "Stopped"
         if mower_attributes["mower"]["state"] in [
             "ERROR",
             "FATAL_ERROR",
             "ERROR_AT_POWER_UP",
         ]:
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+        if mower_attributes["mower"]["state"] in [
+            "UNKNOWN",
+            "STOPPED",
+            "OFF",
+        ]:
+            return mower_attributes["mower"]["state"]
+        if mower_attributes["mower"]["activity"] in [
+            "STOPPED_IN_GARDEN",
+            "UNKNOWN",
+            "NOT_APPLICABLE",
+        ]:
+            return mower_attributes["mower"]["activity"]
         return None
 
 
