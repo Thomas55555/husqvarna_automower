@@ -38,15 +38,10 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Problem Sensor"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_problem_sensor"
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Problem Sensor"
+        self._unique_id = f"{self.mower_id}_problem_sensor"
 
     @property
     def native_value(self) -> str:
@@ -82,15 +77,10 @@ class AutomowerBatterySensor(SensorEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Battery Level"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_battery_level"
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Battery Level"
+        self._unique_id = f"{self.mower_id}_battery_level"
 
     @property
     def device_class(self):
