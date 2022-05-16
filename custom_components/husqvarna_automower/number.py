@@ -38,6 +38,12 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_max_value = 9
 
     @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
+
+    @property
     def name(self) -> str:
         """Return the name of the entity."""
         return f"{self.mower_name} Cutting height"

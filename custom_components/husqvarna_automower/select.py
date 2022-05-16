@@ -36,6 +36,12 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.CONFIG
 
     @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
+
+    @property
     def name(self) -> str:
         """Return the name of the entity."""
         return f"{self.mower_name} Headlight mode"
