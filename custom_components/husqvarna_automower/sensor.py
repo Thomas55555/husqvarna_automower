@@ -1,8 +1,9 @@
 """Creates a sesnor entity for the mower"""
 import logging
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -19,12 +20,17 @@ async def async_setup_entry(
     """Setup select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerSensor(session, idx) for idx, ent in enumerate(session.data["data"])
+        AutomowerProblemSensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+    )
+    async_add_entities(
+        AutomowerBatterySensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
     )
 
 
-class AutomowerSensor(SensorEntity, AutomowerEntity):
-    """Defining the Sensor Entity."""
+class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerProblemSensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
@@ -59,3 +65,34 @@ class AutomowerSensor(SensorEntity, AutomowerEntity):
         ]:
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return None
+
+
+class AutomowerBatterySensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerBatterySensor Entity."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return f"{self.mower_name} Battery Level"
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique identifier for this entity."""
+        return f"{self.mower_id}_battery_level"
+
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return SensorDeviceClass.BATTERY
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit_of_measurement of the device."""
+        return PERCENTAGE
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        return AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"]
