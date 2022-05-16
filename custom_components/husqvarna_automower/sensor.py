@@ -27,6 +27,10 @@ async def async_setup_entry(
         AutomowerBatterySensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
+    async_add_entities(
+        AutomowerNextStartSensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+    )
 
 
 class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
@@ -102,3 +106,36 @@ class AutomowerBatterySensor(SensorEntity, AutomowerEntity):
     def native_value(self):
         """Return the state of the sensor."""
         return AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"]
+
+
+class AutomowerNextStartSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerNextStartSensor Entity."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return f"{self.mower_name} Next Start"
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique identifier for this entity."""
+        return f"{self.mower_id}_next_start"
+
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return SensorDeviceClass.TIMESTAMP
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        next_start = None
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        if mower_attributes["planner"]["nextStartTimestamp"] != 0:
+            next_start = AutomowerEntity.datetime_object(
+                self, mower_attributes["planner"]["nextStartTimestamp"]
+            )
+            return next_start
+        return None
