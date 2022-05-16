@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ACCESS_TOKEN, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_ACCESS_TOKEN, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 
 from .const import CONF_REFRESH_TOKEN, DOMAIN, POSITIONS

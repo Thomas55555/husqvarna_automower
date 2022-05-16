@@ -24,7 +24,7 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, ERRORCODES, HUSQVARNA_URL, ICON
+from .const import DOMAIN, ERRORCODES, ICON
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
@@ -90,6 +90,12 @@ async def async_setup_entry(
 
 class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     """Defining each mower Entity."""
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     @property
     def device_class(self) -> str:

@@ -57,12 +57,6 @@ class AutomowerEntity(Entity):
         )
 
     @property
-    def available(self) -> bool:
-        """Return True if the device is available."""
-        available = self.get_mower_attributes()["metadata"]["connected"]
-        return available
-
-    @property
     def should_poll(self) -> bool:
         """Return True if the device is available."""
         return False

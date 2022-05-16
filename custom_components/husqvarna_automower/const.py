@@ -23,6 +23,7 @@ PLATFORMS = [
     Platform.SELECT,
     Platform.NUMBER,
     Platform.CALENDAR,
+    Platform.SENSOR,
 ]
 
 # Configuration and options
