@@ -26,10 +26,6 @@ class AutomowerEntity(Entity):
 
         self._available = self.get_mower_attributes()["metadata"]["connected"]
 
-        self._event = None
-        self._next_event = None
-        self.loc = None
-
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
         return self.session.data["data"][self.idx]["attributes"]

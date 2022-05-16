@@ -38,15 +38,10 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Problem Sensor"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_problem_sensor"
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Problem Sensor"
+        self._attr_unique_id = f"{self.mower_id}_problem_sensor"
 
     @property
     def native_value(self) -> str:
@@ -81,26 +76,13 @@ class AutomowerBatterySensor(SensorEntity, AutomowerEntity):
     """Defining the AutomowerBatterySensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_device_class = SensorDeviceClass.BATTERY
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Battery Level"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_battery_level"
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return SensorDeviceClass.BATTERY
-
-    @property
-    def native_unit_of_measurement(self):
-        """Return the unit_of_measurement of the device."""
-        return PERCENTAGE
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Battery Level"
+        self._attr_unique_id = f"{self.mower_id}_battery_level"
 
     @property
     def native_value(self):
@@ -112,21 +94,12 @@ class AutomowerNextStartSensor(SensorEntity, AutomowerEntity):
     """Defining the AutomowerNextStartSensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Next Start"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_next_start"
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return SensorDeviceClass.TIMESTAMP
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Next Start"
+        self._attr_unique_id = f"{self.mower_id}_next_start"
 
     @property
     def native_value(self):
