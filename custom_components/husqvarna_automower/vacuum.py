@@ -246,21 +246,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        error_message = None
-        error_time = None
-        if mower_attributes["mower"]["state"] in [
-            "ERROR",
-            "FATAL_ERROR",
-            "ERROR_AT_POWER_UP",
-        ]:
-            error_message = ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-
-            error_time = self.__datetime_object(
-                mower_attributes["mower"]["errorCodeTimestamp"]
-            )
-
         next_start = None
-
         if mower_attributes["planner"]["nextStartTimestamp"] != 0:
             next_start = self.__datetime_object(
                 mower_attributes["planner"]["nextStartTimestamp"]
@@ -270,12 +256,8 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
             ATTR_STATUS: self.__get_status(),
             "mode": mower_attributes["mower"]["mode"],
             "activity": mower_attributes["mower"]["activity"],
-            "state": mower_attributes["mower"]["state"],
-            "errorMessage": error_message,
-            "errorTime": error_time,
             "nextStart": next_start,
             "action": mower_attributes["planner"]["override"]["action"],
-            "restrictedReason": mower_attributes["planner"]["restrictedReason"],
         }
 
     async def async_start(self) -> None:
