@@ -37,6 +37,12 @@ async def async_setup_entry(
 class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._event = None
+        self._next_event = None
+        self.loc = None
+
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
     ) -> list[CalendarEvent]:
@@ -85,7 +91,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
                     )
-                    _LOGGER.debug("self._event %s", self._event)
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
                         _LOGGER.debug("self._next_event %s", self._next_event)

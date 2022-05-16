@@ -11,11 +11,6 @@ HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/apps"
 OAUTH2_AUTHORIZE = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/authorize"
 OAUTH2_TOKEN = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token"
 
-
-# Icons
-ICON = "mdi:robot-mower"
-
-
 # Platforms
 PLATFORMS = [
     Platform.DEVICE_TRACKER,

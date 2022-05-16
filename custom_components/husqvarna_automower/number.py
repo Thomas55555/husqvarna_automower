@@ -37,21 +37,16 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_min_value = 1
     _attr_max_value = 9
 
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Cutting Height"
+        self._attr_unique_id = f"{self.mower_id}_cuttingheight"
+
     @property
     def available(self) -> bool:
         """Return True if the device is available."""
         available = self.get_mower_attributes()["metadata"]["connected"]
         return available
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Cutting height"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_cuttingheight"
 
     @property
     def value(self) -> int:
