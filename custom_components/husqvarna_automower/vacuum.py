@@ -224,7 +224,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return {
             ATTR_STATUS: self.__get_status(),
-            "activity": mower_attributes["mower"]["activity"],
             "action": mower_attributes["planner"]["override"]["action"],
         }
 

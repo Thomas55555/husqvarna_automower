@@ -19,6 +19,7 @@ PLATFORMS = [
     Platform.NUMBER,
     Platform.CALENDAR,
     Platform.SENSOR,
+    Platform.BINARY_SENSOR,
 ]
 
 # Configuration and options
