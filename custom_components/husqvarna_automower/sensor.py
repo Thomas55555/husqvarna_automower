@@ -31,6 +31,10 @@ async def async_setup_entry(
         AutomowerNextStartSensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
+    async_add_entities(
+        AutomowerModeSensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+    )
 
 
 class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
@@ -112,3 +116,21 @@ class AutomowerNextStartSensor(SensorEntity, AutomowerEntity):
             )
             return next_start
         return None
+
+
+class AutomowerModeSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerModeSensor Entity."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Mode"
+        self._attr_unique_id = f"{self.mower_id}_mode"
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        return mower_attributes["mower"]["mode"]
