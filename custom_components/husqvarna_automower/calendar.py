@@ -1,5 +1,4 @@
 """Platform for Husqvarna Automower calendar integration."""
-import copy
 from datetime import datetime
 import logging
 
@@ -9,7 +8,6 @@ from homeassistant.backports.enum import StrEnum
 from homeassistant.components.calendar import (
     CalendarEntity,
     CalendarEvent,
-    is_offset_reached,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -62,6 +60,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         return even_list
 
     def get_next_event(self):
+        """Get the current or next event."""
         self._next_event = CalendarEvent(
             summary="",
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
