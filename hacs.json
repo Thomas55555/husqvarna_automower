@@ -1,7 +1,6 @@
 {
   "name": "Husqvarna Automower",
   "homeassistant": "2022.5.0",
-  "iot_class": ["Cloud Polling"],
   "render_readme": true,
   "zip_release": true,
   "filename": "husqvarna_automower.zip"
