@@ -40,6 +40,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self._event = None
         self._next_event = None
         self.loc = None
+        self.geolocator = Nominatim(user_agent=self.name)
 
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
@@ -49,8 +50,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         lat = mower_attributes["positions"][0]["latitude"]
         long = mower_attributes["positions"][0]["longitude"]
         position = f"{lat}, {long}"
-        geolocator = Nominatim(user_agent=self.name)
-        result = await hass.async_add_executor_job(geolocator.reverse, position)
+        result = await hass.async_add_executor_job(self.geolocator.reverse, position)
         try:
             self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
         except Exception:
@@ -85,7 +85,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 today_as_string = WEEKDAYS[today]
                 if calendar[today_as_string] is True:
                     self._event = CalendarEvent(
-                        summary=f"Mowing schedule {task + 1}",
+                        summary=f"{self.name} Mowing schedule {task + 1}",
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
