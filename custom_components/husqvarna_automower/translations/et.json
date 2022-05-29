@@ -1,0 +1,41 @@
+{
+    "config": {
+        "step": {
+            "password": {
+                "description": "Kui vajad seadistamisel abi, vaata siia: https://github.com/Thomas55555/husqvarna_automower",
+                "data": {
+                    "api_key": "36 kohaline API võti",
+                    "username": "Kasutajanimi",
+                    "password": "Parool",
+                    "credentials": "Jäta Parool ja Kasutajanimi meelde (võimaldab sellel komponendil saada uue loa, kui luba ei saa uuendada)"
+                }
+            },
+            "user": {
+                "menu_options": {
+                    "password": "Logi sisse API võtme, kasutajanime ja parooliga",
+                    "oauth2": "Logi sisse autoriseerimiskoodiga (vajalik yaml)"
+                }
+            },
+            "reauth_confirm": {
+                "description": "Husqvarna Automower sidumine vajab uuesti autentimist Husqvarnaga",
+                "title": "Autendi sidumine uuesti"
+            }
+        },
+        "error": {
+            "auth": "Veendu, et Autoriseerimise API ja Automower-Connect API oleks ühendatud sinu API võtmega: https://developer.husqvarnagroup.cloud/ ning Kasutajanimi/Parool/API võti oleks õiged.",
+            "api_key": "Midagi on valesti sinu API võtmega, palun uuenda seda aadressil https://developer.husqvarnagroup.cloud/",
+            "mower": "Veendu, et Automower-Connect API oleks ühendatud sinu API võtmega: https://developer.husqvarnagroup.cloud/",
+            "unknown": "Tekkis tundmatu viga"
+        },
+        "abort": {
+            "missing_configuration": "Komponent ei ole seadistatud. Palun järgi dokumentatsiooni.",
+            "reauth_successful": "Uuesti autentimine õnnestus",
+            "single_instance_allowed": "Ainult üks Husqvarna Automoweri seadistamine on lubatud."
+        }
+    },
+    "system_health": {
+        "info": {
+            "can_reach_server": "Husqvarna võtmeserver on kättesaadav"
+        }
+    }
+}
