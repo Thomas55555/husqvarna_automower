@@ -12,7 +12,9 @@
   ],
   "requirements": [
     "aioautomower==2022.5.3",
-    "geopy>=2.1.0"
+    "geopy>=2.1.0",
+    "numpy>=1.22.4",
+    "Pillow>=9.1.1"
   ],
   "iot_class": "cloud_push",
   "version": "0.0.0"
