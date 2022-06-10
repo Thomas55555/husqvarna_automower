@@ -56,7 +56,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         self._image_bytes = None
         self._image_to_bytes()
 
-
         self.session = session
 
         if self.entry.options.get(ENABLE_CAMERA, False):

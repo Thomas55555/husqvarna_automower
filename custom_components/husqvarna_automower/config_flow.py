@@ -213,7 +213,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 [str(x) for x in self.map_top_left_coord]
             )
 
-        self.map_bottom_right_coord = self.config_entry.options.get(GPS_BOTTOM_RIGHT, "")
+        self.map_bottom_right_coord = self.config_entry.options.get(
+            GPS_BOTTOM_RIGHT, ""
+        )
         if self.map_bottom_right_coord != "":
             self.map_bottom_right_coord = ",".join(
                 [str(x) for x in self.map_bottom_right_coord]

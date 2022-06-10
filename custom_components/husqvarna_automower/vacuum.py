@@ -133,7 +133,9 @@ class HusqvarnaAutomowerStateMixin(object):
         return ""
 
 
-class HusqvarnaAutomowerEntity(HusqvarnaAutomowerStateMixin, StateVacuumEntity, AutomowerEntity):
+class HusqvarnaAutomowerEntity(
+    HusqvarnaAutomowerStateMixin, StateVacuumEntity, AutomowerEntity
+):
     """Defining each mower Entity."""
 
     _attr_device_class = f"{DOMAIN}__mower"
