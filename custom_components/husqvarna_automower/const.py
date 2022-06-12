@@ -177,7 +177,7 @@ ERRORCODES = {
     118: "Charging system problem",
     119: "Zone generator problem",
     120: "Internal voltage error",
-    121: "High internal temerature",
+    121: "High internal temperature",
     122: "CAN error",
     123: "Destination not reachable",
 }
