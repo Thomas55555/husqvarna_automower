@@ -45,6 +45,8 @@ async def async_setup_entry(
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
+    _attr_entity_registry_enabled_default = False
+
     def __init__(self, session, idx, entry):
         Camera.__init__(self)
         AutomowerEntity.__init__(self, session, idx)
