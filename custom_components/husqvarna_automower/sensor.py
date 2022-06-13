@@ -5,6 +5,7 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE
@@ -189,6 +190,7 @@ class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
+    _attr_state_class = SensorStateClass.TOTAL
 
     def __init__(self, session, idx, description: SensorEntityDescription):
         super().__init__(session, idx)
