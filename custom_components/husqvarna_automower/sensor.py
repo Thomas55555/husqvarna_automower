@@ -190,7 +190,6 @@ class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
         self.entity_description = description
         self._attr_name = f"{self.mower_name} {description.name}"
         self._attr_unique_id = f"{self.mower_id}_{self.entity_description.key}"
-        _LOGGER.debug("self._attr_unique_id: %s", self._attr_unique_id)
 
     @property
     def native_value(self):
