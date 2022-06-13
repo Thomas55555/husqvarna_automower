@@ -111,4 +111,4 @@ class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
                 "description": ERRORCODES.get(mower_attributes["mower"]["errorCode"]),
             }
 
-        return {"ERROR_CODE": -1, "DESCRIPTION": "No Error"}
+        return {"error_code": -1, "description": "No Error"}
