@@ -12,6 +12,7 @@ from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+import homeassistant.util.dt as dt_util
 
 from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
@@ -19,21 +20,11 @@ from .entity import AutomowerEntity
 _LOGGER = logging.getLogger(__name__)
 
 
-SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
+TIME_SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="cuttingBladeUsageTime",
         name="Cutting Blade Usage Time",
         icon="mdi:clock-outline",
-    ),
-    SensorEntityDescription(
-        key="numberOfChargingCycles",
-        name="Number Of Charging Cycles",
-        icon="mdi:battery-sync-outline",
-    ),
-    SensorEntityDescription(
-        key="numberOfCollisions",
-        name="numberOfCollisions",
-        icon="mdi:counter",
     ),
     SensorEntityDescription(
         key="totalChargingTime",
@@ -54,6 +45,19 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key="totalSearchingTime",
         name="Total Searching Time",
         icon="mdi:clock-outline",
+    ),
+)
+
+CYCLE_SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
+    SensorEntityDescription(
+        key="numberOfChargingCycles",
+        name="Number Of Charging Cycles",
+        icon="mdi:battery-sync-outline",
+    ),
+    SensorEntityDescription(
+        key="numberOfCollisions",
+        name="Number Of Collisions",
+        icon="mdi:counter",
     ),
 )
 
@@ -80,9 +84,14 @@ async def async_setup_entry(
         for idx, ent in enumerate(session.data["data"])
     )
     async_add_entities(
-        AutomowerStatisticsSensor(session, idx, description)
+        AutomowerTimeStatisticsSensor(session, idx, description)
         for idx, ent in enumerate(session.data["data"])
-        for description in SENSOR_TYPES
+        for description in TIME_SENSOR_TYPES
+    )
+    async_add_entities(
+        AutomowerCycleStatisticsSensor(session, idx, description)
+        for idx, ent in enumerate(session.data["data"])
+        for description in CYCLE_SENSOR_TYPES
     )
 
 
@@ -185,8 +194,30 @@ class AutomowerModeSensor(SensorEntity, AutomowerEntity):
         return mower_attributes["mower"]["mode"]
 
 
-class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerModeSensor Entity."""
+class AutomowerTimeStatisticsSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerTimeStatisticsSensor Entity."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, session, idx, description: SensorEntityDescription):
+        super().__init__(session, idx)
+        self.entity_description = description
+        self._attr_name = f"{self.mower_name} {description.name}"
+        self._attr_unique_id = f"{self.mower_id}_{self.entity_description.key}"
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        return dt_util.dt.timedelta(
+            seconds=mower_attributes["statistics"][self.entity_description.key]
+        )
+
+
+class AutomowerCycleStatisticsSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerCycleStatictisSensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
