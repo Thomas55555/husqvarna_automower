@@ -62,6 +62,20 @@ CYCLE_SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
 )
 
 
+PERCENTAGE_SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
+    SensorEntityDescription(
+        key="totalSearchingTime",
+        name="Searching Time Percent",
+        icon="mdi:percent",
+    ),
+    SensorEntityDescription(
+        key="totalCuttingTime",
+        name="Cutting Time Percent",
+        icon="mdi:percent",
+    ),
+)
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
@@ -92,6 +106,11 @@ async def async_setup_entry(
         AutomowerCycleStatisticsSensor(session, idx, description)
         for idx, ent in enumerate(session.data["data"])
         for description in CYCLE_SENSOR_TYPES
+    )
+    async_add_entities(
+        AutomowerPercentageTimeSensor(session, idx, description)
+        for idx, ent in enumerate(session.data["data"])
+        for description in PERCENTAGE_SENSOR_TYPES
     )
 
 
@@ -234,3 +253,31 @@ class AutomowerCycleStatisticsSensor(SensorEntity, AutomowerEntity):
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return mower_attributes["statistics"][self.entity_description.key]
+
+
+class AutomowerPercentageTimeSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerPercentageTimeSensor Entity."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = True
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_native_unit_of_measurement = PERCENTAGE
+
+    def __init__(self, session, idx, description: SensorEntityDescription):
+        super().__init__(session, idx)
+        self.entity_description = description
+        self._attr_name = f"{self.mower_name} {description.name}"
+        self._attr_unique_id = (
+            f"{self.mower_id}_{self.entity_description.key}_percentage"
+        )
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+
+        percent = (
+            mower_attributes["statistics"][self.entity_description.key]
+            / mower_attributes["statistics"]["totalRunningTime"]
+        ) * 100
+        return round(percent, 1)
