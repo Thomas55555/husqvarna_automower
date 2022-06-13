@@ -20,6 +20,11 @@ _LOGGER = logging.getLogger(__name__)
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
+        key="cuttingBladeUsageTime",
+        name="Cutting Blade Usage Time",
+        icon="mdi:clock-outline",
+    ),
+    SensorEntityDescription(
         key="numberOfChargingCycles",
         name="Number Of Charging Cycles",
         icon="mdi:battery-sync-outline",
