@@ -1,6 +1,6 @@
 {
   "name": "Husqvarna Automower",
-  "homeassistant": "2022.5.0",
+  "homeassistant": "2022.7.0",
   "render_readme": true,
   "zip_release": true,
   "filename": "husqvarna_automower.zip"
