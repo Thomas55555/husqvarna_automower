@@ -33,6 +33,28 @@
             "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
         }
     },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "enable_camera": "Enable Map Camera"
+                },
+                "description": "Enable Map Camera", 
+                "title": "Husqvarna Automower Options"
+            },
+            "config": {
+                "data": {
+                    "gps_top_left": "GPS Coordinates of the Top Left Image Corner",
+                    "gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
+                    "mower_img_path": "Path to the mower location image",
+                    "map_img_path": "Path to the map image"
+
+                },
+                "description": "Camera Settings",
+                "title": "Husqvarna Automower Options"
+            }
+        }
+    },
     "system_health": {
         "info": {
             "can_reach_server": "Reach Husqvarna Token server"

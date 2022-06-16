@@ -5,10 +5,7 @@ import logging
 from geopy.geocoders import Nominatim
 
 from homeassistant.backports.enum import StrEnum
-from homeassistant.components.calendar import (
-    CalendarEntity,
-    CalendarEvent,
-)
+from homeassistant.components.calendar import CalendarEntity, CalendarEvent
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory

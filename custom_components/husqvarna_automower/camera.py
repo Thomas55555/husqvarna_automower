@@ -45,13 +45,18 @@ async def async_setup_entry(
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
+
+    _attr_entity_registry_enabled_default = False
+    _attr_frame_interval: float = 300
+
     def __init__(self, session, idx, entry):
         Camera.__init__(self)
         AutomowerEntity.__init__(self, session, idx)
 
         self.entry = entry
         self._position_history = []
-
+        self._attr_name = self.mower_name
+        self._attr_unique_id = f"{self.mower_id}_camera"
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._image_bytes = None
         self._image_to_bytes()
@@ -65,6 +70,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
                 lambda data: self._generate_image(data), schedule_immediately=True
             )
         else:
+            self._attr_entity_registry_enabled_default = True
             r_earth = 6378000  # meters
             offset = 100  # meters
             pi = 3.14
@@ -86,21 +92,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     def model(self) -> str:
         """Return the mower model."""
         return self.model
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return self.mower_name
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_camera"
-
-    @property
-    def frame_interval(self) -> float:
-        """Return camera frame rate"""
-        return 300
 
     async def async_camera_image(
         self, width: Optional[int] = None, height: Optional[int] = None
