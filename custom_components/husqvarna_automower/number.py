@@ -34,8 +34,8 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.CONFIG
     _attr_icon = "mdi:grass"
-    _attr_min_value = 1
-    _attr_max_value = 9
+    _attr_native_min_value = 1
+    _attr_native_max_value = 9
 
     def __init__(self, session, idx):
         super().__init__(session, idx)
@@ -49,12 +49,12 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         return available
 
     @property
-    def value(self) -> int:
+    def native_value(self) -> int:
         """Return the entity value."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return mower_attributes["cuttingHeight"]
 
-    async def async_set_value(self, value: float) -> None:
+    async def async_set_native_value(self, value: float) -> None:
         """Change the value."""
         command_type = "settings"
         string = {
