@@ -1,11 +1,14 @@
 """Config flow to add the integration via the UI."""
 import logging
+import os
 
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
 from aioautomower import GetAccessToken, GetMowerData, TokenError
-from homeassistant import data_entry_flow
+from homeassistant import data_entry_flow, config_entries
+
+
 from homeassistant.const import (
     ATTR_CREDENTIALS,
     CONF_ACCESS_TOKEN,
@@ -17,8 +20,18 @@ from homeassistant.const import (
 )
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.network import get_url
+from homeassistant.core import callback
 
-from .const import CONF_PROVIDER, CONF_TOKEN_TYPE, DOMAIN
+from .const import (
+    CONF_PROVIDER,
+    CONF_TOKEN_TYPE,
+    DOMAIN,
+    ENABLE_CAMERA,
+    GPS_TOP_LEFT,
+    GPS_BOTTOM_RIGHT,
+    MOWER_IMG_PATH,
+    MAP_IMG_PATH,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -176,3 +189,95 @@ class HusqvarnaConfigFlowHandler(
     def logger(self) -> logging.Logger:
         """Return logger."""
         return logging.getLogger(__name__)
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle a option flow."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry):
+        """Initialize options flow."""
+        super().__init__()
+        self.base_path = os.path.dirname(__file__)
+        self.config_entry = config_entry
+
+        self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
+        self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
+        if self.map_top_left_coord != "":
+            self.map_top_left_coord = ",".join(
+                [str(x) for x in self.map_top_left_coord]
+            )
+
+        self.map_bottom_right_coord = self.config_entry.options.get(
+            GPS_BOTTOM_RIGHT, ""
+        )
+        if self.map_bottom_right_coord != "":
+            self.map_bottom_right_coord = ",".join(
+                [str(x) for x in self.map_bottom_right_coord]
+            )
+
+        self.mower_image_path = self.config_entry.options.get(
+            MOWER_IMG_PATH, os.path.join(self.base_path, "resources/mower.png")
+        )
+        self.map_img_path = self.config_entry.options.get(
+            MAP_IMG_PATH, os.path.join(self.base_path, "resources/map_image.png")
+        )
+        self.options = self.config_entry.options.copy()
+
+    async def async_step_init(self, user_input=None):
+        """Enable / Disable the camera."""
+
+        if user_input:
+            if user_input.get(ENABLE_CAMERA):
+                self.options[ENABLE_CAMERA] = True
+                return await self.async_step_config()
+            self.options[ENABLE_CAMERA] = False
+            return await self._update_camera_config()
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(ENABLE_CAMERA, default=self.camera_enabled): bool,
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=data_schema)
+
+    async def async_step_config(self, user_input=None):
+        """Update the camera configuration."""
+        if user_input:
+            if user_input.get(GPS_TOP_LEFT):
+                self.options[GPS_TOP_LEFT] = [
+                    float(x.strip())
+                    for x in user_input.get(GPS_TOP_LEFT).split(",")
+                    if x
+                ]
+            if user_input.get(GPS_BOTTOM_RIGHT):
+                self.options[GPS_BOTTOM_RIGHT] = [
+                    float(x.strip())
+                    for x in user_input.get(GPS_BOTTOM_RIGHT).split(",")
+                    if x
+                ]
+
+            self.options[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
+            self.options[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
+            return await self._update_camera_config()
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(GPS_TOP_LEFT, default=self.map_top_left_coord): str,
+                vol.Required(
+                    GPS_BOTTOM_RIGHT, default=self.map_bottom_right_coord
+                ): str,
+                vol.Required(MOWER_IMG_PATH, default=self.mower_image_path): str,
+                vol.Required(MAP_IMG_PATH, default=self.map_img_path): str,
+            }
+        )
+        return self.async_show_form(step_id="config", data_schema=data_schema)
+
+    async def _update_camera_config(self):
+        """Update config entry options."""
+        return self.async_create_entry(title="", data=self.options)

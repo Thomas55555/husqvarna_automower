@@ -86,24 +86,7 @@ async def async_setup_entry(
     )
 
 
-class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
-    """Defining each mower Entity."""
-
-    _attr_device_class = f"{DOMAIN}__mower"
-    _attr_icon = "mdi:robot-mower"
-    _attr_supported_features = SUPPORT_STATE_SERVICES
-
-    def __init__(self, session, idx):
-        super().__init__(session, idx)
-        self._attr_name = self.mower_name
-        self._attr_unique_id = self.session.data["data"][self.idx]["id"]
-
-    @property
-    def available(self) -> bool:
-        """Return True if the device is available."""
-        available = self.get_mower_attributes()["metadata"]["connected"]
-        return available
-
+class HusqvarnaAutomowerStateMixin(object):
     @property
     def state(self) -> str:
         """Return the state of the mower."""
@@ -148,6 +131,27 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
             mower_attributes = AutomowerEntity.get_mower_attributes(self)
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return ""
+
+
+class HusqvarnaAutomowerEntity(
+    HusqvarnaAutomowerStateMixin, StateVacuumEntity, AutomowerEntity
+):
+    """Defining each mower Entity."""
+
+    _attr_device_class = f"{DOMAIN}__mower"
+    _attr_icon = "mdi:robot-mower"
+    _attr_supported_features = SUPPORT_STATE_SERVICES
+
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = self.mower_name
+        self._attr_unique_id = self.session.data["data"][self.idx]["id"]
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     @property
     def battery_level(self) -> int:
