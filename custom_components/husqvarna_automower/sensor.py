@@ -8,11 +8,10 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import PERCENTAGE, TIME_SECONDS
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-import homeassistant.util.dt as dt_util
 
 from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
@@ -29,6 +28,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalChargingTime",
@@ -38,6 +38,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalCuttingTime",
@@ -47,6 +48,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalRunningTime",
@@ -56,6 +58,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalSearchingTime",
@@ -65,6 +68,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="numberOfChargingCycles",
@@ -252,10 +256,6 @@ class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
     def native_value(self):
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        if self.entity_description.device_class is SensorDeviceClass.DURATION:
-            return dt_util.dt.timedelta(
-                seconds=mower_attributes["statistics"][self.entity_description.key]
-            )
         return mower_attributes["statistics"][self.entity_description.key]
 
 
