@@ -8,7 +8,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import PERCENTAGE, TIME_SECONDS
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -24,36 +24,89 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key="cuttingBladeUsageTime",
         name="Cutting Blade Usage Time",
         icon="mdi:clock-outline",
-    ),
-    SensorEntityDescription(
-        key="numberOfChargingCycles",
-        name="Number Of Charging Cycles",
-        icon="mdi:battery-sync-outline",
-    ),
-    SensorEntityDescription(
-        key="numberOfCollisions",
-        name="numberOfCollisions",
-        icon="mdi:counter",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalChargingTime",
         name="Total Charging Time",
         icon="mdi:clock-outline",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalCuttingTime",
         name="Total Cutting Time",
         icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalRunningTime",
         name="Total Running Time",
         icon="mdi:clock-outline",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
     ),
     SensorEntityDescription(
         key="totalSearchingTime",
         name="Total Searching Time",
         icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=TIME_SECONDS,
+    ),
+    SensorEntityDescription(
+        key="numberOfChargingCycles",
+        name="Number Of Charging Cycles",
+        icon="mdi:battery-sync-outline",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    SensorEntityDescription(
+        key="numberOfCollisions",
+        name="Number Of Collisions",
+        icon="mdi:counter",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+)
+
+
+PERCENTAGE_SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
+    SensorEntityDescription(
+        key="totalSearchingTime",
+        name="Searching Time Percent",
+        icon="mdi:percent",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    SensorEntityDescription(
+        key="totalCuttingTime",
+        name="Cutting Time Percent",
+        icon="mdi:percent",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
     ),
 )
 
@@ -83,6 +136,11 @@ async def async_setup_entry(
         AutomowerStatisticsSensor(session, idx, description)
         for idx, ent in enumerate(session.data["data"])
         for description in SENSOR_TYPES
+    )
+    async_add_entities(
+        AutomowerStatisticsPercentageSensor(session, idx, description)
+        for idx, ent in enumerate(session.data["data"])
+        for description in PERCENTAGE_SENSOR_TYPES
     )
 
 
@@ -186,20 +244,36 @@ class AutomowerModeSensor(SensorEntity, AutomowerEntity):
 
 
 class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerModeSensor Entity."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_entity_registry_enabled_default = False
-    _attr_state_class = SensorStateClass.TOTAL
+    """Defining the AutomowerTimeStatisticsSensor Entity."""
 
     def __init__(self, session, idx, description: SensorEntityDescription):
         super().__init__(session, idx)
         self.entity_description = description
         self._attr_name = f"{self.mower_name} {description.name}"
-        self._attr_unique_id = f"{self.mower_id}_{self.entity_description.key}"
+        self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     @property
     def native_value(self):
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return mower_attributes["statistics"][self.entity_description.key]
+
+
+class AutomowerStatisticsPercentageSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerPercentageTimeSensor Entity."""
+
+    def __init__(self, session, idx, description: SensorEntityDescription):
+        super().__init__(session, idx)
+        self.entity_description = description
+        self._attr_name = f"{self.mower_name} {description.name}"
+        self._attr_unique_id = f"{self.mower_id}_{description.key}_percentage"
+
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        percent = (
+            mower_attributes["statistics"][self.entity_description.key]
+            / mower_attributes["statistics"]["totalRunningTime"]
+        ) * 100
+        return round(percent, 1)
