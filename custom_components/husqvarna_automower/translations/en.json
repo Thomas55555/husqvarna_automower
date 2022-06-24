@@ -35,14 +35,38 @@
     },
     "options": {
         "step": {
-            "init": {
+            "select": {
+                "menu_options": {
+                    "home_init": "Set Home Location",
+                    "geofence_init": "Setup Zones",
+                    "camera_init": "Configure Map Camera"
+                },
+                "description": "Select Config Option",
+                "title": "Husqvarna Automower Options"
+            },
+            "home_init": {
+                "data": {
+                    "home_location": "GPS Coordinates of the charging station."
+                },
+                "description": "Set Home Location",
+                "title": "Husqvarna Automower Options"
+            },
+            "zone_edit": {"data": {
+                "name": "Zone Name",
+                "zone_coordinates": "Zone Coordinates lat,long;lat,long...",
+                "delete": "Delete this zone"
+                },
+                "description": "Configure Zone",
+                "title": "Husqvarna Automower Options"
+            },
+            "camera_init": {
                 "data": {
                     "enable_camera": "Enable Map Camera"
                 },
-                "description": "Enable Map Camera", 
+                "description": "Enable Map Camera",
                 "title": "Husqvarna Automower Options"
             },
-            "config": {
+            "camera_config": {
                 "data": {
                     "gps_top_left": "GPS Coordinates of the Top Left Image Corner",
                     "gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",

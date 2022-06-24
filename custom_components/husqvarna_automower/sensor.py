@@ -1,5 +1,6 @@
 """Creates a sesnor entity for the mower"""
 import logging
+import json
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -13,7 +14,17 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, ERRORCODES
+from shapely.geometry import Point, Polygon
+
+from .const import (
+    DOMAIN,
+    ERRORCODES,
+    CONF_ZONES,
+    HOME_LOCATION,
+    ZONE_COORD,
+    ZONE_ID,
+    ZONE_NAME,
+)
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -142,6 +153,68 @@ async def async_setup_entry(
         for idx, ent in enumerate(session.data["data"])
         for description in PERCENTAGE_SENSOR_TYPES
     )
+    async_add_entities(
+        AutomowerZoneSensor(session, idx, entry)
+        for idx, ent in enumerate(session.data["data"])
+    )
+
+
+class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
+    """Define the AutomowerZoneSensor"""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, session, idx, entry):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Zone Sensor"
+        self._attr_unique_id = f"{self.mower_id}_zone_sensor"
+        self.entry = entry
+        self.zones = self._load_zones()
+        self.home_location = self.entry.options.get(HOME_LOCATION, None)
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
+
+    def _load_zones(self):
+        return json.loads(self.entry.options.get(CONF_ZONES, "{}"))
+
+    @property
+    def _is_home(self):
+        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in [
+            "PARKED_IN_CS",
+            "CHARGING",
+        ]:
+            return True
+        return False
+
+    def _find_current_zone(self):
+        if self._is_home and self.home_location:
+            self.zone = {ZONE_NAME: "Home"}
+            self.zone_id = "home"
+            return
+
+        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
+        location = Point(lat, lon)
+        for zone_id, zone in self.zones.items():
+            zone_poly = Polygon(zone.get(ZONE_COORD))
+            if zone_poly.contains(location):
+                self.zone = zone
+                self.zone_id = zone_id
+                return
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
+
+    @property
+    def native_value(self) -> str:
+        """Return a the current zone of the mower."""
+        self._find_current_zone()
+        return self.zone.get(ZONE_NAME)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return the specific state attributes of this mower."""
+        return {ZONE_ID: self.zone_id}
 
 
 class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
