@@ -130,7 +130,7 @@ class HusqvarnaAutomowerStateMixin(object):
         if self.state == STATE_ERROR:
             mower_attributes = AutomowerEntity.get_mower_attributes(self)
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-        return ""
+        return None
 
 
 class HusqvarnaAutomowerEntity(
@@ -220,7 +220,7 @@ class HusqvarnaAutomowerEntity(
             "ERROR_AT_POWER_UP",
         ]:
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-        return "Unknown"
+        return None
 
     @property
     def extra_state_attributes(self) -> dict:
