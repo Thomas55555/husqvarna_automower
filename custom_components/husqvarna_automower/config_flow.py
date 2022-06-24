@@ -1,6 +1,7 @@
 """Config flow to add the integration via the UI."""
 import logging
 import os
+import json
 
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
@@ -214,32 +215,31 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.base_path = os.path.dirname(__file__)
         self.config_entry = config_entry
 
-        self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
-        self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
+        self.user_input = dict(config_entry.options)
+        if self.user_input.get(CONF_ZONES, False):
+            self.user_input[CONF_ZONES] = json.loads(self.user_input[CONF_ZONES])
+
+        self.configured_zones = self.user_input.get(CONF_ZONES, {})
+
+        self.camera_enabled = self.user_input.get(ENABLE_CAMERA, False)
+        self.map_top_left_coord = self.user_input.get(GPS_TOP_LEFT, "")
         if self.map_top_left_coord != "":
             self.map_top_left_coord = ",".join(
                 [str(x) for x in self.map_top_left_coord]
             )
 
-        self.map_bottom_right_coord = self.config_entry.options.get(
-            GPS_BOTTOM_RIGHT, ""
-        )
+        self.map_bottom_right_coord = self.user_input.get(GPS_BOTTOM_RIGHT, "")
         if self.map_bottom_right_coord != "":
             self.map_bottom_right_coord = ",".join(
                 [str(x) for x in self.map_bottom_right_coord]
             )
 
-        self.mower_image_path = self.config_entry.options.get(
+        self.mower_image_path = self.user_input.get(
             MOWER_IMG_PATH, os.path.join(self.base_path, "resources/mower.png")
         )
-        self.map_img_path = self.config_entry.options.get(
+        self.map_img_path = self.user_input.get(
             MAP_IMG_PATH, os.path.join(self.base_path, "resources/map_image.png")
         )
-
-        self.configured_zones = self.config_entry.options.get(CONF_ZONES, {})
-
-        #self.options = self.config_entry.options.copy()
-        self.options = dict(config_entry.options)
 
     async def async_step_init(self, user_input=None):
         """Manage option flow"""
@@ -260,7 +260,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             return await self.async_step_zone_edit(
                 sel_zone_name=user_input.get(ZONE_SEL, ZONE_NEW)
             )
-
         configured_zone_keys = [ZONE_NEW] + list(self.configured_zones.keys())
         data_schema = {}
         data_schema[ZONE_SEL] = selector(
@@ -289,22 +288,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                                 (float(coord_split[0]), float(coord_split[1]))
                             )
                     self.configured_zones[user_input.get(ZONE_NAME)] = zone_coord
-                    _LOGGER.warning(zone_coord)
 
-            #self.options[CONF_ZONES] = self.configured_zones
-            self.options.update({CONF_ZONES: self.configured_zones})
-            _LOGGER.warning(self.options)
+            self.user_input.update({CONF_ZONES: self.configured_zones})
             return await self._update_options()
 
         if sel_zone_name != ZONE_NEW:
             current_coordinates = self.configured_zones.get(sel_zone_name, "")
             str_zone = ""
             if current_coordinates:
-                _LOGGER.warning(current_coordinates)
                 for coord in current_coordinates:
                     str_zone += ",".join([str(x) for x in coord])
                     str_zone += ";"
-                    _LOGGER.warning(str_zone)
 
             sel_zone_coordinates = str_zone
         else:
@@ -324,9 +318,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input:
             if user_input.get(ENABLE_CAMERA):
-                self.options[ENABLE_CAMERA] = True
+                self.user_input[ENABLE_CAMERA] = True
                 return await self.async_step_camera_config()
-            self.options[ENABLE_CAMERA] = False
+            self.user_input[ENABLE_CAMERA] = False
             return await self._update_options()
 
         data_schema = vol.Schema(
@@ -340,20 +334,20 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Update the camera configuration."""
         if user_input:
             if user_input.get(GPS_TOP_LEFT):
-                self.options[GPS_TOP_LEFT] = [
+                self.user_input[GPS_TOP_LEFT] = [
                     float(x.strip())
                     for x in user_input.get(GPS_TOP_LEFT).split(",")
                     if x
                 ]
             if user_input.get(GPS_BOTTOM_RIGHT):
-                self.options[GPS_BOTTOM_RIGHT] = [
+                self.user_input[GPS_BOTTOM_RIGHT] = [
                     float(x.strip())
                     for x in user_input.get(GPS_BOTTOM_RIGHT).split(",")
                     if x
                 ]
 
-            self.options[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
-            self.options[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
+            self.user_input[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
+            self.user_input[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
             return await self._update_options()
 
         data_schema = vol.Schema(
@@ -370,5 +364,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_options(self):
         """Update config entry options."""
-        _LOGGER.warning(self.options)
-        return self.async_create_entry(title="", data=self.options)
+
+        self.user_input["configured_zones"] = json.dumps(
+            self.user_input["configured_zones"]
+        )
+        return self.async_create_entry(title="", data=self.user_input)

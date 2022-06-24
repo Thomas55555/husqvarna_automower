@@ -1,5 +1,6 @@
 """Creates a sesnor entity for the mower"""
 import logging
+import json
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -13,7 +14,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, ERRORCODES
+from shapely.geometry import Point, Polygon
+
+from .const import DOMAIN, ERRORCODES, CONF_ZONES
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -142,7 +145,44 @@ async def async_setup_entry(
         for idx, ent in enumerate(session.data["data"])
         for description in PERCENTAGE_SENSOR_TYPES
     )
+    async_add_entities(
+        AutomowerZoneSensor(session, idx, entry)
+        for idx, ent in enumerate(session.data["data"])
+    )
 
+
+class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
+    """Define the AutomowerZoneSensor"""
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, session, idx, entry):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Zone Sensor"
+        self._attr_unique_id = f"{self.mower_id}_zone_sensor"
+        self.entry = entry
+        self.zones = self._load_zones()
+
+    def _load_zones(self):
+        return json.loads(self.entry.options.get(CONF_ZONES, '{}'))
+
+
+    def _find_current_zone(self):
+        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0][
+            "longitude"
+        ]
+        location = Point(lat, lon)
+        for zone_name, zone_coords in self.zones.items():
+            zone_poly = Polygon(zone_coords)
+            if zone_poly.contains(location):
+                return zone_name
+        return "unknown"
+
+    @property
+    def native_value(self) -> str:
+        """Return a the current zone of the mower."""
+        return self._find_current_zone()
 
 class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
     """Defining the AutomowerProblemSensor Entity."""

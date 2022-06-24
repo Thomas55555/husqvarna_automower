@@ -14,7 +14,8 @@
     "aioautomower==2022.6.0",
     "geopy>=2.1.0",
     "numpy>=1.21.6",
-    "Pillow>=9.1.1"
+    "Pillow>=9.1.1",
+    "Shapely>=1.8.2"
   ],
   "iot_class": "cloud_push",
   "version": "0.0.0"
