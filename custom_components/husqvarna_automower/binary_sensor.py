@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,6 +27,10 @@ async def async_setup_entry(
     )
     async_add_entities(
         AutomowerLeavingDockBinarySensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+    )
+    async_add_entities(
+        AutomowerErrorBinarySensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
 
