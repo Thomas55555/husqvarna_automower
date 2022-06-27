@@ -1,12 +1,15 @@
 """Config flow to add the integration via the UI."""
 import logging
 import os
+import json
 
 from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
 from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import data_entry_flow, config_entries
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.selector import selector
 
 
 from homeassistant.const import (
@@ -31,6 +34,13 @@ from .const import (
     GPS_BOTTOM_RIGHT,
     MOWER_IMG_PATH,
     MAP_IMG_PATH,
+    CONF_ZONES,
+    ZONE_COORD,
+    ZONE_NAME,
+    ZONE_DEL,
+    ZONE_SEL,
+    ZONE_NEW,
+    ZONE_ID,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -206,65 +216,148 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.base_path = os.path.dirname(__file__)
         self.config_entry = config_entry
 
-        self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
-        self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
+        self.user_input = dict(config_entry.options)
+        if self.user_input.get(CONF_ZONES, False):
+            self.user_input[CONF_ZONES] = json.loads(self.user_input[CONF_ZONES])
+
+        self.configured_zones = self.user_input.get(CONF_ZONES, {})
+
+        self.camera_enabled = self.user_input.get(ENABLE_CAMERA, False)
+        self.map_top_left_coord = self.user_input.get(GPS_TOP_LEFT, "")
         if self.map_top_left_coord != "":
             self.map_top_left_coord = ",".join(
                 [str(x) for x in self.map_top_left_coord]
             )
 
-        self.map_bottom_right_coord = self.config_entry.options.get(
-            GPS_BOTTOM_RIGHT, ""
-        )
+        self.map_bottom_right_coord = self.user_input.get(GPS_BOTTOM_RIGHT, "")
         if self.map_bottom_right_coord != "":
             self.map_bottom_right_coord = ",".join(
                 [str(x) for x in self.map_bottom_right_coord]
             )
 
-        self.mower_image_path = self.config_entry.options.get(
+        self.mower_image_path = self.user_input.get(
             MOWER_IMG_PATH, os.path.join(self.base_path, "resources/mower.png")
         )
-        self.map_img_path = self.config_entry.options.get(
+        self.map_img_path = self.user_input.get(
             MAP_IMG_PATH, os.path.join(self.base_path, "resources/map_image.png")
         )
-        self.options = self.config_entry.options.copy()
 
     async def async_step_init(self, user_input=None):
+        """Manage option flow"""
+        return await self.async_step_select()
+
+    async def async_step_select(self, user_input=None):
+        """Select Configuration Item"""
+
+        return self.async_show_menu(
+            step_id="select",
+            menu_options=["geofence_init", "camera_init"],
+        )
+
+    async def async_step_geofence_init(self, user_input=None):
+        """Configure the geofence"""
+
+        if user_input:
+            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_NEW)
+            return await self.async_step_zone_edit()
+        configured_zone_keys = [ZONE_NEW] + list(self.configured_zones.keys())
+        data_schema = {}
+        data_schema[ZONE_SEL] = selector(
+            {
+                "select": {
+                    "options": configured_zone_keys,
+                }
+            }
+        )
+        return self.async_show_form(
+            step_id="geofence_init", data_schema=vol.Schema(data_schema)
+        )
+
+    async def async_step_zone_edit(self, user_input=None):
+        """Update the selected zone configuration."""
+        if user_input:
+            if user_input.get(ZONE_DEL) == True:
+                self.configured_zones.pop(self.sel_zone_id, None)
+            else:
+                zone_coord = []
+                if user_input.get(ZONE_COORD):
+                    for coord in user_input.get(ZONE_COORD).split(";"):
+                        if coord != "":
+                            coord_split = coord.split(",")
+                            zone_coord.append(
+                                (float(coord_split[0]), float(coord_split[1]))
+                            )
+                    if self.sel_zone_id == ZONE_NEW:
+                        self.sel_zone_id = (
+                            user_input.get(ZONE_NAME).lower().strip().replace(" ", "_")
+                        )
+
+                    self.configured_zones[self.sel_zone_id] = {
+                        ZONE_COORD: zone_coord,
+                        ZONE_NAME: user_input.get(ZONE_NAME).strip(),
+                    }
+
+            self.user_input.update({CONF_ZONES: self.configured_zones})
+            await self._update_options()
+            return await self.async_step_geofence_init()
+
+        sel_zone = self.configured_zones.get(self.sel_zone_id, {})
+        current_coordinates = sel_zone.get(ZONE_COORD, "")
+
+        str_zone = ""
+        sel_zone_name = sel_zone.get(ZONE_NAME, "")
+
+        for coord in current_coordinates:
+            str_zone += ",".join([str(x) for x in coord])
+            str_zone += ";"
+
+        sel_zone_coordinates = str_zone
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(ZONE_NAME, default=sel_zone_name): str,
+                vol.Required(ZONE_COORD, default=sel_zone_coordinates): str,
+                vol.Required(ZONE_DEL, default=False): bool,
+            }
+        )
+        return self.async_show_form(step_id="zone_edit", data_schema=data_schema)
+
+    async def async_step_camera_init(self, user_input=None):
         """Enable / Disable the camera."""
 
         if user_input:
             if user_input.get(ENABLE_CAMERA):
-                self.options[ENABLE_CAMERA] = True
-                return await self.async_step_config()
-            self.options[ENABLE_CAMERA] = False
-            return await self._update_camera_config()
+                self.user_input[ENABLE_CAMERA] = True
+                return await self.async_step_camera_config()
+            self.user_input[ENABLE_CAMERA] = False
+            return await self._update_options()
 
         data_schema = vol.Schema(
             {
                 vol.Required(ENABLE_CAMERA, default=self.camera_enabled): bool,
             }
         )
-        return self.async_show_form(step_id="init", data_schema=data_schema)
+        return self.async_show_form(step_id="camera_init", data_schema=data_schema)
 
-    async def async_step_config(self, user_input=None):
+    async def async_step_camera_config(self, user_input=None):
         """Update the camera configuration."""
         if user_input:
             if user_input.get(GPS_TOP_LEFT):
-                self.options[GPS_TOP_LEFT] = [
+                self.user_input[GPS_TOP_LEFT] = [
                     float(x.strip())
                     for x in user_input.get(GPS_TOP_LEFT).split(",")
                     if x
                 ]
             if user_input.get(GPS_BOTTOM_RIGHT):
-                self.options[GPS_BOTTOM_RIGHT] = [
+                self.user_input[GPS_BOTTOM_RIGHT] = [
                     float(x.strip())
                     for x in user_input.get(GPS_BOTTOM_RIGHT).split(",")
                     if x
                 ]
 
-            self.options[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
-            self.options[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
-            return await self._update_camera_config()
+            self.user_input[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
+            self.user_input[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
+            return await self._update_options()
 
         data_schema = vol.Schema(
             {
@@ -276,8 +369,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(MAP_IMG_PATH, default=self.map_img_path): str,
             }
         )
-        return self.async_show_form(step_id="config", data_schema=data_schema)
+        return self.async_show_form(step_id="camera_config", data_schema=data_schema)
 
-    async def _update_camera_config(self):
+    async def _update_options(self):
         """Update config entry options."""
-        return self.async_create_entry(title="", data=self.options)
+
+        self.user_input["configured_zones"] = json.dumps(
+            self.user_input["configured_zones"]
+        )
+        return self.async_create_entry(title="", data=self.user_input)

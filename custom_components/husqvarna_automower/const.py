@@ -39,6 +39,15 @@ GPS_BOTTOM_RIGHT = "gps_bottom_right"
 MOWER_IMG_PATH = "mower_img_path"
 MAP_IMG_PATH = "map_img_path"
 
+# Zone configuration
+CONF_ZONES = "configured_zones"
+ZONE_COORD = "zone_coordinates"
+ZONE_NAME = "name"
+ZONE_DEL = "delete"
+ZONE_SEL = "selected_zone"
+ZONE_NEW = "new"
+ZONE_ID = "zone_id"
+
 
 # Defaults
 DEFAULT_NAME = DOMAIN
