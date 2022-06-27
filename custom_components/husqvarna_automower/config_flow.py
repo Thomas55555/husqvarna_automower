@@ -40,7 +40,7 @@ from .const import (
     ZONE_DEL,
     ZONE_SEL,
     ZONE_NEW,
-    ZONE_ID,
+    CONF_ZONES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -258,7 +258,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Configure the geofence"""
 
         if user_input:
-            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_NEW)
+            self.sel_zone_id=user_input.get(ZONE_SEL, ZONE_NEW)
             return await self.async_step_zone_edit()
         configured_zone_keys = [ZONE_NEW] + list(self.configured_zones.keys())
         data_schema = {}
@@ -288,13 +288,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                                 (float(coord_split[0]), float(coord_split[1]))
                             )
                     if self.sel_zone_id == ZONE_NEW:
-                        self.sel_zone_id = (
-                            user_input.get(ZONE_NAME).lower().strip().replace(" ", "_")
-                        )
+                        self.sel_zone_id = user_input.get(ZONE_NAME).lower().strip().replace(' ', '_')
 
                     self.configured_zones[self.sel_zone_id] = {
                         ZONE_COORD: zone_coord,
-                        ZONE_NAME: user_input.get(ZONE_NAME).strip(),
+                        ZONE_NAME: user_input.get(ZONE_NAME).strip()
                     }
 
             self.user_input.update({CONF_ZONES: self.configured_zones})
@@ -305,13 +303,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         current_coordinates = sel_zone.get(ZONE_COORD, "")
 
         str_zone = ""
-        sel_zone_name = sel_zone.get(ZONE_NAME, "")
+        sel_zone_name = sel_zone.get(ZONE_NAME,"")
 
         for coord in current_coordinates:
             str_zone += ",".join([str(x) for x in coord])
             str_zone += ";"
 
         sel_zone_coordinates = str_zone
+
 
         data_schema = vol.Schema(
             {
@@ -321,6 +320,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             }
         )
         return self.async_show_form(step_id="zone_edit", data_schema=data_schema)
+
 
     async def async_step_camera_init(self, user_input=None):
         """Enable / Disable the camera."""
@@ -374,7 +374,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def _update_options(self):
         """Update config entry options."""
 
-        self.user_input["configured_zones"] = json.dumps(
-            self.user_input["configured_zones"]
-        )
+        if CONF_ZONES in self.user_input
+            self.user_input[CONF_ZONES] = json.dumps(
+                self.user_input[CONF_ZONES]
+            )
         return self.async_create_entry(title="", data=self.user_input)
