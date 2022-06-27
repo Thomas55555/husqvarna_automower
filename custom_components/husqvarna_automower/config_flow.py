@@ -40,6 +40,7 @@ from .const import (
     ZONE_DEL,
     ZONE_SEL,
     ZONE_NEW,
+    ZONE_ID,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -257,9 +258,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Configure the geofence"""
 
         if user_input:
-            return await self.async_step_zone_edit(
-                sel_zone_name=user_input.get(ZONE_SEL, ZONE_NEW)
-            )
+            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_NEW)
+            return await self.async_step_zone_edit()
         configured_zone_keys = [ZONE_NEW] + list(self.configured_zones.keys())
         data_schema = {}
         data_schema[ZONE_SEL] = selector(
@@ -273,11 +273,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="geofence_init", data_schema=vol.Schema(data_schema)
         )
 
-    async def async_step_zone_edit(self, user_input=None, sel_zone_name=None):
+    async def async_step_zone_edit(self, user_input=None):
         """Update the selected zone configuration."""
         if user_input:
-            if user_input.get("delete") == True:
-                self.configured_zones.pop(user_input.get(ZONE_NAME))
+            if user_input.get(ZONE_DEL) == True:
+                self.configured_zones.pop(self.sel_zone_id, None)
             else:
                 zone_coord = []
                 if user_input.get(ZONE_COORD):
@@ -287,22 +287,31 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                             zone_coord.append(
                                 (float(coord_split[0]), float(coord_split[1]))
                             )
-                    self.configured_zones[user_input.get(ZONE_NAME)] = zone_coord
+                    if self.sel_zone_id == ZONE_NEW:
+                        self.sel_zone_id = (
+                            user_input.get(ZONE_NAME).lower().strip().replace(" ", "_")
+                        )
+
+                    self.configured_zones[self.sel_zone_id] = {
+                        ZONE_COORD: zone_coord,
+                        ZONE_NAME: user_input.get(ZONE_NAME).strip(),
+                    }
 
             self.user_input.update({CONF_ZONES: self.configured_zones})
-            return await self._update_options()
+            await self._update_options()
+            return await self.async_step_geofence_init()
 
-        if sel_zone_name != ZONE_NEW:
-            current_coordinates = self.configured_zones.get(sel_zone_name, "")
-            str_zone = ""
-            if current_coordinates:
-                for coord in current_coordinates:
-                    str_zone += ",".join([str(x) for x in coord])
-                    str_zone += ";"
+        sel_zone = self.configured_zones.get(self.sel_zone_id, {})
+        current_coordinates = sel_zone.get(ZONE_COORD, "")
 
-            sel_zone_coordinates = str_zone
-        else:
-            sel_zone_coordinates = ""
+        str_zone = ""
+        sel_zone_name = sel_zone.get(ZONE_NAME, "")
+
+        for coord in current_coordinates:
+            str_zone += ",".join([str(x) for x in coord])
+            str_zone += ";"
+
+        sel_zone_coordinates = str_zone
 
         data_schema = vol.Schema(
             {

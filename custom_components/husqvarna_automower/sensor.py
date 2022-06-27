@@ -16,7 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from shapely.geometry import Point, Polygon
 
-from .const import DOMAIN, ERRORCODES, CONF_ZONES
+from .const import DOMAIN, ERRORCODES, CONF_ZONES, ZONE_COORD, ZONE_ID, ZONE_NAME
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -153,6 +153,7 @@ async def async_setup_entry(
 
 class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
     """Define the AutomowerZoneSensor"""
+
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
 
@@ -164,25 +165,32 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
         self.zones = self._load_zones()
 
     def _load_zones(self):
-        return json.loads(self.entry.options.get(CONF_ZONES, '{}'))
-
+        return json.loads(self.entry.options.get(CONF_ZONES, "{}"))
 
     def _find_current_zone(self):
         lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
-        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0][
-            "longitude"
-        ]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
         location = Point(lat, lon)
-        for zone_name, zone_coords in self.zones.items():
-            zone_poly = Polygon(zone_coords)
+        for zone_id, zone in self.zones.items():
+            zone_poly = Polygon(zone.get(ZONE_COORD))
             if zone_poly.contains(location):
-                return zone_name
-        return "unknown"
+                self.zone = zone
+                self.zone_id = zone_id
+                return
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
 
     @property
     def native_value(self) -> str:
         """Return a the current zone of the mower."""
-        return self._find_current_zone()
+        self._find_current_zone()
+        return self.zone.get(ZONE_NAME)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return the specific state attributes of this mower."""
+        return {ZONE_ID: self.zone_id}
+
 
 class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
     """Defining the AutomowerProblemSensor Entity."""
