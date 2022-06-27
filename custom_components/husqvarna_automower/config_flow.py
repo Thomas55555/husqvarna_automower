@@ -296,8 +296,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     }
 
             self.user_input.update({CONF_ZONES: self.configured_zones})
-            await self._update_options()
-            return await self.async_step_geofence_init()
+            return await self._update_options()
+            # Trying to do this kills the config flow
+            # return await self.async_step_geofence_init()
 
         sel_zone = self.configured_zones.get(self.sel_zone_id, {})
         current_coordinates = sel_zone.get(ZONE_COORD, "")
