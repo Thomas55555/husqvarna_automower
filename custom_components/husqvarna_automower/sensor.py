@@ -168,15 +168,21 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
         return json.loads(self.entry.options.get(CONF_ZONES, "{}"))
 
     def _find_current_zone(self):
-        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
-        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
-        location = Point(lat, lon)
-        for zone_id, zone in self.zones.items():
-            zone_poly = Polygon(zone.get(ZONE_COORD))
-            if zone_poly.contains(location):
-                self.zone = zone
-                self.zone_id = zone_id
-                return
+        try:
+            lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
+            lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
+            location = Point(lat, lon)
+            for zone_id, zone in self.zones.items():
+                zone_poly = Polygon(zone.get(ZONE_COORD))
+                if zone_poly.contains(location):
+                    self.zone = zone
+                    self.zone_id = zone_id
+                    return
+        except IndexError:
+            # If no position set, just return Unknown
+            _LOGGER.debug('No position available')
+            pass
+
         self.zone = {ZONE_NAME: "Unknown"}
         self.zone_id = "unknown"
 

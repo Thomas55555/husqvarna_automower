@@ -374,8 +374,5 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def _update_options(self):
         """Update config entry options."""
 
-        if CONF_ZONES in self.user_input:
-            self.user_input[CONF_ZONES] = json.dumps(
-                self.user_input[CONF_ZONES]
-            )
+        self.user_input[CONF_ZONES] = json.dumps(self.user_input.get(CONF_ZONES, {}))
         return self.async_create_entry(title="", data=self.user_input)
