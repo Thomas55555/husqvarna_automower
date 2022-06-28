@@ -37,10 +37,18 @@
         "step": {
             "select": {
                 "menu_options": {
+                    "home_init": "Set Home Location",
                     "geofence_init": "Setup Zones",
                     "camera_init": "Configure Map Camera"
                 },
                 "description": "Select Config Option",
+                "title": "Husqvarna Automower Options"
+            },
+            "home_init": {
+                "data": {
+                    "home_location": "GPS Coordinates of the charging station."
+                },
+                "description": "Set Home Location",
                 "title": "Husqvarna Automower Options"
             },
             "zone_edit": {"data": {
