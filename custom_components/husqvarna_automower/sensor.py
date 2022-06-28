@@ -16,7 +16,15 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from shapely.geometry import Point, Polygon
 
-from .const import DOMAIN, ERRORCODES, CONF_ZONES, HOME_LOCATION, ZONE_COORD, ZONE_ID, ZONE_NAME
+from .const import (
+    DOMAIN,
+    ERRORCODES,
+    CONF_ZONES,
+    HOME_LOCATION,
+    ZONE_COORD,
+    ZONE_ID,
+    ZONE_NAME,
+)
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -172,12 +180,15 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
 
     @property
     def _is_home(self):
-        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]:
+        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in [
+            "PARKED_IN_CS",
+            "CHARGING",
+        ]:
             return True
         return False
 
     def _find_current_zone(self):
-        if  self._is_home and self.home_location:
+        if self._is_home and self.home_location:
             self.zone = {ZONE_NAME: "Home"}
             self.zone_id = "home"
             return
@@ -193,7 +204,6 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
                 return
         self.zone = {ZONE_NAME: "Unknown"}
         self.zone_id = "unknown"
-
 
     @property
     def native_value(self) -> str:
