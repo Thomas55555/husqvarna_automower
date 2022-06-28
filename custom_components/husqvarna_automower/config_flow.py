@@ -41,6 +41,7 @@ from .const import (
     ZONE_SEL,
     ZONE_NEW,
     CONF_ZONES,
+    ZONE_FINISH,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -259,8 +260,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input:
             self.sel_zone_id=user_input.get(ZONE_SEL, ZONE_NEW)
+            if self.sel_zone_id == ZONE_FINISH:
+                return await self._update_options()
+
             return await self.async_step_zone_edit()
-        configured_zone_keys = [ZONE_NEW] + list(self.configured_zones.keys())
+
+        configured_zone_keys = [ZONE_NEW, ZONE_FINISH] + list(self.configured_zones.keys())
         data_schema = {}
         data_schema[ZONE_SEL] = selector(
             {
@@ -296,9 +301,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     }
 
             self.user_input.update({CONF_ZONES: self.configured_zones})
-            return await self._update_options()
-            # Trying to do this kills the config flow
-            # return await self.async_step_geofence_init()
+            return await self.async_step_geofence_init()
 
         sel_zone = self.configured_zones.get(self.sel_zone_id, {})
         current_coordinates = sel_zone.get(ZONE_COORD, "")

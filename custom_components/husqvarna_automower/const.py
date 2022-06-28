@@ -47,6 +47,7 @@ ZONE_DEL = "delete"
 ZONE_SEL = "selected_zone"
 ZONE_NEW = "new"
 ZONE_ID = "zone_id"
+ZONE_FINISH = "save"
 
 
 # Defaults
