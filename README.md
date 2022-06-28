@@ -101,9 +101,16 @@ You have two options to login.
 
 The optional camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
 
-The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and seperated by a comma for example (40.689209, -74.044661)
+The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and seperated by a comma for example ```40.689209, -74.044661```
 
 You can then provide the path to the image you would like to use for the map and mower, this has been tested with the PNG format, other formats may work.
+
+
+### Configuring the zone sensor
+
+The optional zone sensor allows zones to be designated by coorinates, this sensor will then return the name of the zone the mower is currently located.
+
+To create a Zone, select new then enter a name for the zone and the coordinates of the zone.  Coordinates are entered in Signed Degree format with latitude and lognitude seperated by a comma and each coordinate seperated by a semi colon. You must enter at least three coordinates to define a zone. For example: ```40.689209, -74.044661; 40.689210, -74.044652; 40.689211, -74.044655``` You must select save and then submit, exiting the flow in another manner will cause any entered zones to be lost.
 
 ## Usage
 
