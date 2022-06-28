@@ -31,6 +31,7 @@ CONF_TOKEN_TYPE = "token_type"
 CONF_REFRESH_TOKEN = "refresh_token"
 ACCESS_TOKEN_RAW = "access_token_raw"
 POSITIONS = "positions"
+HOME_LOCATION = "home_location"
 
 # Camera configuration
 ENABLE_CAMERA = "enable_camera"

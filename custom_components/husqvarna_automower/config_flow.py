@@ -8,7 +8,6 @@ import voluptuous as vol
 
 from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import data_entry_flow, config_entries
-from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.selector import selector
 
 
@@ -40,8 +39,8 @@ from .const import (
     ZONE_DEL,
     ZONE_SEL,
     ZONE_NEW,
-    CONF_ZONES,
     ZONE_FINISH,
+    HOME_LOCATION
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -211,7 +210,7 @@ class HusqvarnaConfigFlowHandler(
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle a option flow."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry):
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
         super().__init__()
         self.base_path = os.path.dirname(__file__)
@@ -243,6 +242,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             MAP_IMG_PATH, os.path.join(self.base_path, "resources/map_image.png")
         )
 
+        self.home_location = self.user_input.get(HOME_LOCATION, "")
+        if self.home_location != "":
+            self.home_location = ",".join(
+                [str(x) for x in self.home_location]
+            )
+
+        self.sel_zone_id = None
+
+
+
+
     async def async_step_init(self, user_input=None):
         """Manage option flow"""
         return await self.async_step_select()
@@ -252,22 +262,38 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         return self.async_show_menu(
             step_id="select",
-            menu_options=["geofence_init", "camera_init"],
+            menu_options=["geofence_init", "camera_init", "home_init"],
         )
+
+    async def async_step_home_init(self, user_input=None):
+        """Configure the home location."""
+
+        if user_input:
+            if user_input.get(HOME_LOCATION):
+                self.user_input[HOME_LOCATION] = [
+                    float(x.strip())
+                    for x in user_input.get(HOME_LOCATION).split(",")
+                    if x
+                ]
+                return await self._update_options()
+        data_schema = vol.Schema(
+            {
+                vol.Required(HOME_LOCATION, default=self.home_location): str,
+            }
+        )
+        return self.async_show_form(step_id="home_init", data_schema=data_schema)
 
     async def async_step_geofence_init(self, user_input=None):
         """Configure the geofence"""
 
         if user_input:
-            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_NEW)
+            self.sel_zone_id=user_input.get(ZONE_SEL, ZONE_NEW)
             if self.sel_zone_id == ZONE_FINISH:
                 return await self._update_options()
 
             return await self.async_step_zone_edit()
 
-        configured_zone_keys = [ZONE_NEW, ZONE_FINISH] + list(
-            self.configured_zones.keys()
-        )
+        configured_zone_keys = [ZONE_NEW, ZONE_FINISH] + list(self.configured_zones.keys())
         data_schema = {}
         data_schema[ZONE_SEL] = selector(
             {
@@ -283,7 +309,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_zone_edit(self, user_input=None):
         """Update the selected zone configuration."""
         if user_input:
-            if user_input.get(ZONE_DEL) == True:
+            if user_input.get(ZONE_DEL) is True:
                 self.configured_zones.pop(self.sel_zone_id, None)
             else:
                 zone_coord = []
@@ -295,13 +321,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                                 (float(coord_split[0]), float(coord_split[1]))
                             )
                     if self.sel_zone_id == ZONE_NEW:
-                        self.sel_zone_id = (
-                            user_input.get(ZONE_NAME).lower().strip().replace(" ", "_")
-                        )
+                        self.sel_zone_id = user_input.get(ZONE_NAME).lower().strip().replace(' ', '_')
 
                     self.configured_zones[self.sel_zone_id] = {
                         ZONE_COORD: zone_coord,
-                        ZONE_NAME: user_input.get(ZONE_NAME).strip(),
+                        ZONE_NAME: user_input.get(ZONE_NAME).strip()
                     }
 
             self.user_input.update({CONF_ZONES: self.configured_zones})
@@ -311,13 +335,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         current_coordinates = sel_zone.get(ZONE_COORD, "")
 
         str_zone = ""
-        sel_zone_name = sel_zone.get(ZONE_NAME, "")
+        sel_zone_name = sel_zone.get(ZONE_NAME,"")
 
         for coord in current_coordinates:
             str_zone += ",".join([str(x) for x in coord])
             str_zone += ";"
 
         sel_zone_coordinates = str_zone
+
 
         data_schema = vol.Schema(
             {
@@ -327,6 +352,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             }
         )
         return self.async_show_form(step_id="zone_edit", data_schema=data_schema)
+
 
     async def async_step_camera_init(self, user_input=None):
         """Enable / Disable the camera."""

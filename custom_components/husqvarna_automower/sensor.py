@@ -16,7 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from shapely.geometry import Point, Polygon
 
-from .const import DOMAIN, ERRORCODES, CONF_ZONES, ZONE_COORD, ZONE_ID, ZONE_NAME
+from .const import DOMAIN, ERRORCODES, CONF_ZONES, HOME_LOCATION, ZONE_COORD, ZONE_ID, ZONE_NAME
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -163,30 +163,37 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
         self._attr_unique_id = f"{self.mower_id}_zone_sensor"
         self.entry = entry
         self.zones = self._load_zones()
+        self.home_location = self.entry.options.get(HOME_LOCATION, None)
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
 
     def _load_zones(self):
         return json.loads(self.entry.options.get(CONF_ZONES, "{}"))
 
-    def _find_current_zone(self):
-        try:
-            lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
-            lon = AutomowerEntity.get_mower_attributes(self)["positions"][0][
-                "longitude"
-            ]
-            location = Point(lat, lon)
-            for zone_id, zone in self.zones.items():
-                zone_poly = Polygon(zone.get(ZONE_COORD))
-                if zone_poly.contains(location):
-                    self.zone = zone
-                    self.zone_id = zone_id
-                    return
-        except IndexError:
-            # If no position set, just return Unknown
-            _LOGGER.debug("No position available")
-            pass
+    @property
+    def _is_home(self):
+        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]:
+            return True
+        return False
 
+    def _find_current_zone(self):
+        if  self._is_home and self.home_location:
+            self.zone = {ZONE_NAME: "Home"}
+            self.zone_id = "home"
+            return
+
+        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
+        location = Point(lat, lon)
+        for zone_id, zone in self.zones.items():
+            zone_poly = Polygon(zone.get(ZONE_COORD))
+            if zone_poly.contains(location):
+                self.zone = zone
+                self.zone_id = zone_id
+                return
         self.zone = {ZONE_NAME: "Unknown"}
         self.zone_id = "unknown"
+
 
     @property
     def native_value(self) -> str:
