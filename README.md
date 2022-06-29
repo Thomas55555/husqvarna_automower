@@ -112,7 +112,7 @@ The optional zone sensor allows zones to be designated by coorinates, this senso
 
 To create a Zone, select new then enter a name for the zone and the coordinates of the zone.  Coordinates are entered in Signed Degree format with latitude and lognitude seperated by a comma and each coordinate seperated by a semi colon. You must enter at least three coordinates to define a zone. For example: ```40.689209, -74.044661; 40.689210, -74.044652; 40.689211, -74.044655``` You must select save and then submit, exiting the flow in another manner will cause any entered zones to be lost.
 
-If a Home Zone is set, the sensor will return Home when the mower is charging or at the docking station.
+If a Home Zone is set, the sensor will return Home and the camera will display the mower at the home location, when the mower is charging or at the docking station.
 
 ## Usage
 
