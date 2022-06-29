@@ -11,7 +11,7 @@ from typing import Optional
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.components.camera import Camera, SUPPORT_ON_OFF
+from homeassistant.components.camera import Camera, CameraEntityFeature
 
 from .entity import AutomowerEntity
 from .vacuum import HusqvarnaAutomowerStateMixin
@@ -23,6 +23,7 @@ from .const import (
     GPS_BOTTOM_RIGHT,
     MOWER_IMG_PATH,
     MAP_IMG_PATH,
+    HOME_LOCATION,
 )
 
 
@@ -57,6 +58,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         self._position_history = []
         self._attr_name = self.mower_name
         self._attr_unique_id = f"{self.mower_id}_camera"
+        self.home_location = self.entry.options.get(HOME_LOCATION, None)
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._image_bytes = None
         self._image_to_bytes()
@@ -113,11 +115,17 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     @property
     def supported_features(self) -> int:
-        return SUPPORT_ON_OFF
+        return CameraEntityFeature.ON_OFF
 
     def _generate_image(self, data: dict):
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
-        location = (position_history[0]["latitude"], position_history[0]["longitude"])
+        if self._is_home and self.home_location:
+            location = self.home_location
+        else:
+            location = (
+                position_history[0]["latitude"],
+                position_history[0]["longitude"],
+            )
         if len(position_history) == 1:
             self._position_history += position_history
             position_history = self._position_history

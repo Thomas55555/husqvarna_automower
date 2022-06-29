@@ -178,15 +178,6 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
     def _load_zones(self):
         return json.loads(self.entry.options.get(CONF_ZONES, "{}"))
 
-    @property
-    def _is_home(self):
-        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in [
-            "PARKED_IN_CS",
-            "CHARGING",
-        ]:
-            return True
-        return False
-
     def _find_current_zone(self):
         if self._is_home and self.home_location:
             self.zone = {ZONE_NAME: "Home"}
