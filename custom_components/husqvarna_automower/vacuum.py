@@ -269,6 +269,9 @@ class HusqvarnaAutomowerEntity(
 
     async def async_park_and_start(self, command, duration, **kwargs) -> None:
         """Sends a custom command to the mower."""
+        _LOGGER.warning(
+            "The service `park_and_start` is depracated. Please use the number entites `number.park_for` or `number.mow_for` instead"
+        )
         command_type = "actions"
         string = {
             "data": {
