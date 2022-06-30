@@ -83,6 +83,7 @@ class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
 
     def __init__(self, session, idx):
         super().__init__(session, idx)
