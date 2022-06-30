@@ -7,9 +7,8 @@ from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
 from aioautomower import GetAccessToken, GetMowerData, TokenError
-from homeassistant import data_entry_flow, config_entries
+from homeassistant import config_entries, data_entry_flow
 from homeassistant.helpers.selector import selector
-
 
 from homeassistant.const import (
     ATTR_CREDENTIALS,
@@ -20,18 +19,17 @@ from homeassistant.const import (
     CONF_TOKEN,
     CONF_USERNAME,
 )
+from homeassistant.core import callback
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.network import get_url
-from homeassistant.core import callback
 
 from .const import (
     CONF_PROVIDER,
     CONF_TOKEN_TYPE,
     DOMAIN,
     ENABLE_CAMERA,
-    GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
-    MOWER_IMG_PATH,
+    GPS_TOP_LEFT,
     MAP_IMG_PATH,
     CONF_ZONES,
     ZONE_COORD,
