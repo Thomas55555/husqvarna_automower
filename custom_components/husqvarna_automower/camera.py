@@ -90,7 +90,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             self.top_left_coord = (top_left_lat, top_left_lon)
             self.bottom_right_coord = (bottom_right_lat, bottom_right_lon)
 
-    @property
     def model(self) -> str:
         """Return the mower model."""
         return self.model
