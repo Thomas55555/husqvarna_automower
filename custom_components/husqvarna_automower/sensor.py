@@ -340,4 +340,4 @@ class AutomowerStatisticsPercentageSensor(SensorEntity, AutomowerEntity):
             mower_attributes["statistics"][self.entity_description.key]
             / mower_attributes["statistics"]["totalRunningTime"]
         ) * 100
-        return round(percent, 1)
+        return round(percent, 2)
