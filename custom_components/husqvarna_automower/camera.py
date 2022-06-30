@@ -8,7 +8,7 @@ from typing import Optional
 from PIL import Image, ImageDraw
 import numpy as np
 
-from homeassistant.components.camera import SUPPORT_ON_OFF, Camera
+from homeassistant.components.camera import CameraEntityFeature, Camera
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -19,6 +19,7 @@ from .const import (
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
     MAP_IMG_PATH,
+    MOWER_IMG_PATH,
     HOME_LOCATION,
 )
 from .entity import AutomowerEntity
@@ -43,6 +44,7 @@ async def async_setup_entry(
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
+    """Define an Automower Camera entity"""
 
     _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
@@ -88,6 +90,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             self.top_left_coord = (top_left_lat, top_left_lon)
             self.bottom_right_coord = (bottom_right_lat, bottom_right_lon)
 
+    @property
     def model(self) -> str:
         """Return the mower model."""
         return self.model

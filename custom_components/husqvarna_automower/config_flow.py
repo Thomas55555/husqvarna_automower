@@ -31,6 +31,7 @@ from .const import (
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
     MAP_IMG_PATH,
+    MOWER_IMG_PATH,
     CONF_ZONES,
     ZONE_COORD,
     ZONE_NAME,
