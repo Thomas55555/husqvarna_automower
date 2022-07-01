@@ -108,6 +108,7 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description
+        self._attr_name = f"{self.mower_name} {description.name}"
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     async def async_set_native_value(self, value: float) -> None:
