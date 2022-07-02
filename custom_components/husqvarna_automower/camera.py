@@ -155,11 +155,12 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             plot_points = self._find_points_on_line(scaled_loc_1, scaled_loc_2)
             for p in range(0, len(plot_points) - 1, 2):
                 img_draw.line((plot_points[p], plot_points[p + 1]), fill="red", width=2)
-        overlay_image = overlay_image.resize((64, 64))
+        mower_img_w = 64
+        mower_wpercent = mower_img_w / float(overlay_image.size[0])
+        hsize = int((float(overlay_image.size[1]) * float(mower_wpercent)))
+        overlay_image = overlay_image.resize((mower_img_w, hsize), Image.ANTIALIAS)
         img_w, img_h = overlay_image.size
-        map_image.paste(
-            overlay_image, (x1 - img_w // 2, y1 - img_h // 2), overlay_image
-        )
+        map_image.paste(overlay_image, (x1 - img_w // 2, y1 - img_h), overlay_image)
         self._image = map_image
         self._image_to_bytes()
 
