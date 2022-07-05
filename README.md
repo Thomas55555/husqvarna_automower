@@ -2,7 +2,7 @@
 
 # This fork varies from @Thomas55555 as follows
 
-- Adds a zone sensor to track the zone the mower is in.  THis is configurable and supports polygon zones.
+- Adds a zone sensor to track the zone the mower is in.  This is configurable and supports polygon zones.
 - Uses a binary error sensor that has an error number and state for attributes.
 - Better mower location icon
 - Allows setting a home position, this is where the mower charger is located, when the mower is home the location of the zone will indicate home and the map camera will show the mower at the charger instead of it's reported position.
