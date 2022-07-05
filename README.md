@@ -29,7 +29,7 @@ need a API key to use this integration, refer to [this
 guide](https://developer.husqvarnagroup.cloud/docs/getting-started) on how to
 get one.
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/images/screenshot_husqvarna_automower.png)
+![Screenshot of the integration](/images/screenshot_husqvarna_automower.png)
 
 ## Supported devices
 
@@ -102,7 +102,7 @@ You have two options to login.
 
 ### Configuring the camera sensor
 
-![Example of camera](https://github.com/Thomas55555/husqvarna_automower/blob/main/images/map_camera.png)
+![Example of camera](/images/map_camera.png)
 
 The optional camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
 
