@@ -26,7 +26,7 @@ need a API key to use this integration, refer to [this
 guide](https://developer.husqvarnagroup.cloud/docs/getting-started) on how to
 get one.
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/master/screenshot_husqvarna_automower.PNG)
+![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG)
 
 ## Supported devices
 

@@ -81,9 +81,9 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
 class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerErrorSensor Entity."""
 
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_entity_registry_enabled_default = False
-    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+    _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default: bool = False
+    _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
 
     def __init__(self, session, idx):
         super().__init__(session, idx)
