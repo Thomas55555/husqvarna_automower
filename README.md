@@ -1,8 +1,11 @@
 # Home Assistant integration for Husqvarna Automower
 
-![Maintenance](https://img.shields.io/maintenance/yes/2022.svg)
-[![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
-[![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)
+# This fork varies from @Thomas55555 as follows
+
+- Adds a zone sensor to track the zone the mower is in.  THis is configurable and supports polygon zones.
+- Uses a binary error sensor that has an error number and state for attributes.
+- Better mower location icon
+- Allows setting a home position, this is where the mower charger is located, when the mower is home the location of the zone will indicate home and the map camera will show the mower at the charger instead of it's reported position.
 
 Custom component to support Automower.
 
