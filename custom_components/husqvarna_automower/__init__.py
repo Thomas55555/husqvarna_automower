@@ -68,11 +68,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-
     api_key = entry.unique_id
     access_token = entry.data.get(CONF_TOKEN)
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    if username and password:
+        _LOGGER.warning(
+            "Log-in with password/username is depracated. Please set-up client_id and client_secrent in your configuration.yaml"
+        )
     session = aioautomower.AutomowerSession(api_key, access_token)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(

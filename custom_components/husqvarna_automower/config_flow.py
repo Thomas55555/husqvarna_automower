@@ -45,9 +45,11 @@ class HusqvarnaConfigFlowHandler(
         """Create an entry for the flow."""
 
         data["token"]["status"] = 200
-        await self.async_test_mower(
-            self.hass.data[DOMAIN][CONF_CLIENT_ID], data[CONF_TOKEN]
-        )
+        if "amc:api" not in data[CONF_TOKEN]["scope"]:
+            _LOGGER.warning(
+                "The scope of your API-key is `%s`, but should be `iam:read amc:api`",
+                data[CONF_TOKEN]["scope"],
+            )
         return await self.async_step_finish(
             self.hass.data[DOMAIN][CONF_CLIENT_ID], data
         )
@@ -67,29 +69,6 @@ class HusqvarnaConfigFlowHandler(
             data=data,
         )
 
-    async def async_test_mower(self, api_key, access_token_raw):
-        """Test if mower data can be fetched with Rest, and also check websocket capabilities."""
-        try:
-            get_mower_data = GetMowerData(
-                api_key,
-                access_token_raw[CONF_ACCESS_TOKEN],
-                access_token_raw[CONF_PROVIDER],
-                access_token_raw[CONF_TOKEN_TYPE],
-            )
-            mower_data = await get_mower_data.async_mower_state()
-            _LOGGER.debug("config: %s", mower_data)
-        except (ClientConnectorError, ClientResponseError):
-            if "amc:api" in access_token_raw["scope"]:
-                _LOGGER.warning("Something's wrong with the API-key")
-            else:
-                _LOGGER.warning("Automower Connect API not connected")
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Unexpected exception")
-
-        if "amc:api" not in access_token_raw["scope"]:
-            # If the API-Key is old
-            _LOGGER.warning("The API-key is too old. Renew it")
-
     async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
@@ -104,6 +83,11 @@ class HusqvarnaConfigFlowHandler(
             )
         _LOGGER.debug("user_input: %s", user_input)
         return await self.async_step_user()
+
+    @property
+    def logger(self) -> logging.Logger:
+        """Return logger."""
+        return logging.getLogger(__name__)
 
     @staticmethod
     @callback
