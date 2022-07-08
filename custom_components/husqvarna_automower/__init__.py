@@ -4,6 +4,11 @@ import logging
 import voluptuous as vol
 
 import aioautomower
+from homeassistant.components.application_credentials import (
+    ClientCredential,
+    async_import_client_credential,
+    DEFAULT_IMPORT_NAME,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_CLIENT_ID,
@@ -13,7 +18,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.typing import ConfigType
 
 from . import config_flow
@@ -43,15 +47,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         return True
 
     if CONF_CLIENT_ID in config[DOMAIN]:
-        config_flow.HusqvarnaConfigFlowHandler.async_register_implementation(
+        await async_import_client_credential(
             hass,
-            config_entry_oauth2_flow.LocalOAuth2Implementation(
-                hass,
-                DOMAIN,
+            DOMAIN,
+            ClientCredential(
                 config[DOMAIN][CONF_CLIENT_ID],
                 config[DOMAIN][CONF_CLIENT_SECRET],
-                OAUTH2_AUTHORIZE,
-                OAUTH2_TOKEN,
+                DEFAULT_IMPORT_NAME,
             ),
         )
         conf = config.get(DOMAIN, {})

@@ -4,7 +4,7 @@
   "documentation": "https://github.com/Thomas55555/husqvarna_automower",
   "issue_tracker": "https://github.com/Thomas55555/husqvarna_automower/issues",
   "dependencies": [
-    "auth"
+    "application_credentials"
   ],
   "config_flow": true,
   "codeowners": [
