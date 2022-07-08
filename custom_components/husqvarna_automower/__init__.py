@@ -15,18 +15,11 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
+from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.typing import ConfigType
 
 from . import config_flow
-from .const import (
-    DOMAIN,
-    HUSQVARNA_URL,
-    OAUTH2_AUTHORIZE,
-    OAUTH2_TOKEN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DOMAIN, OAUTH2_AUTHORIZE, OAUTH2_TOKEN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -97,36 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception:
         # If we haven't used the refresh_token (ie. been offline) for 10 days,
         # we need to login using username and password in the config flow again.
-        username = entry.data.get(CONF_USERNAME)
-        password = entry.data.get(CONF_PASSWORD)
-        if not (username and password):
-            raise ConfigEntryAuthFailed from Exception
-        if username and password:
-            get_token = aioautomower.GetAccessToken(
-                api_key,
-                username,
-                password,
-            )
-            access_token = await get_token.async_get_access_token()
-            _LOGGER.debug("access_token: %s", access_token)
-            hass.config_entries.async_update_entry(
-                entry,
-                data={
-                    CONF_TOKEN: access_token,
-                    CONF_USERNAME: username,
-                    CONF_PASSWORD: password,
-                },
-            )
-            try:
-                session = aioautomower.AutomowerSession(api_key, access_token)
-                await session.connect()
-            except Exception:
-                raise ConfigEntryAuthFailed from Exception
-
-    if "amc:api" not in access_token["scope"]:
-        raise ConfigEntryAuthFailed(
-            f"Your API-Key is not compatible to websocket, please renew it on {HUSQVARNA_URL}"
-        )
+        raise ConfigEntryAuthFailed from Exception
 
     hass.data[DOMAIN][entry.entry_id] = session
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
