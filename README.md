@@ -26,7 +26,7 @@ need a API key to use this integration, refer to [this
 guide](https://developer.husqvarnagroup.cloud/docs/getting-started) on how to
 get one.
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/master/screenshot_husqvarna_automower.PNG)
+![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG)
 
 ## Supported devices
 
@@ -84,18 +84,25 @@ Setup under Integrations in Home Assistant, search for "husqvarna_automower" and
 
 If the integration is not shown, try to refresh your browser (F5) or (Shift+F5). Maybe you need to reopen your browser.
 
-You have two options to login.
-1.  Login with API-Key and Application Secret. You can find them on the Husqvarna site
-    [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
-    Additionally add your credentials to the `configuration.yaml`:
-    ```
-    husqvarna_automower:
-      client_id: !secret husqvarna_apikey
-      client_secret: !secret husqvarna_client_secret
-    ```
-    You will be re-directed to the Husqvarna site and have to login there with username and password to authorize Home Assistant.
-2.  Login with API-key, username and password.
 
+Login with API-Key and Application Secret. You can find them on the Husqvarna site
+[![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
+On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant https://my.home-assistant.io/redirect/oauth
+Additionally add your credentials to the `configuration.yaml`:
+```
+husqvarna_automower:
+  client_id: !secret husqvarna_apikey
+  client_secret: !secret husqvarna_client_secret
+```
+You will be re-directed to the Husqvarna site and have to login there with username and password to authorize Home Assistant.
+
+### Configuring the camera sensor
+
+The optional camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
+
+The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and seperated by a comma for example (40.689209, -74.044661)
+
+You can then provide the path to the image you would like to use for the map and mower, this has been tested with the PNG format, other formats may work.
 
 ## Usage
 

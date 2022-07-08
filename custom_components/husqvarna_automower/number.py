@@ -2,8 +2,11 @@
 import json
 import logging
 
-from homeassistant.components.number import NumberEntity
+from aiohttp import ClientResponseError
+
+from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import TIME_MINUTES
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -27,6 +30,29 @@ async def async_setup_entry(
         for idx, ent in enumerate(session.data["data"])
         if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
     )
+    async_add_entities(
+        AutomowerParkStartNumberEntity(session, idx, description)
+        for idx, ent in enumerate(session.data["data"])
+        for description in NUMBER_SENSOR_TYPES
+    )
+
+
+NUMBER_SENSOR_TYPES: tuple[NumberEntityDescription, ...] = (
+    NumberEntityDescription(
+        key="Park",
+        name="Park for",
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=TIME_MINUTES,
+    ),
+    NumberEntityDescription(
+        key="Start",
+        name="Mow for",
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=TIME_MINUTES,
+    ),
+)
 
 
 class AutomowerNumber(NumberEntity, AutomowerEntity):
@@ -34,26 +60,27 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.CONFIG
     _attr_icon = "mdi:grass"
-    _attr_min_value = 1
-    _attr_max_value = 9
+    _attr_native_min_value = 1
+    _attr_native_max_value = 9
+
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Cutting Height"
+        self._attr_unique_id = f"{self.mower_id}_cuttingheight"
 
     @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name} Cutting height"
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_cuttingheight"
-
-    @property
-    def value(self) -> int:
+    def native_value(self) -> int:
         """Return the entity value."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return mower_attributes["cuttingHeight"]
 
-    async def async_set_value(self, value: float) -> None:
+    async def async_set_native_value(self, value: float) -> None:
         """Change the value."""
         command_type = "settings"
         string = {
@@ -67,3 +94,35 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
             await self.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
+
+
+class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
+    """Defining the AutomowerParkStartNumberEntity."""
+
+    _attr_native_value: float = 1
+    _attr_native_min_value: float = 1
+    _attr_native_max_value: float = 60480
+    _attr_native_step: float = 1
+
+    def __init__(self, session, idx, description: NumberEntityDescription):
+        super().__init__(session, idx)
+        self.description = description
+        self.entity_description = description
+        self._attr_name = f"{self.mower_name} {description.name}"
+        self._attr_unique_id = f"{self.mower_id}_{description.key}"
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Change the value."""
+        command_type = "actions"
+        duration = int(value)
+        string = {
+            "data": {
+                "type": self.entity_description.key,
+                "attributes": {"duration": duration},
+            }
+        }
+        payload = json.dumps(string)
+        try:
+            await self.session.action(self.mower_id, payload, command_type)
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que: %s", exception)

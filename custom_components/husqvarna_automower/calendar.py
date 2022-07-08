@@ -1,16 +1,11 @@
 """Platform for Husqvarna Automower calendar integration."""
-import copy
 from datetime import datetime
 import logging
 
 from geopy.geocoders import Nominatim
 
 from homeassistant.backports.enum import StrEnum
-from homeassistant.components.calendar import (
-    CalendarEntity,
-    CalendarEvent,
-    is_offset_reached,
-)
+from homeassistant.components.calendar import CalendarEntity, CalendarEvent
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
@@ -37,6 +32,13 @@ async def async_setup_entry(
 class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._event = None
+        self._next_event = None
+        self.loc = None
+        self.geolocator = Nominatim(user_agent=self.name)
+
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
     ) -> list[CalendarEvent]:
@@ -45,8 +47,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         lat = mower_attributes["positions"][0]["latitude"]
         long = mower_attributes["positions"][0]["longitude"]
         position = f"{lat}, {long}"
-        geolocator = Nominatim(user_agent=self.name)
-        result = await hass.async_add_executor_job(geolocator.reverse, position)
+        result = await hass.async_add_executor_job(self.geolocator.reverse, position)
         try:
             self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
         except Exception:
@@ -56,6 +57,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         return even_list
 
     def get_next_event(self):
+        """Get the current or next event."""
         self._next_event = CalendarEvent(
             summary="",
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
@@ -80,12 +82,11 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 today_as_string = WEEKDAYS[today]
                 if calendar[today_as_string] is True:
                     self._event = CalendarEvent(
-                        summary=f"Mowing schedule {task + 1}",
+                        summary=f"{self.name} Mowing schedule {task + 1}",
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
                     )
-                    _LOGGER.debug("self._event %s", self._event)
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
                         _LOGGER.debug("self._next_event %s", self._next_event)
