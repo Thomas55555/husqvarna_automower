@@ -2,18 +2,14 @@
 import logging
 import os
 
-from aiohttp.client_exceptions import ClientConnectorError, ClientResponseError
 import voluptuous as vol
 
-from aioautomower import GetAccessToken, GetMowerData, TokenError
 from homeassistant import config_entries, data_entry_flow
-from homeassistant.const import CONF_ACCESS_TOKEN, CONF_CLIENT_ID, CONF_TOKEN
+from homeassistant.const import CONF_CLIENT_ID, CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_oauth2_flow
 
 from .const import (
-    CONF_PROVIDER,
-    CONF_TOKEN_TYPE,
     DOMAIN,
     ENABLE_CAMERA,
     GPS_BOTTOM_RIGHT,
@@ -36,7 +32,7 @@ class HusqvarnaConfigFlowHandler(
     DOMAIN = DOMAIN
     VERSION = 2
 
-    async def async_step_oauth2(self, user_input=None):
+    async def async_step_oauth2(self, user_input=None) -> data_entry_flow.FlowResult:
         """Handle the config-flow for Authorization Code Grant."""
 
         return await super().async_step_user(user_input)
@@ -53,7 +49,7 @@ class HusqvarnaConfigFlowHandler(
             self.hass.data[DOMAIN][CONF_CLIENT_ID], data
         )
 
-    async def async_step_finish(self, unique_id, data):
+    async def async_step_finish(self, unique_id, data) -> data_entry_flow.FlowResult:
         """Complete the config entries."""
 
         existing_entry = await self.async_set_unique_id(unique_id)
@@ -68,11 +64,13 @@ class HusqvarnaConfigFlowHandler(
             data=data,
         )
 
-    async def async_step_reauth(self, user_input=None):
+    async def async_step_reauth(self, user_input=None) -> data_entry_flow.FlowResult:
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 
-    async def async_step_reauth_confirm(self, user_input=None):
+    async def async_step_reauth_confirm(
+        self, user_input=None
+    ) -> data_entry_flow.FlowResult:
         """Dialog that informs the user that reauth is required."""
         if user_input is None:
             _LOGGER.debug("USER INPUT NONE")
@@ -98,7 +96,7 @@ class HusqvarnaConfigFlowHandler(
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle a option flow."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry):
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
         super().__init__()
         self.base_path = os.path.dirname(__file__)

@@ -8,9 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
-    CONF_PASSWORD,
     CONF_TOKEN,
-    CONF_USERNAME,
     Platform,
 )
 from homeassistant.core import HomeAssistant
