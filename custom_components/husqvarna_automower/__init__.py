@@ -7,6 +7,7 @@ import aioautomower
 from homeassistant.components.application_credentials import (
     ClientCredential,
     async_import_client_credential,
+    DEFAULT_IMPORT_NAME,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -61,6 +62,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             ClientCredential(
                 config[DOMAIN][CONF_CLIENT_ID],
                 config[DOMAIN][CONF_CLIENT_SECRET],
+                DEFAULT_IMPORT_NAME,
             ),
         )
         conf = config.get(DOMAIN, {})
