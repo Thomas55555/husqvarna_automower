@@ -5,7 +5,7 @@ import os
 import voluptuous as vol
 
 from homeassistant import config_entries, data_entry_flow
-from homeassistant.const import CONF_CLIENT_ID, CONF_TOKEN
+from homeassistant.const import CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_oauth2_flow
 
@@ -45,9 +45,7 @@ class HusqvarnaConfigFlowHandler(
                 "The scope of your API-key is `%s`, but should be `iam:read amc:api`",
                 data[CONF_TOKEN]["scope"],
             )
-        return await self.async_step_finish(
-            self.hass.data[DOMAIN][CONF_CLIENT_ID], data
-        )
+        return await self.async_step_finish(DOMAIN, data)
 
     async def async_step_finish(self, unique_id, data) -> data_entry_flow.FlowResult:
         """Complete the config entries."""
