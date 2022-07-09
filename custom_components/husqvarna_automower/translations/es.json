@@ -1,24 +1,10 @@
 {
     "config": {
         "step": {
-            "user": {
-                "description": "Para obtener ayuda con la configuración: https://github.com/Thomas55555/husqvarna_automower",
-                "data": {
-                    "api_key": "Clave de API de 36 caracteres",
-                    "username": "Nombre de usuario",
-                    "password": "Contraseña"
-                }
-            },
             "reauth_confirm": {
                 "description": "La integración Husqvarna Automower necesita reautenticarse con Husqvarna",
                 "title": "Reautenticar integración"
             }
-        },
-        "error": {
-            "auth": "Verifica que la API de autenticación y la API de Automower Connect están enlazadas con tu clave de API: https://developer.husqvarnagroup.cloud/ y que las credenciales y la clave de API son correctas",
-            "api_key": "Ha ocurrido un error con tu clave de API, puedes renovarla en https://developer.husqvarnagroup.cloud/",
-            "mower": "Verifica que la API de Automower Connect está enlazada con tu clave de API: https://developer.husqvarnagroup.cloud/",
-            "unknown": "Ha ocurrido un error"
         },
         "abort": {
             "reauth_successful": "Se ha reautenticado con éxito",
