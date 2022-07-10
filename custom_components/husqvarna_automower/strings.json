@@ -1,31 +1,10 @@
 {
   "config": {
     "step": {
-      "password": {
-        "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
-        "data": {
-          "api_key": "[%key:common::config_flow::data::api_key%]",
-          "username": "[%key:common::config_flow::data::email%]",
-          "password": "[%key:common::config_flow::data::password%]",
-          "credentials": "Remember Password and Username (allows this component to get a new token if it can't get renewed)"
-        }
-      },
-      "user": {
-        "menu_options": {
-          "password": "Log-in with passowrd",
-          "oauth2": "Login with Authorization Code Grant"
-        }
-      },
       "reauth_confirm": {
         "title": "[%key:common::config_flow::title::reauth%]",
         "description": "The Husqvarna Automower integration needs to re-authenticate your account."
       }
-    },
-    "error": {
-      "auth": "Make sure that the Authentication API and the Automower-Connect API is connected with your API-Key: https://developer.husqvarnagroup.cloud/ and Username/Password/API-Key are right.",
-      "api_key": "Something is wrong with your API-Key, please renew it on https://developer.husqvarnagroup.cloud/",
-      "mower": "Make sure that the Automower-Connect API is connected with your API-Key: https://developer.husqvarnagroup.cloud/",
-      "unknown": "An unknown error occured"
     },
     "abort": {
       "missing_configuration": "[%key:common::config_flow::abort::missing_configuration%]",
@@ -36,5 +15,8 @@
     "info": {
       "can_reach_server": "Reach Husqvarna Token Server"
     }
+  },
+  "application_credentials": {
+    "description": "Create an account on [Husqvarna develoeprs portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
   }
 }
