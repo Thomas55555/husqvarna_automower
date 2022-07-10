@@ -1,31 +1,10 @@
 {
     "config": {
         "step": {
-            "password": {
-                "description": "Hvis du har brug for hjælp til konfigurationen så kig her: https://github.com/Thomas55555/husqvarna_automower",
-                "data": {
-                    "api_key": "API Key (36 tegn lang)",
-                    "username": "Brugernavn",
-                    "password": "Password",
-                    "credentials": "Husk brugernavn og password (muliggører at denne komponent kan hente en ny token hvis den ikke længere kan fornyes)"
-                }
-            },
-            "user": {
-                "menu_options": {
-                    "password": "Log ind med API key, brugernavn og password",
-                    "oauth2": "Log ind med Authorization Code Grant (yaml nødvendig)"
-                }
-            },
             "reauth_confirm": {
                 "description": "Husqvarna Automower integrationen har brug for at genautentificere ved Husqvarna",
                 "title": "Genautentificer integration"
             }
-        },
-        "error": {
-            "auth": "Sørg for at Authentication API'en og Automower-Connect API'en er forbundet med din API Key: https://developer.husqvarnagroup.cloud/ og Brugernavn/Password/API Key er korrekt.",
-            "api_key": "Der er noget galt med din API Key. Forny den på: https://developer.husqvarnagroup.cloud/",
-            "mower": "Sørg for at Automower-Connect API'en er forbundet med din API Key: https://developer.husqvarnagroup.cloud/",
-            "unknown": "Der er sket en uforudset fejl"
         },
         "abort": {
             "missing_configuration": "Komponenten er ikke konfigureret. Følg venligst dokumentationen.",
@@ -59,5 +38,8 @@
         "info": {
             "can_reach_server": "Kan nå Husqvarna Token server"
         }
+    },
+    "application_credentials": {
+        "description": "Lav en bruger på [Husqvarna developers portal]({oauth_creds_url}). Forbind Authentication API'en og Automower Connect API'en. Som redirect-URI bruges https://my.home-assistant.io/redirect/oauth. Hvis du endnu ikke har opsat My HomeAssistant så brug i stedet denne URL: {redirect_uri}"
     }
 }
