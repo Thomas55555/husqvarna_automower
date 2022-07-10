@@ -1,31 +1,10 @@
 {
     "config": {
         "step": {
-            "password": {
-                "description": "If you need help with the configuration have a look here: https://github.com/Thomas55555/husqvarna_automower",
-                "data": {
-                    "api_key": "36 digits API Key",
-                    "username": "Username",
-                    "password": "Password",
-                    "credentials": "Remember Password and Username (allows this component to get a new token if it can't get renewed)"
-                }
-            },
-            "user": {
-                "menu_options": {
-                    "password": "Log-in with API-Key, username and password",
-                    "oauth2": "Login with Authorization Code Grant (yaml requiered)"
-                }
-            },
             "reauth_confirm": {
                 "description": "The Husqvarna Automower integration needs to re-authenticate with Husqvarna",
                 "title": "Reauthenticate Integration"
             }
-        },
-        "error": {
-            "auth": "Make sure that the Authentication API and the Automower-Connect API is connected with your API-Key: https://developer.husqvarnagroup.cloud/ and Username/Password/API-Key are right.",
-            "api_key": "Something is wrong with your API-Key, please renew it on https://developer.husqvarnagroup.cloud/",
-            "mower": "Make sure that the Automower-Connect API is connected with your API-Key: https://developer.husqvarnagroup.cloud/",
-            "unknown": "An unknown error occured"
         },
         "abort": {
             "missing_configuration": "The component is not configured. Please follow the documentation.",
@@ -83,5 +62,8 @@
         "info": {
             "can_reach_server": "Reach Husqvarna Token server"
         }
+    },
+    "application_credentials": {
+      "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
     }
 }

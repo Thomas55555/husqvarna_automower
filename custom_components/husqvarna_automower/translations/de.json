@@ -1,30 +1,10 @@
 {
     "config": {
         "step": {
-            "password": {
-                "description": "Wenn du Hilfe zur Konfiguration benötigst, schaue hier nach: https://github.com/Thomas55555/husqvarna_automower",
-                "data": {
-                    "api_key": "API-Key (36 Zeichen)",
-                    "username": "Benutzername",
-                    "password": "Passwort"
-                }
-            },
-            "user": {
-                "menu_options": {
-                  "password": "Einloggen mit API-Key, username and password",
-                  "oauth2": "Einloggen mit Authorization Code Grant (yaml benötigt)"
-                }
-            },
             "reauth_confirm": {
                 "description": "Die Husqvarna Automower Integration muss erneut bei Husqvarna authentifiziert werden",
                 "title": "Integration erneut authentifizieren"
             }
-        },
-        "error": {
-            "auth": "Bitte stelle sicher, dass die Authentication API und die Automower-Connect API für deinen API-Key aktiviert (https://developer.husqvarnagroup.cloud/) und Benutzername, Passwort und API-Key korrekt sind.",
-            "api_key": "Es liegt ein Fehler mit dem API-Key vor. Auf https://developer.husqvarnagroup.cloud/ kannst du ihn erneuern.",
-            "mower": "Bitte stelle sicher, dass die Automower-Connect API für deinen API-Key aktiviert ist: https://developer.husqvarnagroup.cloud/",
-            "unknown": "Ein unbekannter Fehler ist aufgetreten."
         },
         "abort": {
             "missing_configuration": "Die Komponente ist nicht konfiguriert. Bitte befolge die Dokumenation.",
