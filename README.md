@@ -87,21 +87,24 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 Login with API-Key and Application Secret. You can find them on the Husqvarna site
 [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
-On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant https://my.home-assistant.io/redirect/oauth
+On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant 
+```
+https://my.home-assistant.io/redirect/oauth
+```
 You will be re-directed to the Husqvarna site and have to login there with username and password to authorize Home Assistant.
 
 ### Configuring the camera sensor
 
 The optional camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
 
-The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and seperated by a comma for example (40.689209, -74.044661)
+The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example (40.689209, -74.044661)
 
 You can then provide the path to the image you would like to use for the map and mower, this has been tested with the PNG format, other formats may work.
 
 ## Usage
 
 `vacuum.start`
-The mower continues to mow, within the specifed schedule
+The mower continues to mow, within the specified schedule
 
 `vacuum.pause`
 Pauses the mower until a new command
@@ -113,7 +116,7 @@ The mower returns to the base and parks there until the next schedule starts
 The mower returns to the base and parks there until it gets a new start command
 
 `husqvarna_automower.park_and_start`
-With the this command you can override the curent schedule for a specific time. For more details see the [Services](https://github.com/Thomas55555/husqvarna_automower#services) chapter
+With the this command you can override the current schedule for a specific time. For more details see the [Services](https://github.com/Thomas55555/husqvarna_automower#services) chapter
 
 ### Services
 
@@ -133,7 +136,7 @@ target:
   entity_id: vacuum.automower_r_315x_haffi
 ```
 
-Example for parking indepentend from the schedule for 5 minutes:
+Example for parking independent from the schedule for 5 minutes:
 ```
 service: husqvarna_automower.park_and_start
 data:
