@@ -34,7 +34,6 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_oauth2(self, user_input=None) -> data_entry_flow.FlowResult:
         """Handle the config-flow for Authorization Code Grant."""
-
         return await super().async_step_user(user_input)
 
     async def async_oauth_create_entry(self, data: dict) -> dict:
