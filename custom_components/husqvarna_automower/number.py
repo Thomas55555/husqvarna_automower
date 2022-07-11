@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup number platform."""
+    """Set up number platform."""
 
     session = hass.data[DOMAIN][entry.entry_id]
 
@@ -65,6 +65,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_name = "Cutting height"
 
     def __init__(self, session, idx):
+        """Initialize AutomowerNumber."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_cuttingheight"
 
@@ -105,6 +106,7 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
     _attr_native_step: float = 1
 
     def __init__(self, session, idx, description: NumberEntityDescription):
+        """Initialize AutomowerParkStartNumberEntity."""
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description

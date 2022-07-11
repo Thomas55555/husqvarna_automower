@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup calendar platform."""
+    """Set up calendar platform."""
     _LOGGER.debug("entry: %s", entry)
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
@@ -35,6 +35,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, session, idx):
+        """Initialize AutomowerCalendar."""
         super().__init__(session, idx)
         self._event = None
         self._next_event = None

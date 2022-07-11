@@ -1,0 +1,43 @@
+name: Lint
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.10"
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+    - name: Check with Black Code Formatter
+      run: |
+        black custom_components/husqvarna_automower --check
+    - name: Lint with flake8
+      run: |
+        flake8 custom_components/husqvarna_automower
+    - name: Lint with pydocstyle
+      run: |
+        pydocstyle custom_components/husqvarna_automower
+    - name: Lint with isort
+      run: |
+        isort custom_components/husqvarna_automower

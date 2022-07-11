@@ -26,7 +26,6 @@ class HusqvarnaConfigFlowHandler(
     data_entry_flow.FlowHandler,
     domain=DOMAIN,
 ):
-
     """Handle a config flow."""
 
     DOMAIN = DOMAIN
