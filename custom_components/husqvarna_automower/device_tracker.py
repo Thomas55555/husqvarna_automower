@@ -25,6 +25,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
     def __init__(self, session, idx):
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_dt"
+
     @property
     def source_type(self) -> str:
         """Return the source type, eg gps or router, of the device."""
