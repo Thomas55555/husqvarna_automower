@@ -33,12 +33,10 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_oauth2(self, user_input=None) -> data_entry_flow.FlowResult:
         """Handle the config-flow for Authorization Code Grant."""
-
         return await super().async_step_user(user_input)
 
     async def async_oauth_create_entry(self, data: dict) -> dict:
         """Create an entry for the flow."""
-
         if "amc:api" not in data[CONF_TOKEN]["scope"]:
             _LOGGER.warning(
                 "The scope of your API-key is `%s`, but should be `iam:read amc:api`",
