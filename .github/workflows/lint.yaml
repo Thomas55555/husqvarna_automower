@@ -31,13 +31,13 @@ jobs:
         pip install -r requirements-test.txt
     - name: Check with Black Code Formatter
       run: |
-        black husqvarna_automower/custom_components/husqvarna_automower --check
+        black custom_components/husqvarna_automower --check
     - name: Lint with flake8
       run: |
-        flake8 husqvarna_automower/custom_components/husqvarna_automower
-    # - name: Lint with pydocstyle
-    #   run: |
-    #     pydocstyle husqvarna_automower/custom_components/husqvarna_automower
-    # - name: Lint with pydocstyle
-    #   run: |
-    #     isort husqvarna_automower/custom_components/husqvarna_automower
+        flake8 custom_components/husqvarna_automower
+    - name: Lint with pydocstyle
+      run: |
+        pydocstyle custom_components/husqvarna_automower
+    - name: Lint with isort
+      run: |
+        isort custom_components/husqvarna_automower
