@@ -96,11 +96,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         return event_list, self._next_event
 
     @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name}"
-
-    @property
     def unique_id(self) -> str:
         """Return a unique identifier for this entity."""
         return f"{self.mower_id}_calendar"
