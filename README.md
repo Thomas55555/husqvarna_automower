@@ -23,7 +23,7 @@ This integration is based on the offical
 [API](https://developer.husqvarnagroup.cloud/). The integration is using the
 Husqvarna websocket API for pushed updates, so no polling is performed. You
 need a API key to use this integration, refer to [this
-guide](https://developer.husqvarnagroup.cloud/docs/getting-started) on how to
+guide](https://developer.husqvarnagroup.cloud/docs/get-started) on how to
 get one.
 
 ![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG)
@@ -69,7 +69,7 @@ In order to use this integration you must get a API-Key from Husqvarna.
 
 2.  Create an account if needed, otherwise sign in with your Husqvarna account.
 
-3.  After signing in you will be automatically redirected to "Your applications". (Otherwise go to: <https://developer.husqvarnagroup.cloud/apps>)
+3.  After signing in you will be automatically redirected to "Your applications". (Otherwise go to: <https://developer.husqvarnagroup.cloud/applications>)
 
 4.  Create an new application, name it for example "My Home Assistant" (doesn't matter), leave the other fields empty.
 
