@@ -32,12 +32,15 @@ async def async_setup_entry(
 class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
     def __init__(self, session, idx):
         super().__init__(session, idx)
         self._event = None
         self._next_event = None
         self.loc = None
-        self.geolocator = Nominatim(user_agent=self.name)
+        self.geolocator = Nominatim(user_agent=self.mower_id)
+        self._attr_unique_id = f"{self.mower_id}_calendar"
 
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
@@ -82,7 +85,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 today_as_string = WEEKDAYS[today]
                 if calendar[today_as_string] is True:
                     self._event = CalendarEvent(
-                        summary=f"{self.name} Mowing schedule {task + 1}",
+                        summary=f"{self.mower_name} Mowing schedule {task + 1}",
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
@@ -94,21 +97,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                     event_list.append(self._event)
 
         return event_list, self._next_event
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return f"{self.mower_name}"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_calendar"
-
-    @property
-    def entity_category(self) -> StrEnum:
-        """Return a unique identifier for this entity."""
-        return EntityCategory.DIAGNOSTIC
 
     async def async_get_events(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
