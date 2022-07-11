@@ -15,6 +15,7 @@ class AutomowerEntity(Entity):
     """Defining the Automower Basic Entity."""
 
     def __init__(self, session, idx) -> None:
+        """Initialize AutomowerEntity."""
         self.session = session
         self.idx = idx
         self.mower = self.session.data["data"][self.idx]
@@ -31,7 +32,7 @@ class AutomowerEntity(Entity):
         return self.session.data["data"][self.idx]["attributes"]
 
     def datetime_object(self, timestamp) -> datetime:
-        """Converts the mower local timestamp to a UTC datetime object"""
+        """Convert the mower local timestamp to a UTC datetime object."""
         naive = datetime.utcfromtimestamp(timestamp / 1000)
         local = dt_util.as_local(naive)
         return local
@@ -50,7 +51,7 @@ class AutomowerEntity(Entity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        """Defines the DeviceInfo for the mower."""
+        """Define the DeviceInfo for the mower."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.mower_id)},
             name=self.mower_name,

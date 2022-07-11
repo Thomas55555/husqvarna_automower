@@ -1,4 +1,4 @@
-"""Creates a binary sesnor entity for the mower"""
+"""Creates a binary sesnor entity for the mower."""
 import logging
 
 from homeassistant.components.binary_sensor import (
@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup select platform."""
+    """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerBatteryChargingBinarySensor(session, idx)
@@ -43,6 +43,7 @@ class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
     _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
 
     def __init__(self, session, idx):
+        """Initialize AutomowerBatteryChargingBinarySensor."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Battery Charging"
         self._attr_unique_id = f"{self.mower_id}_battery_charging"
@@ -64,6 +65,7 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
     _attr_entity_registry_enabled_default = False
 
     def __init__(self, session, idx):
+        """Initialize AutomowerLeavingDockBinarySensor."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Leaving Dock"
         self._attr_unique_id = f"{self.mower_id}_leaving_dock"
@@ -86,6 +88,7 @@ class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
 
     def __init__(self, session, idx):
+        """Initialize AutomowerErrorBinarySensor."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Error"
         self._attr_unique_id = f"{self.mower_id}_error"
