@@ -102,6 +102,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         return self._image_bytes
 
     def _image_to_bytes(self):
+        """Convert image to byte array"""
         img_byte_arr = io.BytesIO()
         self._image.save(img_byte_arr, format="PNG")
         self._image_bytes = img_byte_arr.getvalue()
@@ -118,9 +119,11 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     @property
     def supported_features(self) -> int:
+        """Show supported features"""
         return CameraEntityFeature.ON_OFF
 
     def _generate_image(self, data: dict):
+        """Generate the image"""
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
         if self._is_home and self.home_location:
             location = self.home_location
@@ -171,6 +174,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     def _find_points_on_line(
         self, point_1: ImgPoint, point_2: ImgPoint
     ) -> list[ImgPoint]:
+        """Find points on a line"""
         dash_length = 10
         line_length = math.sqrt(
             (point_2[0] - point_1[0]) ** 2 + (point_2[1] - point_1[1]) ** 2
@@ -189,6 +193,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     def _get_point_on_vector(
         self, initial_pt: ImgPoint, terminal_pt: ImgPoint, distance: int
     ) -> ImgPoint:
+        """Get points on a vector"""
         v = np.array(initial_pt, dtype=float)
         u = np.array(terminal_pt, dtype=float)
         n = v - u
