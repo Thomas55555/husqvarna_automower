@@ -4,7 +4,7 @@ from PIL import Image, UnidentifiedImageError
 
 
 def validate_image(img_path: str) -> bool:
-    """Ensure image is valid"""
+    """Ensure image is valid."""
     try:
         im = Image.open(img_path)
         im.verify()
@@ -15,28 +15,28 @@ def validate_image(img_path: str) -> bool:
 
 
 class LatLon:
-    """Define a Latitude and Longitude object"""
+    """Define a Latitude and Longitude object."""
 
     def __init__(self, lat: float, lon: float) -> None:
-        """Initialize the LatLon Object"""
+        """Initialize the LatLon Object."""
         self.lat = lat
         self.lon = lon
 
     @property
     def point(self) -> Point:
-        """Return a Point"""
+        """Return a Point."""
         return Point(self.lat, self.lon)
 
     def is_valid(self) -> bool:
-        """Return True if point is a valid WGS84 Coordinate"""
+        """Return True if point is a valid WGS84 Coordinate."""
         return LAT_LON_BOUNDS.intersects(self.point)
 
 
 class ValidatePointString:
-    """Define a Point String Validation Object"""
+    """Define a Point String Validation Object."""
 
     def __init__(self, point_string: str) -> None:
-        """Initialize the ValidatePointString Object"""
+        """Initialize the ValidatePointString Object."""
         self.point_str = point_string
         self.point_list = self.point_str.split(",")
         self.error = ""
@@ -59,10 +59,10 @@ class ValidatePointString:
         self.valid = True
 
     def is_valid(self) -> tuple[bool, str]:
-        """Return True if string parses, False and an error if not"""
+        """Return True if string parses, False and an error if not."""
         return (self.valid, self.error)
 
     @property
     def point(self) -> Point:
-        """Return parsed point"""
+        """Return parsed point."""
         return self.coord.point
