@@ -1,5 +1,6 @@
 """The constants for the Husqvarna Automower integration."""
 from homeassistant.const import Platform
+from shapely.geometry import Polygon
 
 # Base component constants
 NAME = "husqvarna_automower"

@@ -62,6 +62,15 @@ class AutomowerEntity(Entity):
         )
 
     @property
+    def _is_home(self):
+        if AutomowerEntity.get_mower_attributes(self)["mower"]["activity"] in [
+            "PARKED_IN_CS",
+            "CHARGING",
+        ]:
+            return True
+        return False
+
+    @property
     def should_poll(self) -> bool:
         """Return True if the device is available."""
         return False
