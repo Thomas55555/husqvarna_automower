@@ -8,7 +8,7 @@ from typing import Optional
 from PIL import Image, ImageDraw
 import numpy as np
 
-from homeassistant.components.camera import SUPPORT_ON_OFF, Camera
+from homeassistant.components.camera import CameraEntityFeature, Camera
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -20,6 +20,7 @@ from .const import (
     GPS_TOP_LEFT,
     MAP_IMG_PATH,
     MOWER_IMG_PATH,
+    HOME_LOCATION,
 )
 from .entity import AutomowerEntity
 from .vacuum import HusqvarnaAutomowerStateMixin
@@ -57,6 +58,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         self._position_history = []
         self._attr_name = self.mower_name
         self._attr_unique_id = f"{self.mower_id}_camera"
+        self.home_location = self.entry.options.get(HOME_LOCATION, None)
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._image_bytes = None
         self._image_to_bytes()
@@ -116,12 +118,17 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     @property
     def supported_features(self) -> int:
-        """Show supported features."""
-        return SUPPORT_ON_OFF
+        return CameraEntityFeature.ON_OFF
 
     def _generate_image(self, data: dict):
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
-        location = (position_history[0]["latitude"], position_history[0]["longitude"])
+        if self._is_home and self.home_location:
+            location = self.home_location
+        else:
+            location = (
+                position_history[0]["latitude"],
+                position_history[0]["longitude"],
+            )
         if len(position_history) == 1:
             self._position_history += position_history
             position_history = self._position_history
@@ -152,11 +159,12 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             plot_points = self._find_points_on_line(scaled_loc_1, scaled_loc_2)
             for p in range(0, len(plot_points) - 1, 2):
                 img_draw.line((plot_points[p], plot_points[p + 1]), fill="red", width=2)
-        overlay_image = overlay_image.resize((64, 64))
+        mower_img_w = 64
+        mower_wpercent = mower_img_w / float(overlay_image.size[0])
+        hsize = int((float(overlay_image.size[1]) * float(mower_wpercent)))
+        overlay_image = overlay_image.resize((mower_img_w, hsize), Image.ANTIALIAS)
         img_w, img_h = overlay_image.size
-        map_image.paste(
-            overlay_image, (x1 - img_w // 2, y1 - img_h // 2), overlay_image
-        )
+        map_image.paste(overlay_image, (x1 - img_w // 2, y1 - img_h), overlay_image)
         self._image = map_image
         self._image_to_bytes()
 

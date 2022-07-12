@@ -5,6 +5,8 @@ import os
 import voluptuous as vol
 
 from homeassistant import config_entries, data_entry_flow
+from homeassistant.helpers.selector import selector
+
 from homeassistant.const import CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_oauth2_flow
@@ -16,7 +18,10 @@ from .const import (
     GPS_TOP_LEFT,
     MAP_IMG_PATH,
     MOWER_IMG_PATH,
+    HOME_LOCATION,
 )
+
+from .map_utils import ValidatePointString
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -97,65 +102,131 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.base_path = os.path.dirname(__file__)
         self.config_entry = config_entry
 
-        self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
-        self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
+        self.user_input = dict(config_entry.options)
+
+        self.camera_enabled = self.user_input.get(ENABLE_CAMERA, False)
+        self.map_top_left_coord = self.user_input.get(GPS_TOP_LEFT, "")
         if self.map_top_left_coord != "":
             self.map_top_left_coord = ",".join(
                 [str(x) for x in self.map_top_left_coord]
             )
 
-        self.map_bottom_right_coord = self.config_entry.options.get(
-            GPS_BOTTOM_RIGHT, ""
-        )
+        self.map_bottom_right_coord = self.user_input.get(GPS_BOTTOM_RIGHT, "")
         if self.map_bottom_right_coord != "":
             self.map_bottom_right_coord = ",".join(
                 [str(x) for x in self.map_bottom_right_coord]
             )
 
-        self.mower_image_path = self.config_entry.options.get(
+        self.mower_image_path = self.user_input.get(
             MOWER_IMG_PATH, os.path.join(self.base_path, "resources/mower.png")
         )
-        self.map_img_path = self.config_entry.options.get(
+        self.map_img_path = self.user_input.get(
             MAP_IMG_PATH, os.path.join(self.base_path, "resources/map_image.png")
         )
-        self.options = self.config_entry.options.copy()
+
+        self.home_location = self.user_input.get(HOME_LOCATION, "")
+        if self.home_location != "":
+            self.home_location = ",".join([str(x) for x in self.home_location])
+
+        self.sel_zone_id = None
 
     async def async_step_init(self, user_input=None):
+        """Manage option flow"""
+        return await self.async_step_select()
+
+    async def async_step_select(self, user_input=None):
+        """Select Configuration Item"""
+
+        return self.async_show_menu(
+            step_id="select",
+            menu_options=["camera_init", "home_init"],
+        )
+
+    async def async_step_home_init(self, user_input=None):
+        """Configure the home location."""
+        errors = {}
+        if user_input:
+            if user_input.get(HOME_LOCATION):
+                pnt_validator = ValidatePointString(user_input.get(HOME_LOCATION))
+                pnt_valid, pnt_error = pnt_validator.is_valid()
+
+                if pnt_valid:
+                    self.user_input[HOME_LOCATION] = [
+                        pnt_validator.point.x,
+                        pnt_validator.point.y,
+                    ]
+                    return await self._update_options()
+                errors[HOME_LOCATION] = pnt_error
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(HOME_LOCATION, default=self.home_location): str,
+            }
+        )
+        return self.async_show_form(
+            step_id="home_init", data_schema=data_schema, errors=errors
+        )
+
+    async def async_step_camera_init(self, user_input=None):
         """Enable / Disable the camera."""
 
         if user_input:
             if user_input.get(ENABLE_CAMERA):
-                self.options[ENABLE_CAMERA] = True
-                return await self.async_step_config()
-            self.options[ENABLE_CAMERA] = False
-            return await self._update_camera_config()
+                self.user_input[ENABLE_CAMERA] = True
+                return await self.async_step_camera_config()
+            self.user_input[ENABLE_CAMERA] = False
+            return await self._update_options()
 
         data_schema = vol.Schema(
             {
                 vol.Required(ENABLE_CAMERA, default=self.camera_enabled): bool,
             }
         )
-        return self.async_show_form(step_id="init", data_schema=data_schema)
+        return self.async_show_form(step_id="camera_init", data_schema=data_schema)
 
-    async def async_step_config(self, user_input=None):
+    async def async_step_camera_config(self, user_input=None):
         """Update the camera configuration."""
+        errors = {}
+
         if user_input:
             if user_input.get(GPS_TOP_LEFT):
-                self.options[GPS_TOP_LEFT] = [
-                    float(x.strip())
-                    for x in user_input.get(GPS_TOP_LEFT).split(",")
-                    if x
-                ]
-            if user_input.get(GPS_BOTTOM_RIGHT):
-                self.options[GPS_BOTTOM_RIGHT] = [
-                    float(x.strip())
-                    for x in user_input.get(GPS_BOTTOM_RIGHT).split(",")
-                    if x
-                ]
+                pnt_validator = ValidatePointString(user_input.get(GPS_TOP_LEFT))
+                pnt_valid, pnt_error = pnt_validator.is_valid()
 
-            self.options[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
-            self.options[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
-            return await self._update_camera_config()
+                if pnt_valid:
+                    self.user_input[GPS_TOP_LEFT] = [
+                        pnt_validator.point.x,
+                        pnt_validator.point.y,
+                    ]
+                else:
+                    errors[GPS_TOP_LEFT] = pnt_error
+
+            if user_input.get(GPS_BOTTOM_RIGHT):
+                pnt_validator = ValidatePointString(user_input.get(GPS_BOTTOM_RIGHT))
+                pnt_valid, pnt_error = pnt_validator.is_valid()
+
+                if pnt_valid:
+                    self.user_input[GPS_BOTTOM_RIGHT] = [
+                        pnt_validator.point.x,
+                        pnt_validator.point.y,
+                    ]
+                else:
+                    errors[GPS_BOTTOM_RIGHT] = pnt_error
+
+            if user_input.get(MOWER_IMG_PATH):
+                if os.path.isfile(user_input.get(MOWER_IMG_PATH)):
+                    self.user_input[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
+                else:
+                    errors[MOWER_IMG_PATH] = "not_file"
+
+            if user_input.get(MAP_IMG_PATH):
+                if os.path.isfile(user_input.get(MAP_IMG_PATH)):
+                    self.user_input[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
+                else:
+                    errors[MAP_IMG_PATH] = "not_file"
+
+            if not errors:
+                return await self._update_options()
 
         data_schema = vol.Schema(
             {
@@ -167,8 +238,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(MAP_IMG_PATH, default=self.map_img_path): str,
             }
         )
-        return self.async_show_form(step_id="config", data_schema=data_schema)
+        return self.async_show_form(
+            step_id="camera_config", data_schema=data_schema, errors=errors
+        )
 
-    async def _update_camera_config(self):
+    async def _update_options(self):
         """Update config entry options."""
-        return self.async_create_entry(title="", data=self.options)
+
+        return self.async_create_entry(title="", data=self.user_input)
