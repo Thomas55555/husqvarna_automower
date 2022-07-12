@@ -229,10 +229,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             if user_input.get(MAP_IMG_PATH):
                 if os.path.isfile(user_input.get(MAP_IMG_PATH)):
-                    if validate_image(user_input.get(MOWER_IMG_PATH)):
+                    if validate_image(user_input.get(MAP_IMG_PATH)):
                         self.user_input[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
                     else:
-                        errors[MOWER_IMG_PATH] = "not_image"
+                        errors[MAP_IMG_PATH] = "not_image"
                 else:
                     errors[MAP_IMG_PATH] = "not_file"
 
