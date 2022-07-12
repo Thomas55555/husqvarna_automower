@@ -25,16 +25,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
     def __init__(self, session, idx):
         """Initialize AutomowerTracker."""
         super().__init__(session, idx)
-
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return self.mower_name
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_dt"
+        self._attr_unique_id = "{self.mower_id}_dt"
 
     @property
     def source_type(self) -> str:
