@@ -14,6 +14,8 @@ _LOGGER = logging.getLogger(__name__)
 class AutomowerEntity(Entity):
     """Defining the Automower Basic Entity."""
 
+    _attr_has_entity_name = True
+
     def __init__(self, session, idx) -> None:
         """Initialize AutomowerEntity."""
         self.session = session
