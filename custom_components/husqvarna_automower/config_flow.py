@@ -213,6 +213,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 else:
                     errors[GPS_BOTTOM_RIGHT] = pnt_error
 
+            if self.user_input.get(GPS_BOTTOM_RIGHT) == self.user_input.get(
+                GPS_TOP_LEFT
+            ):
+                errors[GPS_BOTTOM_RIGHT] = "points_match"
+
             if user_input.get(MOWER_IMG_PATH):
                 if os.path.isfile(user_input.get(MOWER_IMG_PATH)):
                     self.user_input[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
