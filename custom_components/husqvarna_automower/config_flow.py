@@ -51,7 +51,6 @@ class HusqvarnaConfigFlowHandler(
 
     async def async_step_finish(self, unique_id, data) -> data_entry_flow.FlowResult:
         """Complete the config entries."""
-
         existing_entry = await self.async_set_unique_id(unique_id)
 
         if existing_entry:
@@ -131,12 +130,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.sel_zone_id = None
 
     async def async_step_init(self, user_input=None):
-        """Manage option flow"""
+        """Manage option flow."""
         return await self.async_step_select()
 
     async def async_step_select(self, user_input=None):
-        """Select Configuration Item"""
-
+        """Select Configuration Item."""
         return self.async_show_menu(
             step_id="select",
             menu_options=["camera_init", "home_init"],
@@ -169,7 +167,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_camera_init(self, user_input=None):
         """Enable / Disable the camera."""
-
         if user_input:
             if user_input.get(ENABLE_CAMERA):
                 self.user_input[ENABLE_CAMERA] = True
@@ -255,5 +252,4 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_options(self):
         """Update config entry options."""
-
         return self.async_create_entry(title="", data=self.user_input)

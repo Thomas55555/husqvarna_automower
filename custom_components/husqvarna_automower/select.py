@@ -36,6 +36,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, session, idx):
+        """Initialze the Select."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Headlight mode"
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"

@@ -102,7 +102,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         return self._image_bytes
 
     def _image_to_bytes(self):
-        """Convert image to byte array"""
+        """Convert image to byte array."""
         img_byte_arr = io.BytesIO()
         self._image.save(img_byte_arr, format="PNG")
         self._image_bytes = img_byte_arr.getvalue()

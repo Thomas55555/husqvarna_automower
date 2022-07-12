@@ -1,3 +1,4 @@
+"""Utilities for parsing and validating coordinates."""
 from shapely.geometry import Point
 from .const import LAT_LON_BOUNDS
 from PIL import Image, UnidentifiedImageError
