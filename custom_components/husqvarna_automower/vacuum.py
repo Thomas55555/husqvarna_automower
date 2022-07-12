@@ -146,6 +146,7 @@ class HusqvarnaAutomowerEntity(
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""
         super().__init__(session, idx)
+        self._attr_name = self.mower_name
         self._attr_unique_id = self.session.data["data"][self.idx]["id"]
 
     @property

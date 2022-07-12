@@ -61,11 +61,11 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_icon = "mdi:grass"
     _attr_native_min_value = 1
     _attr_native_max_value = 9
-    _attr_name = "Cutting height"
 
     def __init__(self, session, idx):
         """Initialize AutomowerNumber."""
         super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Cutting Height"
         self._attr_unique_id = f"{self.mower_id}_cuttingheight"
 
     @property
@@ -109,7 +109,7 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description
-        self._attr_name = description.name
+        self._attr_name = f"{self.mower_name} {description.name}"
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     async def async_set_native_value(self, value: float) -> None:
