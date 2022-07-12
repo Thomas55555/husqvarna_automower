@@ -22,15 +22,9 @@ async def async_setup_entry(
 class AutomowerTracker(TrackerEntity, AutomowerEntity):
     """Defining the Device Tracker Entity."""
 
-    @property
-    def name(self) -> str:
-        """Return the name of the entity."""
-        return self.mower_name
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique identifier for this entity."""
-        return f"{self.mower_id}_dt"
+    def __init__(self, session, idx):
+        super().__init__(session, idx)
+        self._attr_unique_id = f"{self.mower_id}_dt"
 
     @property
     def source_type(self) -> str:
