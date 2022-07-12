@@ -83,14 +83,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for k in ap_storage_data:
         api_key = ap_storage_data[k]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
-    try:
-        hass.data.get(DOMAIN)[CONF_CLIENT_ID] and hass.data.get(DOMAIN)[
-            CONF_CLIENT_SECRET
-        ]
-    except KeyError:
-        _LOGGER.warning(
-            "Log-in with password/username is depracated. Please set-up client_id and client_secret in the Application Credentials form"
-        )
     session = aioautomower.AutomowerSession(api_key, access_token)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
