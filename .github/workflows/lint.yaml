@@ -33,7 +33,7 @@ jobs:
         black custom_components/husqvarna_automower --check
     - name: Lint with flake8
       run: |
-        flake8 custom_components/husqvarna_automower
+        flake8 --ignore=E501,W503,E203,D202,W504 custom_components/husqvarna_automower
     - name: Lint with pydocstyle
       run: |
         pydocstyle custom_components/husqvarna_automower
