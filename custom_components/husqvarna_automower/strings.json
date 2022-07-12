@@ -62,7 +62,8 @@
         "cant_parse": "Coordinates are not valid, lat and lon sperated by a comma in signed degree format",
         "not_file": "Invalid path, not a file",
         "too_few_points": "Must have atleast 3 points to define a zone",
-        "points_match": "Top Left and Bottom Right coordinates can't be the same"
+        "points_match": "Top Left and Bottom Right coordinates can't be the same",
+        "not_image": "Seleted file is not a valid image"
     }
   },
   "system_health": {

@@ -1,5 +1,17 @@
 from shapely.geometry import Point
 from .const import LAT_LON_BOUNDS
+from PIL import Image, UnidentifiedImageError
+
+
+def validate_image(img_path: str) -> bool:
+    """Ensure image is valid"""
+    try:
+        im = Image.open(img_path)
+        im.verify()
+        im.close()
+    except (FileNotFoundError, UnidentifiedImageError):
+        return False
+    return True
 
 
 class LatLon:
