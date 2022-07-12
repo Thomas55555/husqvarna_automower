@@ -31,6 +31,8 @@ async def async_setup_entry(
 class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
     def __init__(self, session, idx):
         """Initialize AutomowerCalendar."""
         super().__init__(session, idx)
