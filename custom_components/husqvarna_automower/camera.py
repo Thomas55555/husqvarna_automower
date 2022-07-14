@@ -47,6 +47,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
+    _attr_name = "Map"
 
     def __init__(self, session, idx, entry):
         """Initialize AutomowerCamera."""
@@ -55,7 +56,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
         self.entry = entry
         self._position_history = []
-        self._attr_name = self.mower_name
         self._attr_unique_id = f"{self.mower_id}_camera"
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._image_bytes = None
