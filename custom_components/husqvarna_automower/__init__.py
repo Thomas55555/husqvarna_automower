@@ -75,7 +75,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-
+    api_key = None
     ap_storage = hass.data.get("application_credentials")["storage"]
     ap_storage_data = ap_storage.__dict__["data"]
     for k in ap_storage_data:

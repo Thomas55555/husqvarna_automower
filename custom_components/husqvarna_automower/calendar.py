@@ -106,7 +106,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         return f"{self.mower_id}_calendar"
 
     @property
-    def entity_category(self) -> StrEnum:
+    def entity_category(self) -> EntityCategory:
         """Return a unique identifier for this entity."""
         return EntityCategory.DIAGNOSTIC
 
