@@ -15,5 +15,4 @@ def async_register(hass: HomeAssistant, register: SystemHealthRegistration) -> N
 
 async def system_health_info(hass: HomeAssistant):
     """Get info for the info page."""
-
     return {"can_reach_server": async_check_can_reach_url(hass, TOKEN_URL)}

@@ -37,6 +37,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     _attr_name = "Headlight mode"
 
     def __init__(self, session, idx):
+        """Initialize AutomowerSelect."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
