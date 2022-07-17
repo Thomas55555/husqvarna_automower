@@ -21,7 +21,7 @@ Custom component to support Automower.
 
 ## About
 
-This Home Assistant integration provides status and control of supported Husqvarna  automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.  
+This Home Assistant integration provides status and control of supported Husqvarna  Automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.  
 
 ![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/dev/screenshot_husqvarna_automower.PNG?raw=true)
 
@@ -111,7 +111,7 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 
 2. Acknowledge prompts to open link, install Husqvarna Automower integration
 
-3. Acknowledge prompt to setup application credentials
+3. Acknowledge prompt to setup application credentials.
 
 4. Enter the following from the Husqvrana developer tab:
 
@@ -120,13 +120,13 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
    * Copy and paste the *Application Key* into the *OAuth Client ID* field
    * Copy and paste the *Application Secret* into the *OAuth Client Secret* field
 
-5. Click Create
+5. Click **Create**
 
 6. Browser will be redirected to Husqvarna Developer site.  Sign in and Authorize the integration to connect with your Husqvarna account
 
-7. After authorizing the integration the browser will show the my Home Assistant redirect link to link this account.  Click on Link Account.
+7. After authorizing the integration the browser will show the my Home Assistant redirect link to link this account.  Click on **Link Account**.
 
-8. Confirm successful connection of Automowers and assign to an HA area if desired.
+8. Confirm successful connection of mower and assign to an HA area if desired.
 
 ### Camera Sensor
 
@@ -138,30 +138,33 @@ You can then provide the path to the image you would like to use for the map and
 
 ## Usage
 
-`vacuum.start`
-The mower continues to mow, within the specified schedule
+* `vacuum.start`
+  The mower continues to mow, within the specified schedule
 
-`vacuum.pause`
-Pauses the mower until a new command
+* `vacuum.pause`
+  Pauses the mower until a new command
 
-`vacuum.stop`
-The mower returns to the base and parks there until the next schedule starts
+* `vacuum.stop`
+  The mower returns to the base and parks there until the next schedule starts
 
-`vacuum.return_to_base`
-The mower returns to the base and parks there until it gets a new start command
+* `vacuum.return_to_base`
+  The mower returns to the base and parks there until it gets a new start command
 
-`number.automower_park_for`
+* `number.automower_park_for`
+  Override schedule to park mower for specified number of minutes.
 
-Override schedule to park mower for specified number of minutes.
+* `number.automower_mow_for`
+  Override schedule to mow for specified number of minutes.
 
-`number.automower_mow_for`
+* `number.automower_cutting_height`
+  Set mower cutting height.
 
-Override schedule to mow for specified number of minutes.
+* `select.automower_headlight_mode`
+  Set the mower headlight operating mode
 
 ### Services
 
 * `husqvarna_automower.park_and_start` 
-
   Deprecated as of version 2022.7.0.  Use number .set_value service to set overrides.
 
   ```
@@ -173,8 +176,7 @@ Override schedule to mow for specified number of minutes.
   ```
 
 * `husqvarna_automower.calendar`
-
-  Allows Automower schedule to be revised.  Supports single schedule per day, this will override existing schedule.
+  Allows mower schedule to be revised.  Supports single schedule per day, this will override existing schedule.
 
   ```
   service: husqvarna_automower.calendar
@@ -191,15 +193,12 @@ Override schedule to mow for specified number of minutes.
   target:
     entity_id: vacuum.automower
   ```
-
   `start` must be less than `end`.  Seconds are ignored.
 
 * `husqvarna_automower.custom_command`
-
   Allows custom JSON formatted commands to be sent.
 
   Example equivalent to `vacuum.start`
-
   ```
   service: husqvarna_automower.custom_command
   data:
@@ -211,7 +210,6 @@ Override schedule to mow for specified number of minutes.
   target:
     entity_id: vacuum.automower
   ```
-
   See https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger for additional details.
 
 ## Debugging     
