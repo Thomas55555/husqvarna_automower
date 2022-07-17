@@ -162,21 +162,63 @@ Override schedule to mow for specified number of minutes.
 
 * `husqvarna_automower.park_and_start` 
 
-  Deprecated as of version 2022.7.0
+  Deprecated as of version 2022.7.0.  Use number .set_value service to set overrides.
+
+  ```
+  service: number.set_value
+  data:
+    value: '60'
+  target:
+    entity_id: number.automower_mow_for
+  ```
 
 * `husqvarna_automower.calendar`
 
-  Allows home assistant to modify the Automower schedule.
+  Allows Automower schedule to be revised.  Supports single schedule per day, this will override existing schedule.
+
+  ```
+  service: husqvarna_automower.calendar
+  data:
+    start: '11:45:00'
+    end: '21:30:00'
+    monday: true
+    tuesday: true
+    wednesday: true
+    thursday: true
+    friday: true
+    saturday: false
+    sunday: false
+  target:
+    entity_id: vacuum.automower
+  ```
+
+  `start` must be less than `end`.  Seconds are ignored.
 
 * `husqvarna_automower.custom_command`
 
-  Allows custom JSON formated commands to be sent.
+  Allows custom JSON formatted commands to be sent.
 
-## Debugging
+  Example equivalent to `vacuum.start`
 
-To enable debug logging for this integration and related libraries you
-can control this in your Home Assistant `configuration.yaml`
-file. Example:
+  ```
+  service: husqvarna_automower.custom_command
+  data:
+    command_type: actions
+    json_string: >-
+      {
+       "data": {"type": "ResumeSchedule"}
+      }
+  target:
+    entity_id: vacuum.automower
+  ```
+
+  See https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger for additional details.
+
+## Debugging     
+
+To enable debug logging for this integration and related libraries you can control this in your Home Assistant `configuration.yaml` file. 
+
+Example:
 
 ```
 logger:
