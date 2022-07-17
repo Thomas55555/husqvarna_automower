@@ -18,6 +18,7 @@ Custom component to support Automower.
   - [Camera Sensor](#Camera-sensor)
 - [Usage](#usage)
 - [Debugging](#Debugging)
+- [Troubleshooting](#Troubleshooting)
 
 ## About
 
@@ -106,7 +107,7 @@ Your Husqvarna account username/password used for the *Automower® Connect*  pho
 
 The My Home Assistant redirect feature needs to be setup to redirect to your home assistant installation.  See https://my.home-assistant.io/faq/ for additional information.  
 
-1. Add the integration to your home assistant insatllation and test the redirect feature by following below link:
+1. Add the integration to your home assistant installation and test the redirect feature by following below link:
    [![my_button](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=husqvarna_automower)
 
 2. Acknowledge prompts to open link, install Husqvarna Automower integration
@@ -165,7 +166,7 @@ You can then provide the path to the image you would like to use for the map and
 ### Services
 
 * `husqvarna_automower.park_and_start` 
-  Deprecated as of version 2022.7.0.  Use number .set_value service to set overrides.
+  Deprecated as of version 2022.7.0.  Use number .set_value service to set the number overrides.
 
   ```
   service: number.set_value
@@ -210,7 +211,7 @@ You can then provide the path to the image you would like to use for the map and
   target:
     entity_id: vacuum.automower
   ```
-  See https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger for additional details.
+  See Husqvarna [API reference](https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger) for additional details.
 
 ## Debugging     
 
@@ -227,3 +228,9 @@ logger:
 ```
 
 After a restart detailed log entries will appear in `/config/home-assistant.log`.
+
+## Troubleshooting
+
+### Remove Credentials
+
+The OAuth2 credentials can be removed from the home assistant user interface.  Navigate to the Integrations tab under settings.  Access the *Application Credentials* menu  by clicking on the Kebab (3 vertical dot menu icon) .  Direct link: https://my.home-assistant.io/redirect/application_credentials/
