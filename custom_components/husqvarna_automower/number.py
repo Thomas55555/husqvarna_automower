@@ -112,6 +112,12 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         self._attr_name = f"{self.mower_name} {description.name}"
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
+
     async def async_set_native_value(self, value: float) -> None:
         """Change the value."""
         command_type = "actions"
