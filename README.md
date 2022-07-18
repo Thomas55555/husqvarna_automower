@@ -24,24 +24,11 @@ Custom component to support Automower.
 
 This Home Assistant integration provides status and control of supported Husqvarna  Automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.  
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/dev/screenshot_husqvarna_automower.PNG?raw=true)
+![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG?raw=true)
 
 ## Supported devices
 
-Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* produced after 2017 are supported. e.g.
-
-- Automower® 105
-- Automower® 310
-- Automower® 315
-- Automower® 315X / 315XH
-- Automower® 420
-- Automower® 430X / 430XH
-- Automower® 435X AWD
-- Automower® 440
-- Automower® 450X / 450XH
-- Automower® 520
-- Automower® 535 AWD
-- Automower® 550
+Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* are supported. 
 
 
 ## Installation
