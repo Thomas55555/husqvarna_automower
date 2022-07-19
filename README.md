@@ -26,7 +26,7 @@ need a API key to use this integration, refer to [this
 guide](https://developer.husqvarnagroup.cloud/docs/get-started) on how to
 get one.
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG)
+![Screenshot of the integration](https://raw.githubusercontent.com/Thomas55555/husqvarna_automower/main/screenshot_husqvarna_automower.PNG)
 
 ## Supported devices
 
@@ -87,7 +87,7 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 Login with API-Key and Application Secret. You can find them on the Husqvarna site
 [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
-On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant 
+On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant
 ```
 https://my.home-assistant.io/redirect/oauth
 ```
