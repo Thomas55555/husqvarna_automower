@@ -10,3 +10,4 @@ scripts.yaml
 secrets.yaml
 __pycache__/
 deps/
+!.github/

@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup select platform."""
+    """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerSelect(session, idx)
@@ -36,6 +36,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, session, idx):
+        """Initialize AutomowerSelect."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Headlight mode"
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"

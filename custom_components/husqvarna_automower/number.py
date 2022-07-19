@@ -21,8 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup number platform."""
-
+    """Set up number platform."""
     session = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
@@ -64,6 +63,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_native_max_value = 9
 
     def __init__(self, session, idx):
+        """Initialize AutomowerNumber."""
         super().__init__(session, idx)
         self._attr_name = f"{self.mower_name} Cutting Height"
         self._attr_unique_id = f"{self.mower_id}_cuttingheight"
@@ -105,11 +105,18 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
     _attr_native_step: float = 1
 
     def __init__(self, session, idx, description: NumberEntityDescription):
+        """Initialize AutomowerParkStartNumberEntity."""
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description
         self._attr_name = f"{self.mower_name} {description.name}"
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     async def async_set_native_value(self, value: float) -> None:
         """Change the value."""

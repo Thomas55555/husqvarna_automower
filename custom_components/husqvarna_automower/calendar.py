@@ -4,7 +4,6 @@ import logging
 
 from geopy.geocoders import Nominatim
 
-from homeassistant.backports.enum import StrEnum
 from homeassistant.components.calendar import CalendarEntity, CalendarEvent
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -21,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Setup calendar platform."""
+    """Set up calendar platform."""
     _LOGGER.debug("entry: %s", entry)
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
@@ -33,6 +32,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
     def __init__(self, session, idx):
+        """Initialize AutomowerCalendar."""
         super().__init__(session, idx)
         self._event = None
         self._next_event = None
@@ -106,7 +106,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         return f"{self.mower_id}_calendar"
 
     @property
-    def entity_category(self) -> StrEnum:
+    def entity_category(self) -> EntityCategory:
         """Return a unique identifier for this entity."""
         return EntityCategory.DIAGNOSTIC
 
