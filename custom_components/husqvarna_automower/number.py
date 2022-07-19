@@ -28,7 +28,7 @@ async def async_setup_entry(
     async_add_entities(
         AutomowerNumber(session, idx)
         for idx, ent in enumerate(session.data["data"])
-        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
+        if "3" in session.data["data"][idx]["attributes"]["system"]["model"]
     )
     async_add_entities(
         AutomowerParkStartNumberEntity(session, idx, description)
@@ -86,7 +86,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {"cuttingHeight": value},
+                "attributes": {"cuttingHeight": int(value)},
             }
         }
         payload = json.dumps(string)
