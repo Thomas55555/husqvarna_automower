@@ -1,6 +1,7 @@
 """The Husqvarna Automower integration."""
 import logging
 
+import async_timeout
 import voluptuous as vol
 
 import aioautomower
@@ -11,10 +12,15 @@ from homeassistant.components.application_credentials import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_TOKEN, Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -125,3 +131,37 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     if unload_ok:
         hass.config_entries.async_setup_platforms(entry, [Platform.CAMERA])
         entry.async_on_unload(entry.add_update_listener(update_listener))
+
+
+class AutomowerCoordinator(DataUpdateCoordinator):
+    """My custom coordinator."""
+
+    def __init__(self, hass, session):
+        """Initialize my coordinator."""
+        super().__init__(
+            hass,
+            _LOGGER,
+            # Name of the data. For logging purposes.
+            name="Husqvarna Automower",
+            # Polling interval. Will only be polled if there are subscribers.
+            # update_interval=30,
+        )
+        self.api = session
+
+    async def _async_update_data(self):
+        """Fetch data from API endpoint.
+
+        This is the place to pre-process the data to lookup tables
+        so entities can quickly look up their data.
+        """
+        try:
+            # Note: asyncio.TimeoutError and aiohttp.ClientError are already
+            # handled by the data update coordinator.
+            async with async_timeout.timeout(10):
+                return await self.api.get_status()
+        except Exception as err:
+            # Raising ConfigEntryAuthFailed will cancel future updates
+            # and start a config flow with SOURCE_REAUTH (async_step_reauth)
+            raise ConfigEntryAuthFailed from err
+        except Exception as err:
+            raise UpdateFailed(f"Error communicating with API: {err}")

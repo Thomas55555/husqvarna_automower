@@ -4,11 +4,12 @@ import logging
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
+from . import AutomowerCoordinator
 from .const import DOMAIN, HEADLIGHTMODES
 from .entity import AutomowerEntity
 
@@ -20,24 +21,27 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = AutomowerCoordinator(hass, session)
+    await coordinator.async_config_entry_first_refresh()
     async_add_entities(
-        AutomowerSelect(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-        if not session.data["data"][idx]["attributes"]["system"]["model"]
+        AutomowerSelect(coordinator, idx)
+        for idx, ent in enumerate(coordinator.data["data"])
+        if not coordinator.data["data"][idx]["attributes"]["system"]["model"]
         in ["550", "Ceora"]
     )
 
 
-class AutomowerSelect(SelectEntity, AutomowerEntity):
+class AutomowerSelect(AutomowerEntity, CoordinatorEntity, SelectEntity):
     """Defining the Headlight Mode Select Entity."""
 
     _attr_options = HEADLIGHTMODES
     _attr_icon = "mdi:car-light-high"
     _attr_entity_category = EntityCategory.CONFIG
 
-    def __init__(self, session, idx):
+    def __init__(self, coordinator, idx):
         """Initialize AutomowerSelect."""
-        super().__init__(session, idx)
+        super().__init__(coordinator, idx)
+        self.idx = idx
         self._attr_name = f"{self.mower_name} Headlight mode"
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
@@ -64,6 +68,6 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
         }
         payload = json.dumps(string)
         try:
-            await self.session.action(self.mower_id, payload, command_type)
+            await self.coordinator.api.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception

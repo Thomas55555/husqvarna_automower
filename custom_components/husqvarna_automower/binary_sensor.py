@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from . import AutomowerCoordinator
 from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
 
@@ -21,30 +22,35 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = AutomowerCoordinator(hass, session)
+    await coordinator.async_config_entry_first_refresh()
     async_add_entities(
-        AutomowerBatteryChargingBinarySensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerBatteryChargingBinarySensor(coordinator, idx)
+        for idx, ent in enumerate(coordinator.data["data"])
     )
     async_add_entities(
-        AutomowerLeavingDockBinarySensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerLeavingDockBinarySensor(coordinator, idx)
+        for idx, ent in enumerate(coordinator.data["data"])
     )
     async_add_entities(
-        AutomowerErrorBinarySensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerErrorBinarySensor(coordinator, idx)
+        for idx, ent in enumerate(coordinator.data["data"])
     )
 
 
-class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
+class AutomowerBatteryChargingBinarySensor(
+    AutomowerEntity,
+    BinarySensorEntity,
+):
     """Defining the AutomowerProblemSensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
     _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
 
-    def __init__(self, session, idx):
+    def __init__(self, coordinator, idx):
         """Initialize AutomowerBatteryChargingBinarySensor."""
-        super().__init__(session, idx)
+        super().__init__(coordinator, idx)
         self._attr_name = f"{self.mower_name} Battery Charging"
         self._attr_unique_id = f"{self.mower_id}_battery_charging"
 
@@ -58,15 +64,18 @@ class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
             return False
 
 
-class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
+class AutomowerLeavingDockBinarySensor(
+    AutomowerEntity,
+    BinarySensorEntity,
+):
     """Defining the AutomowerProblemSensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
 
-    def __init__(self, session, idx):
+    def __init__(self, coordinator, idx):
         """Initialize AutomowerLeavingDockBinarySensor."""
-        super().__init__(session, idx)
+        super().__init__(coordinator, idx)
         self._attr_name = f"{self.mower_name} Leaving Dock"
         self._attr_unique_id = f"{self.mower_id}_leaving_dock"
 
@@ -80,16 +89,19 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
             return False
 
 
-class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
+class AutomowerErrorBinarySensor(
+    AutomowerEntity,
+    BinarySensorEntity,
+):
     """Defining the AutomowerErrorSensor Entity."""
 
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default: bool = False
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
 
-    def __init__(self, session, idx):
+    def __init__(self, coordinator, idx):
         """Initialize AutomowerErrorBinarySensor."""
-        super().__init__(session, idx)
+        super().__init__(coordinator, idx)
         self._attr_name = f"{self.mower_name} Error"
         self._attr_unique_id = f"{self.mower_id}_error"
 

@@ -13,14 +13,14 @@ OAUTH2_TOKEN = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token"
 
 # Platforms
 PLATFORMS = [
-    Platform.DEVICE_TRACKER,
-    Platform.VACUUM,
+    # Platform.DEVICE_TRACKER,
+    # Platform.VACUUM,
     Platform.SELECT,
-    Platform.NUMBER,
-    Platform.CALENDAR,
-    Platform.SENSOR,
+    # Platform.NUMBER,
+    # Platform.CALENDAR,
+    # Platform.SENSOR,
     Platform.BINARY_SENSOR,
-    Platform.CAMERA,
+    # Platform.CAMERA,
 ]
 
 # Configuration and options

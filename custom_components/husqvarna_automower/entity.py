@@ -4,6 +4,7 @@ from datetime import datetime
 import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, HUSQVARNA_URL
@@ -11,25 +12,24 @@ from .const import DOMAIN, HUSQVARNA_URL
 _LOGGER = logging.getLogger(__name__)
 
 
-class AutomowerEntity(Entity):
+class AutomowerEntity(CoordinatorEntity, Entity):
     """Defining the Automower Basic Entity."""
 
-    def __init__(self, session, idx) -> None:
+    def __init__(self, coordinator, idx) -> None:
         """Initialize AutomowerEntity."""
-        self.session = session
+        super().__init__(coordinator, idx)
+        self.coordinator = coordinator
         self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
-
+        self.mower = self.coordinator.data["data"][self.idx]
         mower_attributes = self.get_mower_attributes()
         self.mower_id = self.mower["id"]
         self.mower_name = mower_attributes["system"]["name"]
         self.model = mower_attributes["system"]["model"]
-
         self._available = self.get_mower_attributes()["metadata"]["connected"]
 
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
-        return self.session.data["data"][self.idx]["attributes"]
+        return self.coordinator.data["data"][self.idx]["attributes"]
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
@@ -40,14 +40,16 @@ class AutomowerEntity(Entity):
     async def async_added_to_hass(self) -> None:
         """Call when entity about to be added to Home Assistant."""
         await super().async_added_to_hass()
-        self.session.register_data_callback(
+        self.coordinator.api.register_data_callback(
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
 
     async def async_will_remove_from_hass(self) -> None:
         """Call when entity is being removed from Home Assistant."""
         await super().async_will_remove_from_hass()
-        self.session.unregister_data_callback(lambda _: self.async_write_ha_state())
+        self.coordinator.api.unregister_data_callback(
+            lambda _: self.async_write_ha_state()
+        )
 
     @property
     def device_info(self) -> DeviceInfo:
