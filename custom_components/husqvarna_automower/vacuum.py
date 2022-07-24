@@ -99,14 +99,14 @@ class HusqvarnaAutomowerStateMixin(object):
             "WAIT_POWER_UP",
         ]:
             return STATE_IDLE
-        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
-            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
-        ):
-            return STATE_DOCKED
         if mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
             return STATE_CLEANING
         if mower_attributes["mower"]["activity"] == "GOING_HOME":
             return STATE_RETURNING
+        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
+            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
+        ):
+            return STATE_DOCKED
         if (
             mower_attributes["mower"]["state"]
             in [
