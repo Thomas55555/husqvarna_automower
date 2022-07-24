@@ -24,7 +24,7 @@ Custom component to support Automower.
 
 This Home Assistant integration provides status and control of supported Husqvarna  Automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.  
 
-![Screenshot of the integration](https://github.com/Thomas55555/husqvarna_automower/blob/main/screenshot_husqvarna_automower.PNG?raw=true)
+![Screenshot of the integration](https://raw.githubusercontent.com/Thomas55555/husqvarna_automower/main/screenshot_husqvarna_automower.PNG)
 
 ## Supported devices
 
@@ -104,7 +104,6 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 4. Enter the following from the Husqvrana developer tab:
 
    * The name of the application assigned in Step 3 above 
-
    * Copy and paste the *Application Key* into the *OAuth Client ID* field
    * Copy and paste the *Application Secret* into the *OAuth Client Secret* field
 
