@@ -12,7 +12,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .const import DOMAIN
+from .const import CHANGING_CUTTING_HEIGHT_SUPPORT, DOMAIN
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,7 +27,10 @@ async def async_setup_entry(
     async_add_entities(
         AutomowerNumber(session, idx)
         for idx, ent in enumerate(session.data["data"])
-        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
+        if any(
+            ele in session.data["data"][idx]["attributes"]["system"]["model"]
+            for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
+        )
     )
     async_add_entities(
         AutomowerParkStartNumberEntity(session, idx, description)
