@@ -86,7 +86,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {"cuttingHeight": value},
+                "attributes": {"cuttingHeight": int(value)},
             }
         }
         payload = json.dumps(string)
