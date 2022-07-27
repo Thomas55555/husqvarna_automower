@@ -11,7 +11,7 @@
     "@Thomas55555"
   ],
   "requirements": [
-    "aioautomower==2022.7.0",
+    "aioautomower==2022.8.0b0",
     "geopy>=2.1.0",
     "numpy>=1.21.6",
     "Pillow>=9.1.1"

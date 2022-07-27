@@ -42,7 +42,7 @@ Only mowers with built-in Automower® Connect or with the Automower® Connect Mo
 
 ## Installation
 
-Requires Home Assistant 2022.5.0 or newer.
+Requires Home Assistant 2022.8.0b0 or newer.
 
 ### Installation through HACS
 
@@ -87,7 +87,7 @@ If the integration is not shown, try to refresh your browser (F5) or (Shift+F5).
 
 Login with API-Key and Application Secret. You can find them on the Husqvarna site
 [![Screenshot](https://user-images.githubusercontent.com/59625598/165815612-e52ad1b1-1e4f-44eb-ac18-e10a5f2db293.png)
-On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant 
+On the Husqvrana site edit your Application and add your Home Assistant instance as redirect URL. Use My HomeAssistant
 ```
 https://my.home-assistant.io/redirect/oauth
 ```
