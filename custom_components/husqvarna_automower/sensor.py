@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, ERRORCODES
+from .const import DOMAIN, ERRORCODES, NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -141,6 +141,14 @@ async def async_setup_entry(
         AutomowerStatisticsPercentageSensor(session, idx, description)
         for idx, ent in enumerate(session.data["data"])
         for description in PERCENTAGE_SENSOR_TYPES
+    )
+    async_add_entities(
+        AutomowerCuttingHeightSensor(session, idx)
+        for idx, ent in enumerate(session.data["data"])
+        if any(
+            ele in session.data["data"][idx]["attributes"]["system"]["model"]
+            for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+        )
     )
 
 
@@ -283,3 +291,23 @@ class AutomowerStatisticsPercentageSensor(SensorEntity, AutomowerEntity):
             / mower_attributes["statistics"]["totalRunningTime"]
         ) * 100
         return round(percent, 2)
+
+
+class AutomowerCuttingHeightSensor(SensorEntity, AutomowerEntity):
+    """Defining the AutomowerPercentageTimeSensor Entity."""
+
+    _attr_entity_category: EntityCategory = EntityCategory.CONFIG
+    _attr_icon = "mdi:grass"
+    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
+
+    def __init__(self, session, idx):
+        """Initialize AutomowerNumber."""
+        super().__init__(session, idx)
+        self._attr_name = f"{self.mower_name} Cutting Height"
+        self._attr_unique_id = f"{self.mower_id}_cuttingheight_sensor"
+
+    @property
+    def native_value(self) -> int:
+        """Return the entity value."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        return mower_attributes["cuttingHeight"]
