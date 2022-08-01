@@ -299,11 +299,11 @@ class AutomowerCuttingHeightSensor(SensorEntity, AutomowerEntity):
     _attr_entity_category: EntityCategory = EntityCategory.CONFIG
     _attr_icon = "mdi:grass"
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
+    _attr_name = "Cutting height"
 
     def __init__(self, session, idx):
         """Initialize AutomowerNumber."""
         super().__init__(session, idx)
-        self._attr_name = f"{self.mower_name} Cutting Height"
         self._attr_unique_id = f"{self.mower_id}_cuttingheight_sensor"
 
     @property
