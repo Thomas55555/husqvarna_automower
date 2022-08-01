@@ -3,8 +3,8 @@
 from homeassistant.components.application_credentials import AuthorizationServer
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.network import get_url
-from .const import OAUTH2_AUTHORIZE, OAUTH2_TOKEN
 
+from .const import HUSQVARNA_URL, OAUTH2_AUTHORIZE, OAUTH2_TOKEN
 
 async def async_get_authorization_server(hass: HomeAssistant) -> AuthorizationServer:
     """Return authorization server."""

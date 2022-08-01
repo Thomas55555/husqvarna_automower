@@ -110,5 +110,6 @@ class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
         """Return the specific state attributes of this mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         if self.is_on:
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+            error = ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+            return {"error": error}
         return None

@@ -12,7 +12,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .const import DOMAIN
+from .const import CHANGING_CUTTING_HEIGHT_SUPPORT, DOMAIN
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,13 +22,15 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up number platform."""
-
     session = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
         AutomowerNumber(session, idx)
         for idx, ent in enumerate(session.data["data"])
-        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
+        if any(
+            ele in session.data["data"][idx]["attributes"]["system"]["model"]
+            for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
+        )
     )
     async_add_entities(
         AutomowerParkStartNumberEntity(session, idx, description)
@@ -87,7 +89,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {"cuttingHeight": value},
+                "attributes": {"cuttingHeight": int(value)},
             }
         }
         payload = json.dumps(string)
@@ -112,6 +114,12 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         self.entity_description = description
         self._attr_name = description.name
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     async def async_set_native_value(self, value: float) -> None:
         """Change the value."""

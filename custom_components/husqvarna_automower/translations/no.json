@@ -1,0 +1,45 @@
+{
+    "config": {
+        "step": {
+            "reauth_confirm": {
+                "description": "Husqvarna Automower integrasjonen må reautentiseres med Husqvarna",
+                "title": "Reautentiserer integrasjion"
+            }
+        },
+        "abort": {
+            "missing_configuration": "Komponenten er ikke konfigurert. Følg venligst dokumentasjonen.",
+            "reauth_successful": "Renautentiseringen var suksessfull",
+            "single_instance_allowed": "Kun en konfigurering af Husqvarna Automower er tillatt."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "enable_camera": "Aktiver kart-kamera"
+                },
+                "description": "Aktiver kart-kamera",
+                "title": "Husqvarna Automower innstillinger"
+            },
+            "config": {
+                "data": {
+                    "gps_top_left": "GPS koordinater for det øvre venstre hjørne av bildet",
+                    "gps_bottom_right": "GPS koordinater for det nedre høyre hjørne av bildet",
+                    "mower_img_path": "Filsti til bilde af robotklipper",
+                    "map_img_path": "Filsti til bilde af kartet"
+
+                },
+                "description": "Kamera instillinger",
+                "title": "Husqvarna Automower instillinger"
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "can_reach_server": "Kan nå Husqvarna Token server"
+        }
+    },
+    "application_credentials": {
+        "description": "Lag en bruker på [Husqvarna developers portal]({oauth_creds_url}). Koble Authentiserings API'en og Automower Connect API'en. Som redirect-URI brukes https://my.home-assistant.io/redirect/oauth. Hvis du ennå ikke har konfigurert My HomeAssistant så bruk i stedet denne URL: {redirect_uri}"
+    }
+}

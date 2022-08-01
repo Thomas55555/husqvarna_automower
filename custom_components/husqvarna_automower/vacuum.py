@@ -43,7 +43,6 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up vacuum platform."""
-
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         HusqvarnaAutomowerEntity(session, idx)
@@ -100,14 +99,14 @@ class HusqvarnaAutomowerStateMixin(object):
             "WAIT_POWER_UP",
         ]:
             return STATE_IDLE
-        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
-            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
-        ):
-            return STATE_DOCKED
         if mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
             return STATE_CLEANING
         if mower_attributes["mower"]["activity"] == "GOING_HOME":
             return STATE_RETURNING
+        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
+            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
+        ):
+            return STATE_DOCKED
         if (
             mower_attributes["mower"]["state"]
             in [

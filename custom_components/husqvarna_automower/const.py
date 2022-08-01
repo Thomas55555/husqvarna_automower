@@ -180,6 +180,24 @@ ERRORCODES = {
     121: "High internal temperature",
     122: "CAN error",
     123: "Destination not reachable",
+    701: "Connectivity problem",
+    702: "Connectivity settings restored",
+    703: "Connectivity problem",
+    704: "Connectivity problem",
+    705: "Connectivity problem",
+    706: "Poor signal quality",
+    707: "SIM card requires PIN",
+    708: "SIM card locked",
+    709: "SIM card not found",
+    710: "SIM card locked",
+    711: "SIM card locked",
+    712: "SIM card locked",
+    713: "Geofence problem",
+    714: "Geofence problem",
+    715: "Connectivity problem",
+    716: "Connectivity problem",
+    717: "SMS could not be sent",
+    724: "Communication circuit board SW must be updated",
 }
 
 # Headlight modes
@@ -194,4 +212,29 @@ WEEKDAYS = (
     "friday",
     "saturday",
     "sunday",
+)
+
+# Models that support electronic cutting height
+ELECTRONIC_CUTTING_HEIGHT_SUPPORT = [
+    "405",
+    "415",
+    "420",
+    "430",
+    "435",
+    "440",
+    "450",
+    "520",
+    "535",
+    "544",
+    "546",
+    "550",
+    "550 EPOS",
+]
+
+# Models that support electronic cutting height, but are not changeable with this APII
+NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT = ["405", "415", "435", "544", "546", "550 EPOS"]
+
+# Models that are able to change the cutting height with this API
+CHANGING_CUTTING_HEIGHT_SUPPORT = list(
+    set(ELECTRONIC_CUTTING_HEIGHT_SUPPORT) - set(NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT)
 )
