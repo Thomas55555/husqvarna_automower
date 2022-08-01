@@ -23,6 +23,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
     """Defining the Device Tracker Entity."""
 
     def __init__(self, session, idx):
+        """Initialize AutomowerDeviceTracker."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_dt"
 
