@@ -119,7 +119,9 @@ calendar:
 
 custom_command:
   name: Custom command
-  description: Send a highly individual command to the mower, like a multiple calendar task or a command for a new feature, which is not implemented yet by this integration.
+  description: "Send a highly individual command to the mower, like a multiple calendar task or a
+    command for a new feature, which is not implemented yet by this integration. You can get examples
+    from https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#openapi"
   target:
     entity:
       integration: "husqvarna_automower"
@@ -139,7 +141,7 @@ custom_command:
             - "settings"
     json_string:
       name: JSON
-      description: "Custom command as JSON. You can get examples from https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger"
+      description: "Custom command as JSON"
       required: true
       example: >-
         '{
