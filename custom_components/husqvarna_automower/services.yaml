@@ -1,41 +1,5 @@
 # Describes the format for available Husqvarna Automower services
 
-park_and_start:
-  name: Park and start
-  description: Send a custom command to the mower for parking and starting. The schedule will be overriden for the selected time.
-  target:
-    entity:
-      integration: "husqvarna_automower"
-      domain: "vacuum"
-  fields:
-    command:
-      # Field name as shown in UI
-      name: Command
-      # Description of the field
-      description: Custom command
-      # Whether or not field is required
-      required: true
-      # Example value that can be passed for this field
-      example: "Start"
-      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
-      default: "Start"
-      selector:
-        select:
-          options:
-            - "Start"
-            - "Park"
-    duration:
-      name: Duration for the command
-      description: Duration of the command (only for 'Start' and 'Park')
-      required: true
-      example: 60
-      default: 100
-      selector:
-        number:
-          min: 1
-          max: 60480
-          unit_of_measurement: "min"
-
 calendar:
   name: Calendar
   description: This service deletes all of your calendar tasks and replaces it with a new one.
