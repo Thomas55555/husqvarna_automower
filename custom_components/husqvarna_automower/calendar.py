@@ -92,7 +92,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                     )
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
-                        _LOGGER.debug("self._next_event %s", self._next_event)
 
                     event_list.append(self._event)
 
