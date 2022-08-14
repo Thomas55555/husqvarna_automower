@@ -140,6 +140,16 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
             2,
         ),
     ),
+    AutomowerSensorEntityDescription(
+        key="battery_level",
+        name="Battery level",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        value_fn=lambda data: data["battery"]["batteryPercent"],
+    ),
 )
 
 
@@ -150,10 +160,6 @@ async def async_setup_entry(
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerProblemSensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-    )
-    async_add_entities(
-        AutomowerBatterySensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
     async_add_entities(
@@ -217,25 +223,6 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
         ]:
             return mower_attributes["mower"]["activity"]
         return None
-
-
-class AutomowerBatterySensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerBatterySensor Entity."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_native_unit_of_measurement = PERCENTAGE
-    _attr_device_class = SensorDeviceClass.BATTERY
-    _attr_name = "Battery level"
-
-    def __init__(self, session, idx):
-        """Set up AutomowerBatterySensor."""
-        super().__init__(session, idx)
-        self._attr_unique_id = f"{self.mower_id}_battery_level"
-
-    @property
-    def native_value(self):
-        """Return the state of the sensor."""
-        return AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"]
 
 
 class AutomowerNextStartSensor(SensorEntity, AutomowerEntity):
