@@ -159,6 +159,13 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
             data, data["planner"]["nextStartTimestamp"]
         ),
     ),
+    AutomowerSensorEntityDescription(
+        key="mode",
+        name="Mode",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data["mower"]["mode"],
+    ),
 )
 
 
@@ -169,10 +176,6 @@ async def async_setup_entry(
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerProblemSensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-    )
-    async_add_entities(
-        AutomowerModeSensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
     async_add_entities(
@@ -228,25 +231,6 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
         ]:
             return mower_attributes["mower"]["activity"]
         return None
-
-
-class AutomowerModeSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerModeSensor Entity."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_entity_registry_enabled_default = False
-    _attr_name = "Mode"
-
-    def __init__(self, session, idx):
-        """Set up AutomowerModeSensor."""
-        super().__init__(session, idx)
-        self._attr_unique_id = f"{self.mower_id}_mode"
-
-    @property
-    def native_value(self):
-        """Return the state of the sensor."""
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        return mower_attributes["mower"]["mode"]
 
 
 class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
