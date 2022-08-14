@@ -35,8 +35,11 @@ class AutomowerEntity(Entity):
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
-        naive = datetime.utcfromtimestamp(timestamp / 1000)
-        local = dt_util.as_local(naive)
+        if timestamp != 0:
+            naive = datetime.utcfromtimestamp(timestamp / 1000)
+            local = dt_util.as_local(naive)
+        if timestamp == 0:
+            local = None
         return local
 
     async def async_added_to_hass(self) -> None:
