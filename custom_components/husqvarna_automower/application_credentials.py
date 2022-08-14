@@ -18,6 +18,6 @@ async def async_get_authorization_server(hass: HomeAssistant) -> AuthorizationSe
 async def async_get_description_placeholders(hass: HomeAssistant) -> dict[str, str]:
     """Return description placeholders for the credentials dialog."""
     return {
-        "oauth_creds_url": "https://developer.husqvarnagroup.cloud/applications/",
+        "oauth_creds_url": HUSQVARNA_URL,
         "redirect_uri": get_url(hass),
     }
