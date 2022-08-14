@@ -35,6 +35,33 @@ class AutomowerSensorEntityDescription(
     """Describes a sensor sensor entity."""
 
 
+def get_problem(mower_attributes) -> dict:
+    """Get the mower attributes of the current mower."""
+    if mower_attributes["mower"]["state"] == "RESTRICTED":
+        if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
+            return None
+        return mower_attributes["planner"]["restrictedReason"]
+    if mower_attributes["mower"]["state"] in [
+        "ERROR",
+        "FATAL_ERROR",
+        "ERROR_AT_POWER_UP",
+    ]:
+        return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+    if mower_attributes["mower"]["state"] in [
+        "UNKNOWN",
+        "STOPPED",
+        "OFF",
+    ]:
+        return mower_attributes["mower"]["state"]
+    if mower_attributes["mower"]["activity"] in [
+        "STOPPED_IN_GARDEN",
+        "UNKNOWN",
+        "NOT_APPLICABLE",
+    ]:
+        return mower_attributes["mower"]["activity"]
+    return None
+
+
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     AutomowerSensorEntityDescription(
         key="cuttingBladeUsageTime",
@@ -166,6 +193,13 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: data["mower"]["mode"],
     ),
+    AutomowerSensorEntityDescription(
+        key="problem_sensor",
+        name="Problem Sensor",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: get_problem(data),
+    ),
 )
 
 
@@ -175,11 +209,7 @@ async def async_setup_entry(
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerProblemSensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-    )
-    async_add_entities(
-        AutomowerStatisticsSensor(session, idx, description)
+        AutomowerSensor(session, idx, description)
         for idx, ent in enumerate(session.data["data"])
         for description in SENSOR_TYPES
     )
@@ -193,51 +223,11 @@ async def async_setup_entry(
     )
 
 
-class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerProblemSensor Entity."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_name = "Problem sensor"
-
-    def __init__(self, session, idx):
-        """Set up AutomowerProblemSensor."""
-        super().__init__(session, idx)
-        self._attr_unique_id = f"{self.mower_id}_problem_sensor"
-
-    @property
-    def native_value(self) -> str:
-        """Return a the current problem of the mower."""
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        if mower_attributes["mower"]["state"] == "RESTRICTED":
-            if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-                return None
-            return mower_attributes["planner"]["restrictedReason"]
-        if mower_attributes["mower"]["state"] in [
-            "ERROR",
-            "FATAL_ERROR",
-            "ERROR_AT_POWER_UP",
-        ]:
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-        if mower_attributes["mower"]["state"] in [
-            "UNKNOWN",
-            "STOPPED",
-            "OFF",
-        ]:
-            return mower_attributes["mower"]["state"]
-        if mower_attributes["mower"]["activity"] in [
-            "STOPPED_IN_GARDEN",
-            "UNKNOWN",
-            "NOT_APPLICABLE",
-        ]:
-            return mower_attributes["mower"]["activity"]
-        return None
-
-
-class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerTimeStatisticsSensor Entity."""
+class AutomowerSensor(SensorEntity, AutomowerEntity):
+    """Defining the Automower Sensors with AutomowerSensorEntityDescription."""
 
     def __init__(self, session, idx, description: AutomowerSensorEntityDescription):
-        """Set up AutomowerStatisticsSensors."""
+        """Set up AutomowerSensors."""
         super().__init__(session, idx)
         self.entity_description = description
         self._attr_name = description.name
@@ -251,7 +241,7 @@ class AutomowerStatisticsSensor(SensorEntity, AutomowerEntity):
 
 
 class AutomowerCuttingHeightSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerPercentageTimeSensor Entity."""
+    """Defining the AutomowerCuttingHeightSensor Entity."""
 
     _attr_entity_category: EntityCategory = EntityCategory.CONFIG
     _attr_icon = "mdi:grass"
