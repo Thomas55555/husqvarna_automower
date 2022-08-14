@@ -107,7 +107,6 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_unit_of_measurement=TIME_SECONDS,
         value_fn=lambda data: data["statistics"]["numberOfCollisions"],
     ),
     AutomowerSensorEntityDescription(
@@ -150,6 +149,16 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         value_fn=lambda data: data["battery"]["batteryPercent"],
     ),
+    AutomowerSensorEntityDescription(
+        key="next_start",
+        name="Next start",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda data: AutomowerEntity.datetime_object(
+            data, data["planner"]["nextStartTimestamp"]
+        ),
+    ),
 )
 
 
@@ -160,10 +169,6 @@ async def async_setup_entry(
     session = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerProblemSensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-    )
-    async_add_entities(
-        AutomowerNextStartSensor(session, idx)
         for idx, ent in enumerate(session.data["data"])
     )
     async_add_entities(
@@ -222,31 +227,6 @@ class AutomowerProblemSensor(SensorEntity, AutomowerEntity):
             "NOT_APPLICABLE",
         ]:
             return mower_attributes["mower"]["activity"]
-        return None
-
-
-class AutomowerNextStartSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerNextStartSensor Entity."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_device_class = SensorDeviceClass.TIMESTAMP
-    _attr_name = "Next start"
-
-    def __init__(self, session, idx):
-        """Set up AutomowerNextStartSensor."""
-        super().__init__(session, idx)
-        self._attr_unique_id = f"{self.mower_id}_next_start"
-
-    @property
-    def native_value(self):
-        """Return the state of the sensor."""
-        next_start = None
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start = AutomowerEntity.datetime_object(
-                self, mower_attributes["planner"]["nextStartTimestamp"]
-            )
-            return next_start
         return None
 
 
