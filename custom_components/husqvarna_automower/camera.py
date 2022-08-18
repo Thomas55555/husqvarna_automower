@@ -123,7 +123,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
         location = (position_history[0]["latitude"], position_history[0]["longitude"])
         if len(position_history) == 1:
-            self._position_history += position_history
+            self._position_history = position_history + self._position_history
             position_history = self._position_history
         else:
             self._position_history = position_history
