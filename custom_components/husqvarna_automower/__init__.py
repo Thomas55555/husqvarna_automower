@@ -17,12 +17,6 @@ from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Set up the Husqvarna Automower component for Authorization Code Grant."""
-    if DOMAIN not in config:
-        return True
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
