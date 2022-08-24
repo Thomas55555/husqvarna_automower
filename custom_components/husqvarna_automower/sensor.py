@@ -67,7 +67,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key="cuttingBladeUsageTime",
         name="Cutting blade usage time",
         icon="mdi:clock-outline",
-        entity_registry_enabled_default=False,
+        entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         device_class=SensorDeviceClass.DURATION,
@@ -200,6 +200,15 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: get_problem(data),
     ),
+    AutomowerSensorEntityDescription(
+        key="cuttingHeight",
+        name="Cutting height",
+        entity_registry_enabled_default=True,
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:grass",
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda data: data["cuttingHeight"],
+    ),
 )
 
 
@@ -208,19 +217,22 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        AutomowerSensor(session, idx, description)
-        for idx, ent in enumerate(session.data["data"])
-        for description in SENSOR_TYPES
-    )
-    async_add_entities(
-        AutomowerCuttingHeightSensor(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-        if any(
-            ele in session.data["data"][idx]["attributes"]["system"]["model"]
-            for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
-        )
-    )
+    entity_list = []
+    for idx, ent in enumerate(session.data["data"]):
+        for description in SENSOR_TYPES:
+            try:
+                description.value_fn(session.data["data"][idx]["attributes"])
+                entity_list.append(AutomowerSensor(session, idx, description))
+            except KeyError:
+                pass
+            if description.key == "cuttingHeight":
+                if any(
+                    ele in session.data["data"][idx]["attributes"]["system"]["model"]
+                    for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+                ):
+                    entity_list.append(AutomowerSensor(session, idx, description))
+
+    async_add_entities(entity_list)
 
 
 class AutomowerSensor(SensorEntity, AutomowerEntity):
@@ -238,23 +250,3 @@ class AutomowerSensor(SensorEntity, AutomowerEntity):
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return self.entity_description.value_fn(mower_attributes)
-
-
-class AutomowerCuttingHeightSensor(SensorEntity, AutomowerEntity):
-    """Defining the AutomowerCuttingHeightSensor Entity."""
-
-    _attr_entity_category: EntityCategory = EntityCategory.CONFIG
-    _attr_icon = "mdi:grass"
-    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
-    _attr_name = "Cutting height"
-
-    def __init__(self, session, idx):
-        """Initialize AutomowerNumber."""
-        super().__init__(session, idx)
-        self._attr_unique_id = f"{self.mower_id}_cuttingheight_sensor"
-
-    @property
-    def native_value(self) -> int:
-        """Return the entity value."""
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        return mower_attributes["cuttingHeight"]
