@@ -222,15 +222,17 @@ async def async_setup_entry(
         for description in SENSOR_TYPES:
             try:
                 description.value_fn(session.data["data"][idx]["attributes"])
-                entity_list.append(AutomowerSensor(session, idx, description))
+                if description.key == "cuttingHeight":
+                    if any(
+                        ele
+                        in session.data["data"][idx]["attributes"]["system"]["model"]
+                        for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+                    ):
+                        entity_list.append(AutomowerSensor(session, idx, description))
+                if description.key != "cuttingHeight":
+                    entity_list.append(AutomowerSensor(session, idx, description))
             except KeyError:
                 pass
-            if description.key == "cuttingHeight":
-                if any(
-                    ele in session.data["data"][idx]["attributes"]["system"]["model"]
-                    for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
-                ):
-                    entity_list.append(AutomowerSensor(session, idx, description))
 
     async_add_entities(entity_list)
 
