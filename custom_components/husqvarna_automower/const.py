@@ -7,7 +7,7 @@ DOMAIN = "husqvarna_automower"
 DOMAIN_DATA = f"{DOMAIN}_data"
 INTEGRATION_VERSION = "master"
 ISSUE_URL = "https://github.com/Thomas55555/husqvarna_automower"
-HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/applications"
+HUSQVARNA_URL = "https://developer.husqvarnagroup.cloud/login"
 OAUTH2_AUTHORIZE = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/authorize"
 OAUTH2_TOKEN = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token"
 
