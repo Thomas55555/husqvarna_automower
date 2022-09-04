@@ -22,18 +22,18 @@ Custom component to support Automower.
 
 ## About
 
-This Home Assistant integration provides status and control of supported Husqvarna  Automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.  
+This Home Assistant integration provides status and control of supported Husqvarna  Automowers.  The official Husqvarna  [API](https://developer.husqvarnagroup.cloud/) uses websocket connection for pushed updates, so no polling is performed.  Park and Start commands including schedule overrides are supported by the integration allowing for robust automations to be implemented in Home Assistant.  Diagnostic and statics provided by the API are included with the integration for monitoring mower usage and performance.
 
 ![Screenshot of the integration](https://raw.githubusercontent.com/Thomas55555/husqvarna_automower/main/screenshot_husqvarna_automower.PNG)
 
 ## Supported devices
 
-Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* are supported. 
+Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* are supported.
 
 
 ## Installation
 
-Requires Home Assistant 2022.8.0b0 or newer.
+Requires Home Assistant 2022.9.0b0 or newer.
 
 ### Installation through HACS
 
@@ -47,9 +47,9 @@ Installation using Home Assistant Community Store (HACS) is recommended.
 
 ### Manual installation
 
-1. Download the `husqvarna_automower.zip` file from the repository [release section](https://github.com/Thomas55555/husqvarna_automower/releases). 
+1. Download the `husqvarna_automower.zip` file from the repository [release section](https://github.com/Thomas55555/husqvarna_automower/releases).
 
-2. Extract and copy the content into the path `/config/custom_components/husqvarna_automower` of your HA installation. 
+2. Extract and copy the content into the path `/config/custom_components/husqvarna_automower` of your HA installation.
 
    Do **not** download directly from the `main` branch.
 
@@ -62,7 +62,7 @@ Installation using Home Assistant Community Store (HACS) is recommended.
 
 In order to use this integration you must properly configure OAuth2 credentials using your Husqvarna account.  Refer to [this guide](https://developer.husqvarnagroup.cloud/docs/get-started) for general overview of the process.  Username/password authentication for this integration is no longer supported as of version 2022.7.0.
 
-Your Husqvarna account username/password used for the *Automower® Connect*  phone app is required.  Most users probably created a Husqvarna account during initial mower setup. 
+Your Husqvarna account username/password used for the *Automower® Connect*  phone app is required.  Most users probably created a Husqvarna account during initial mower setup.
 
 1. Go to <https://developer.husqvarnagroup.cloud/> and sign in with Husqvarna account.  Sign in page has password recovery/reset using registered email address if needed.  Authorize *Developer Porthole* to access Husqvarna account when prompted.
 
@@ -70,7 +70,7 @@ Your Husqvarna account username/password used for the *Automower® Connect*  pho
 
 3. Create a new application:
 
-   * Name is required but can be anything, for example "My Home Assistant" 
+   * Name is required but can be anything, for example "My Home Assistant"
 
    * Description is optional
 
@@ -92,7 +92,7 @@ Your Husqvarna account username/password used for the *Automower® Connect*  pho
 
 ### Home Assistant
 
-The My Home Assistant redirect feature needs to be setup to redirect to your home assistant installation.  See https://my.home-assistant.io/faq/ for additional information.  
+The My Home Assistant redirect feature needs to be setup to redirect to your home assistant installation.  See https://my.home-assistant.io/faq/ for additional information.
 
 1. Add the integration to your home assistant installation and test the redirect feature by following below link:
    [![my_button](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=husqvarna_automower)
@@ -103,7 +103,7 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 
 4. Enter the following from the Husqvrana developer tab:
 
-   * The name of the application assigned in Step 3 above 
+   * The name of the application assigned in Step 3 above
    * Copy and paste the *Application Key* into the *OAuth Client ID* field
    * Copy and paste the *Application Secret* into the *OAuth Client Secret* field
 
@@ -151,17 +151,6 @@ You can then provide the path to the image you would like to use for the map and
 
 ### Services
 
-* `husqvarna_automower.park_and_start` 
-  Deprecated as of version 2022.7.0.  Use number .set_value service to set the number overrides.
-
-  ```
-  service: number.set_value
-  data:
-    value: '60'
-  target:
-    entity_id: number.automower_mow_for
-  ```
-
 * `husqvarna_automower.calendar`
   Allows mower schedule to be revised.  Supports single schedule per day, this will override existing schedule.
 
@@ -199,9 +188,9 @@ You can then provide the path to the image you would like to use for the map and
   ```
   See Husqvarna [API reference](https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger) for additional details.
 
-## Debugging     
+## Debugging
 
-To enable debug logging for this integration and related libraries you can control this in your Home Assistant `configuration.yaml` file. 
+To enable debug logging for this integration and related libraries you can control this in your Home Assistant `configuration.yaml` file.
 
 Example:
 
