@@ -21,7 +21,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
+from homeassistant.helpers.storage import Store
 from .const import DOMAIN, ERRORCODES
 from .entity import AutomowerEntity
 
@@ -50,19 +50,13 @@ async def async_setup_entry(
     )
     platform = entity_platform.current_platform.get()
 
+    CONFIG_SCHEMA = {
+        vol.Required("test"): cv.string,
+    }
+
     platform.async_register_entity_service(
         "calendar",
-        {
-            vol.Required("start"): cv.time,
-            vol.Required("end"): cv.time,
-            vol.Required("monday"): cv.boolean,
-            vol.Required("tuesday"): cv.boolean,
-            vol.Required("wednesday"): cv.boolean,
-            vol.Required("thursday"): cv.boolean,
-            vol.Required("friday"): cv.boolean,
-            vol.Required("saturday"): cv.boolean,
-            vol.Required("sunday"): cv.boolean,
-        },
+        CONFIG_SCHEMA,
         "async_custom_calendar_command",
     )
 
@@ -261,18 +255,17 @@ class HusqvarnaAutomowerEntity(
 
     async def async_custom_calendar_command(
         self,
-        start,
-        end,
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        sunday,
+        test,
         **kwargs,
     ) -> None:
         """Send a custom calendar command to the mower."""
+
+        _LOGGER.debug("Debugging")
+        Store(self, "1", "schedule")
+        test2 = await Store.async_load(self)
+        _LOGGER.debug("schedule: %s", test2)
+        test3 = test2.__dict__
+        _LOGGER.debug("sschedule: %s", test3)
         start_in_minutes = start.hour * 60 + start.minute
         _LOGGER.debug("start in minutes int: %i", start_in_minutes)
         end_in_minutes = end.hour * 60 + end.minute
