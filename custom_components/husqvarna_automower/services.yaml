@@ -8,6 +8,87 @@ calendar:
       integration: "husqvarna_automower"
       domain: "vacuum"
   fields:
+    start:
+      name: Starting time
+      description: When the mower should start mowing (must be earlier than the ending time, seconds will be ignored)
+      required: true
+      example: "11:11:00"
+      default: "12:00:00"
+      selector:
+        time:
+    end:
+      name: Ending time
+      description: When the mower should return to the dock (must be later than the starting time, seconds will be ignored)
+      required: true
+      example: "17:30:00"
+      default: "18:00:00"
+      selector:
+        time:
+    monday:
+      name: Monday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    tuesday:
+      name: Tuesday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    wednesday:
+      name: Wednesday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    thursday:
+      name: Thursday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    friday:
+      name: Friday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    saturday:
+      name: Saturday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+    sunday:
+      name: Sunday
+      description: Do you wish, that your lawn is mowed on this day?
+      required: true
+      example: true
+      default: true
+      selector:
+        boolean:
+
+schedule_selector:
+  name: Schedule Selector
+  description: This service deletes all of your calendar tasks and replaces it with a new one.
+  target:
+    entity:
+      integration: "husqvarna_automower"
+      domain: "vacuum"
+  fields:
     schedule_selector:
       name: Schedule selector
       selector:

@@ -22,7 +22,7 @@ from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
-from .const import DOMAIN, ERRORCODES
+from .const import DOMAIN, ERRORCODES, WEEKDAYS
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
@@ -50,14 +50,28 @@ async def async_setup_entry(
     )
     platform = entity_platform.current_platform.get()
 
-    CONFIG_SCHEMA = {
-        vol.Required("test"): cv.string,
-    }
-
     platform.async_register_entity_service(
         "calendar",
-        CONFIG_SCHEMA,
+        {
+            vol.Required("start"): cv.time,
+            vol.Required("end"): cv.time,
+            vol.Required("monday"): cv.boolean,
+            vol.Required("tuesday"): cv.boolean,
+            vol.Required("wednesday"): cv.boolean,
+            vol.Required("thursday"): cv.boolean,
+            vol.Required("friday"): cv.boolean,
+            vol.Required("saturday"): cv.boolean,
+            vol.Required("sunday"): cv.boolean,
+        },
         "async_custom_calendar_command",
+    )
+
+    platform.async_register_entity_service(
+        "schedule_selector",
+        {
+            vol.Required("schedule_selector"): cv.string,
+        },
+        "async_schedule_selector",
     )
 
     platform.async_register_entity_service(
@@ -255,17 +269,18 @@ class HusqvarnaAutomowerEntity(
 
     async def async_custom_calendar_command(
         self,
-        test,
+        start,
+        end,
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
         **kwargs,
     ) -> None:
         """Send a custom calendar command to the mower."""
-
-        _LOGGER.debug("Debugging")
-        Store(self, "1", "schedule")
-        test2 = await Store.async_load(self)
-        _LOGGER.debug("schedule: %s", test2)
-        test3 = test2.__dict__
-        _LOGGER.debug("sschedule: %s", test3)
         start_in_minutes = start.hour * 60 + start.minute
         _LOGGER.debug("start in minutes int: %i", start_in_minutes)
         end_in_minutes = end.hour * 60 + end.minute
@@ -299,6 +314,63 @@ class HusqvarnaAutomowerEntity(
             await self.session.action(self.mower_id, payload, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
+
+    async def async_schedule_selector(
+        self,
+        schedule_selector,
+        **kwargs,
+    ) -> None:
+        """Send a custom calendar command to the mower."""
+        schedule_list = schedule_selector.split(".")
+        schedule_id = schedule_list[1]
+        _LOGGER.debug("schedule_selector: %s", schedule_id)
+        a = Store(self.hass, 1, "schedule")
+        schedule_storage_list = await a.async_load()
+        for ent, schedules in enumerate(schedule_storage_list["items"]):
+            _LOGGER.debug("schedule: %s, ent %i", schedules, ent)
+            if schedules["id"] == schedule_id:
+                # target_schedule = schedules[ent]
+                schedules.pop("name")
+                schedules.pop("id")
+                _LOGGER.debug("relevant schedule: %s", schedules)
+                task_list = []
+                for day, schedule in schedules.items():
+                    for daily_task in schedule:
+                        if daily_task:
+                            start_time = daily_task["from"].split(":")
+                            start_time_minutes = int(start_time[0]) * 60 + int(
+                                start_time[1]
+                            )
+                            end_time = daily_task["to"].split(":")
+                            end_time_minutes = int(end_time[0]) * 60 + int(end_time[1])
+                            duration = end_time_minutes - start_time_minutes
+                            addition = {}
+                            relevant_day = False
+                            addition = {
+                                "start": start_time_minutes,
+                                "duration": duration,
+                            }
+                            for relevant_day in WEEKDAYS:
+                                if day == relevant_day:
+                                    addition[relevant_day] = True
+                                else:
+                                    addition[relevant_day] = False
+                            task_list.append(addition)
+                    _LOGGER.debug("task_list: %s", task_list)
+                command_type = "calendar"
+                string = {
+                    "data": {
+                        "type": "calendar",
+                        "attributes": {"tasks": task_list},
+                    }
+                }
+                payload = json.dumps(string)
+                try:
+                    await self.session.action(self.mower_id, payload, command_type)
+                except ClientResponseError as exception:
+                    _LOGGER.error(
+                        "Command couldn't be sent to the command que: %s", exception
+                    )
 
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""
