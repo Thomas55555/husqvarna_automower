@@ -5,6 +5,7 @@ import logging
 from aiohttp import ClientResponseError
 import voluptuous as vol
 
+from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
     STATE_CLEANING,
@@ -22,7 +23,6 @@ from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
-from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 
 from .const import DOMAIN, ERRORCODES, WEEKDAYS
 from .entity import AutomowerEntity
