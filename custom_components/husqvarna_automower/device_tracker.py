@@ -1,5 +1,5 @@
 """Platform for Husqvarna Automower device tracker integration."""
-from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
+from homeassistant.components.device_tracker import SourceType
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -30,7 +30,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
     @property
     def source_type(self) -> str:
         """Return the source type, eg gps or router, of the device."""
-        return SOURCE_TYPE_GPS
+        return SourceType.GPS
 
     @property
     def latitude(self) -> float:
