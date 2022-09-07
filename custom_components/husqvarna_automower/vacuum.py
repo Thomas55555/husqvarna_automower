@@ -22,6 +22,7 @@ from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
+
 from .const import DOMAIN, ERRORCODES, WEEKDAYS
 from .entity import AutomowerEntity
 
@@ -320,7 +321,7 @@ class HusqvarnaAutomowerEntity(
         schedule_selector,
         **kwargs,
     ) -> None:
-        """Send a custom calendar command to the mower."""
+        """Send a schedule created by the schedule helper to the mower."""
         schedule_list = schedule_selector.split(".")
         schedule_id = schedule_list[1]
         _LOGGER.debug("schedule_selector: %s", schedule_id)
@@ -329,7 +330,6 @@ class HusqvarnaAutomowerEntity(
         for ent, schedules in enumerate(schedule_storage_list["items"]):
             _LOGGER.debug("schedule: %s, ent %i", schedules, ent)
             if schedules["id"] == schedule_id:
-                # target_schedule = schedules[ent]
                 schedules.pop("name")
                 schedules.pop("id")
                 _LOGGER.debug("relevant schedule: %s", schedules)
