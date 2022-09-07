@@ -22,6 +22,7 @@ from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
+from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 
 from .const import DOMAIN, ERRORCODES, WEEKDAYS
 from .entity import AutomowerEntity
@@ -325,8 +326,8 @@ class HusqvarnaAutomowerEntity(
         schedule_list = schedule_selector.split(".")
         schedule_id = schedule_list[1]
         _LOGGER.debug("schedule_selector: %s", schedule_id)
-        a = Store(self.hass, 1, "schedule")
-        schedule_storage_list = await a.async_load()
+        schedule_storage = Store(self.hass, 1, SCHEDULE_DOMAIN)
+        schedule_storage_list = await schedule_storage.async_load()
         for ent, schedules in enumerate(schedule_storage_list["items"]):
             _LOGGER.debug("schedule: %s, ent %i", schedules, ent)
             if schedules["id"] == schedule_id:

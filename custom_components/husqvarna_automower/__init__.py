@@ -4,13 +4,14 @@ import logging
 import voluptuous as vol
 
 import aioautomower
-from homeassistant.components.application_credentials import DATA_STORAGE
+from homeassistant.components.application_credentials import DOMAIN as AC_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -22,11 +23,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-    api_key = None
-    ap_storage = hass.data.get("application_credentials")[DATA_STORAGE]
-    ap_storage_data = ap_storage.__dict__["data"]
-    for k in ap_storage_data:
-        api_key = ap_storage_data[k]["client_id"]
+    ap_storage = Store(hass, 1, AC_DOMAIN)
+    ap_storage_data = await ap_storage.async_load()
+    api_key = ap_storage_data["items"][0]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
     session = aioautomower.AutomowerSession(api_key, access_token)
     session.register_token_callback(
