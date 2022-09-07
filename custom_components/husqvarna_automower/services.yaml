@@ -81,6 +81,23 @@ calendar:
       selector:
         boolean:
 
+schedule_selector:
+  name: Schedule Selector
+  description: This service deletes all of your calendar tasks and replaces it with a new one.
+  target:
+    entity:
+      integration: "husqvarna_automower"
+      domain: "vacuum"
+  fields:
+    schedule_selector:
+      name: Schedule selector
+      description: With this you can select the schedule helper which schould be applied to to mower.
+      required: true
+      example: schedule.target_schedule
+      selector:
+        entity:
+          domain: schedule
+
 custom_command:
   name: Custom command
   description: "Send a highly individual command to the mower, like a multiple calendar task or a
