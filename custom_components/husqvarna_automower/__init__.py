@@ -1,5 +1,6 @@
 """The Husqvarna Automower integration."""
 import logging
+from operator import le
 
 import voluptuous as vol
 
@@ -28,6 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for k in ap_storage_data:
         api_key = ap_storage_data[k]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
+    # session = aioautomower.AutomowerSession(api_key, access_token, low_energy=True)
     session = aioautomower.AutomowerSession(api_key, access_token)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
