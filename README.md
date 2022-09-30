@@ -28,7 +28,7 @@ This Home Assistant integration provides status and control of supported Husqvar
 
 ## Supported devices
 
-Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* are supported.
+Husqvarna Automowers with built-in *Automower® Connect* or with the *Automower® Connect Module* are supported.  This integration does not support Bluetooth connectivity with Automowers.
 
 
 ## Installation
@@ -84,7 +84,7 @@ Your Husqvarna account username/password used for the *Automower® Connect*  pho
 
    * Click **CREATE**.  *Application Key* and *Application Secret* will be generated and shown.  Protect these like a username and password.
 
-4. Click on **CONNECT NEW API** and connect the **Authentication API**
+4. Click on **CONNECT NEW API** and connect the **Authentication API**.
 
 5. Click on **CONNECT NEW API** again and connect the **Husqvarna Automower API**.
 
@@ -97,7 +97,7 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 1. Add the integration to your home assistant installation and test the redirect feature by following below link:
    [![my_button](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=husqvarna_automower)
 
-2. Acknowledge prompts to open link, install Husqvarna Automower integration
+2. Acknowledge prompts to open link, install Husqvarna Automower integration.
 
 3. Acknowledge prompt to setup application credentials.
 
@@ -119,9 +119,9 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 
 The camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
 
-The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example (40.689209, -74.044661)
+The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example: `40.689209,-74.044661`
 
-You can then provide the path to the image you would like to use for the map and mower, this has been tested with the PNG format, other formats may work.
+You can then provide the path to the image you would like to use for the map and mower.  This has been tested with the PNG format, other formats may work.  The `.../resources/map_image.png` default image is over written when the integration is updated, store the custom image in another location.  
 
 ## Usage
 
@@ -208,4 +208,8 @@ After a restart detailed log entries will appear in `/config/home-assistant.log`
 
 ### Remove Credentials
 
-The OAuth2 credentials can be removed from the home assistant user interface.  Navigate to the Integrations tab under settings.  Access the *Application Credentials* menu  by clicking on the Kebab (3 vertical dot menu icon) .  Direct link: https://my.home-assistant.io/redirect/application_credentials/
+The OAuth2 credentials can be removed from the home assistant user interface.  Navigate to the Integrations tab under settings.  Access the *Application Credentials* menu  by clicking on the Kebab (3 vertical dot menu icon)  or [direct link](https://my.home-assistant.io/redirect/application_credentials/).
+
+### Error: The component is not configured...
+
+[Dialog box](https://user-images.githubusercontent.com/28894450/178799277-ac61b8c7-4f53-4371-9afe-7ee9ee7e9a49.png) stating the component is not configured.  Please follow the documentation.  This error is resolved by removing OAuth2 credentials
