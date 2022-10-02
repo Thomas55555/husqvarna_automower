@@ -1,17 +1,14 @@
 """The Husqvarna Automower integration."""
 import logging
 
-import voluptuous as vol
-
 import aioautomower
-from homeassistant.components.application_credentials import DOMAIN as AC_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.storage import Store
-from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.config_entry_oauth2_flow import (
+    async_get_config_entry_implementation,
+)
 
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
@@ -23,15 +20,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-    ap_storage = Store(hass, 1, AC_DOMAIN)
-    ap_storage_data = await ap_storage.async_load()
-    api_key = ap_storage_data["items"][0]["client_id"]
+    try:
+        implementation = await async_get_config_entry_implementation(hass, entry)
+    except KeyError:
+        hass.config_entries.async_update_entry(
+            entry,
+            data={"auth_implementation": DOMAIN, CONF_TOKEN: entry.data[CONF_TOKEN]},
+        )
+        implementation = await async_get_config_entry_implementation(hass, entry)
     access_token = entry.data.get(CONF_TOKEN)
-    session = aioautomower.AutomowerSession(api_key, access_token)
+    session = aioautomower.AutomowerSession(implementation.client_id, access_token)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
             entry,
-            data={CONF_TOKEN: token},
+            data={"auth_implementation": DOMAIN, CONF_TOKEN: token},
         )
     )
 
