@@ -5,6 +5,7 @@ import logging
 from aiohttp import ClientResponseError
 import voluptuous as vol
 
+from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
     STATE_CLEANING,
@@ -325,8 +326,8 @@ class HusqvarnaAutomowerEntity(
         schedule_list = schedule_selector.split(".")
         schedule_id = schedule_list[1]
         _LOGGER.debug("schedule_selector: %s", schedule_id)
-        a = Store(self.hass, 1, "schedule")
-        schedule_storage_list = await a.async_load()
+        schedule_storage = Store(self.hass, 1, SCHEDULE_DOMAIN)
+        schedule_storage_list = await schedule_storage.async_load()
         for ent, schedules in enumerate(schedule_storage_list["items"]):
             _LOGGER.debug("schedule: %s, ent %i", schedules, ent)
             if schedules["id"] == schedule_id:
