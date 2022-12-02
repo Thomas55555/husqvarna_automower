@@ -212,6 +212,9 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         name="Mode",
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
+        device_class=SensorDeviceClass.ENUM,
+        options=["MAIN_AREA", "SECONDARY_AREA", "HOME", "DEMO", "UNKNOWN"],
+        translation_key="mode list",
         value_fn=lambda data: data["mower"]["mode"],
     ),
     AutomowerSensorEntityDescription(
