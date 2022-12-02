@@ -62,6 +62,26 @@ def get_problem(mower_attributes) -> dict:
     return None
 
 
+def problem_list() -> list:
+    error_list = list(ERRORCODES.values())
+    other_reasons = [
+        "OFF",
+        "UNKNOWN",
+        "STOPPED",
+        "STOPPED_IN_GARDEN",
+        "NOT_APPLICABLE",
+        "NONE",
+        "WEEK_SCHEDULE",
+        "PARK_OVERRIDE",
+        "SENSOR",
+        "DAILY_LIMIT",
+        "FOTA",
+        "FROST",
+    ]
+    problem_list = error_list + other_reasons
+    return problem_list
+
+
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     AutomowerSensorEntityDescription(
         key="cuttingBladeUsageTime",
@@ -198,6 +218,9 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         name="Problem Sensor",
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
+        device_class=SensorDeviceClass.ENUM,
+        options=problem_list(),
+        translation_key="problem list",
         value_fn=lambda data: get_problem(data),
     ),
     AutomowerSensorEntityDescription(
