@@ -50,7 +50,7 @@
                     "UNKNOWN": "Unknown",
                     "STOPPED": "Stopped",
                     "STOPPED_IN_GARDEN": "Stopped in garden",
-                    "NOT_APPLICABLE": "not applicable",
+                    "NOT_APPLICABLE": "Not applicable",
                     "NONE": "None",
                     "WEEK_SCHEDULE": "Week schedule",
                     "PARK_OVERRIDE": "Park override",

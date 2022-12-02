@@ -41,14 +41,23 @@
 		},
 	"application_credentials": {
 		"description": "Create an account on [Husqvarna develoeprs portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
-		},
+	},
 	"entity": {
 		"sensor": {
 			"problem list": {
 				"state": {
 					"OFF": "Off",
-					"rising": "Rising",
-					"falling": "Falling"
+					"UNKNOWN": "Unknown",
+					"STOPPED": "Stopped",
+					"STOPPED_IN_GARDEN": "Stopped in garden",
+					"NOT_APPLICABLE": "Not applicable",
+					"NONE": "None",
+					"WEEK_SCHEDULE": "Week schedule",
+					"PARK_OVERRIDE": "Park override",
+					"SENSOR": "Weather timer",
+					"DAILY_LIMIT": "Daily limit",
+					"FOTA": "FOTA",
+					"FROST": "Frost"
 				}
 			}
 		}
