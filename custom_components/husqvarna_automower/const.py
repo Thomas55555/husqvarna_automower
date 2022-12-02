@@ -20,7 +20,7 @@ PLATFORMS = [
     Platform.NUMBER,
     Platform.SELECT,
     Platform.SENSOR,
-    Platform.TEXT,
+    Platform.VACUUM,
 ]
 
 # Configuration and options
