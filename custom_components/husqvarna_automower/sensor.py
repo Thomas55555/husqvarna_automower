@@ -63,6 +63,7 @@ def get_problem(mower_attributes) -> dict:
 
 
 def problem_list() -> list:
+    """Get a list with possible problems for the current mower."""
     error_list = list(ERRORCODES.values())
     other_reasons = [
         "OFF",
