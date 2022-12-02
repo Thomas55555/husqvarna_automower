@@ -61,11 +61,13 @@
 				}
 			},
 			"mode list":{
-				"MAIN_AREA": "Main area",
-				"SECONDARY_AREA": "Secondary area",
-				"HOME": "Home",
-				"DEMO": "Demo",
-				"UNKNOWN": "Unknown"
+				"state": {
+                    "MAIN_AREA": "Main area",
+                    "SECONDARY_AREA": "Secondary area",
+                    "HOME": "Home",
+                    "DEMO": "Demo",
+                    "UNKNOWN": "Unknown"
+                }
 			}
 		}
 	}

@@ -16,5 +16,25 @@
         "info": {
             "can_reach_server": "Husqvarna Token Server erreichbar"
         }
-    }
+    },
+	"entity": {
+		"sensor": {
+			"problem list": {
+				"state": {
+                    "OFF": "Aus",
+                    "UNKNOWN": "Unbekannt",
+                    "STOPPED": "Angehalten",
+                    "STOPPED_IN_GARDEN": "Im Garten angehalten",
+                    "NOT_APPLICABLE": "Nicht anwendbar",
+                    "NONE": "Nichts",
+                    "WEEK_SCHEDULE": "Wochenplaner",
+                    "PARK_OVERRIDE": "Parken erzwungen",
+                    "SENSOR": "Wetter timer",
+                    "DAILY_LIMIT": "Tägliches limit",
+                    "FOTA": "FOTA",
+                    "FROST": "Frost"
+				}
+			}
+		}
+	}
 }
