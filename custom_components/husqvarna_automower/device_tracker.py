@@ -8,6 +8,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 from .entity import AutomowerEntity
 
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
@@ -28,7 +32,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         self._attr_unique_id = f"{self.mower_id}_dt"
 
     @property
-    def source_type(self) -> str:
+    def source_type(self) -> SourceType:
         """Return the source type, eg gps or router, of the device."""
         return SourceType.GPS
 
@@ -43,3 +47,8 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         """Return longitude value of the device."""
         lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
         return lon
+
+    @property
+    def entity_picture(self) -> str:
+        """Return an entity picture of the device."""
+        return f"https://github.com/Thomas55555/husqvarna_automower/blob/main/custom_components/husqvarna_automower/resources/{self.model}.png"
