@@ -1,22 +1,74 @@
 {
-  "config": {
-    "step": {
-      "reauth_confirm": {
-        "title": "[%key:common::config_flow::title::reauth%]",
-        "description": "The Husqvarna Automower integration needs to re-authenticate your account."
-      }
-    },
-    "abort": {
-      "missing_configuration": "[%key:common::config_flow::abort::missing_configuration%]",
-      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
-    }
-  },
-  "system_health": {
-    "info": {
-      "can_reach_server": "Reach Husqvarna Token Server"
-    }
-  },
-  "application_credentials": {
-    "description": "Create an account on [Husqvarna develoeprs portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
-  }
+	"config": {
+		"step": {
+			"reauth_confirm": {
+				"title": "[%key:common::config_flow::title::reauth%]",
+				"description": "The Husqvarna Automower integration needs to re-authenticate your account."
+			}
+		},
+		"abort": {
+			"missing_configuration": "[%key:common::config_flow::abort::missing_configuration%]",
+			"reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]",
+            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
+		}
+	},
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "enable_camera": "Enable Map Camera"
+                },
+                "description": "Enable Map Camera",
+                "title": "Husqvarna Automower Options"
+            },
+            "config": {
+                "data": {
+                    "gps_top_left": "GPS Coordinates of the Top Left Image Corner",
+                    "gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
+                    "mower_img_path": "Path to the mower location image",
+                    "map_img_path": "Path to the map image"
+
+                },
+                "description": "Camera Settings",
+                "title": "Husqvarna Automower Options"
+            }
+        }
+	},
+	"system_health": {
+		"info": {
+			"can_reach_server": "Reach Husqvarna Token Server"
+			}
+		},
+	"application_credentials": {
+		"description": "Create an account on [Husqvarna develoeprs portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
+	},
+	"entity": {
+		"sensor": {
+			"problem list": {
+				"state": {
+					"OFF": "Off",
+					"UNKNOWN": "Unknown",
+					"STOPPED": "Stopped",
+					"STOPPED_IN_GARDEN": "Stopped in garden",
+					"NOT_APPLICABLE": "Not applicable",
+					"NONE": "None",
+					"WEEK_SCHEDULE": "Week schedule",
+					"PARK_OVERRIDE": "Park override",
+					"SENSOR": "Weather timer",
+					"DAILY_LIMIT": "Daily limit",
+					"FOTA": "FOTA",
+					"FROST": "Frost"
+				}
+			},
+			"mode list":{
+				"state": {
+                    "MAIN_AREA": "Main area",
+                    "SECONDARY_AREA": "Secondary area",
+                    "HOME": "Home",
+                    "DEMO": "Demo",
+                    "UNKNOWN": "Unknown"
+                }
+			}
+		}
+	}
 }
