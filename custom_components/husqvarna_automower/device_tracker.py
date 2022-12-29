@@ -29,7 +29,6 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         """Initialize AutomowerDeviceTracker."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_dt"
-        self._attr_entity_picture = "https://github.com/Thomas55555/husqvarna_automower/blob/e15ddb5f30638950b26d83816c89f877d3b89232/custom_components/husqvarna_automower/resources/test.jpg"
 
     @property
     def source_type(self) -> SourceType:
