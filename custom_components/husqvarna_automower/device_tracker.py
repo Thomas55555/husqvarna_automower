@@ -29,6 +29,7 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         """Initialize AutomowerDeviceTracker."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_dt"
+        self._attr_entity_picture = "https://github.com/Thomas55555/husqvarna_automower/blob/801a6a839f9d18da42e7dc30164bc7a35941e631/custom_components/husqvarna_automower/resources/mower.png"
 
     @property
     def source_type(self) -> SourceType:
@@ -46,8 +47,3 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         """Return longitude value of the device."""
         lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
         return lon
-
-    @property
-    def entity_picture(self) -> str:
-        """Return an entity picture of the device."""
-        return f"https://github.com/Thomas55555/husqvarna_automower/blob/main/custom_components/husqvarna_automower/resources/{self.model}.png"
