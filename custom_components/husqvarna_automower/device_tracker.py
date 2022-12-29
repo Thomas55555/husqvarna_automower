@@ -46,8 +46,3 @@ class AutomowerTracker(TrackerEntity, AutomowerEntity):
         """Return longitude value of the device."""
         lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
         return lon
-
-    @property
-    def entity_picture(self) -> str:
-        """Return an entity picture of the device."""
-        return f"https://github.com/Thomas55555/husqvarna_automower/blob/main/custom_components/husqvarna_automower/resources/{self.model}.png"
