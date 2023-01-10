@@ -7,13 +7,68 @@
             }
         },
         "abort": {
+            "missing_configuration": "El componente no está configurado. Por favor, siga las instrucciones detalladas en la documentación.",
             "reauth_successful": "Se ha reautenticado con éxito",
             "single_instance_allowed": "Solo se permite una configuración de Husqvarna Automower"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "enable_camera": "Activar la cámara de mapa"
+                },
+                "description": "Activar la cámara de mapa",
+                "title": "Opciones de Husqvarna Automower"
+            },
+            "config": {
+                "data": {
+                    "gps_top_left": "Coordenadas GPS Coordinates de la esquina superior izquierda de la imagen",
+                    "gps_bottom_right": "Coordenadas GPS Coordinates de la esquina inferior derecha de la imagen",
+                    "mower_img_path": "Ruta a la localizacion de la imagen del cortacesped",
+                    "map_img_path": "Ruta a la localizacion de la imagen del mapa"
+
+                },
+                "description": "Ajustes de la cámara",
+                "title": "Opciones de Husqvarna Automower"
+            }
         }
     },
     "system_health": {
         "info": {
             "can_reach_server": "Alcanzar el servidor de tokens de Husqvarna"
+        }
+    },
+    "application_credentials": {
+        "description": "Cree una cuenta en [Husqvarna developers portal]({oauth_creds_url}). Conecte la Authentication API y Automower Connect API. Configure https://my.home-assistant.io/redirect/oauth como la URI de redirección. Si no has configurado HomeAssistant todavía. Introduce esta URL para tu instancia {redirect_uri}"
+    },
+    "entity": {
+        "sensor": {
+            "problem list": {
+                "state": {
+                    "OFF": "Apagado",
+                    "UNKNOWN": "Desconocido",
+                    "STOPPED": "Parado",
+                    "STOPPED_IN_GARDEN": "Parado en el jardín",
+                    "NOT_APPLICABLE": "No aplicable",
+                    "NONE": "Ninguno",
+                    "WEEK_SCHEDULE": "Programación semanal",
+                    "PARK_OVERRIDE": "Anulación de estacionamiento",
+                    "SENSOR": "Temporizador clima",
+                    "DAILY_LIMIT": "Límite diario",
+                    "FOTA": "Actualización inalámbrica",
+                    "FROST": "Hielo"
+                }
+            },
+            "mode list":{
+                "state": {
+                    "MAIN_AREA": "Área principal",
+                    "SECONDARY_AREA": "Area secundaria",
+                    "HOME": "Casa",
+                    "DEMO": "Demo",
+                    "UNKNOWN": "Desconocido"
+                }
+            }
         }
     }
 }
