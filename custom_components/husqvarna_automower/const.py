@@ -216,6 +216,8 @@ WEEKDAYS = (
 
 # Models that support electronic cutting height
 ELECTRONIC_CUTTING_HEIGHT_SUPPORT = [
+    "320",
+    "330",
     "405",
     "415",
     "420",
