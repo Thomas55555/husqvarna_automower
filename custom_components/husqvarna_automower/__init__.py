@@ -2,11 +2,12 @@
 import logging
 
 import aioautomower
+from asyncio.exceptions import TimeoutError
 from homeassistant.components.application_credentials import DATA_STORAGE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.config_entry_oauth2_flow import (
     async_get_config_entry_implementation,
 )
@@ -37,7 +38,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     try:
         await session.connect()
-    except Exception:
+    except TimeoutError as error:
+        _LOGGER.debug("Asyncio timeout: %s", error)
+        raise ConfigEntryNotReady from error
+    except Exception as error:
+        _LOGGER.debug("Exception in async_setup_entry: %s", error)
         # If we haven't used the refresh_token (ie. been offline) for 10 days,
         # we need to login using username and password in the config flow again.
         raise ConfigEntryAuthFailed from Exception
