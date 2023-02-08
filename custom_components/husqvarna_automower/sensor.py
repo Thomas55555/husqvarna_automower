@@ -64,7 +64,7 @@ def get_problem(mower_attributes) -> dict:
 
 def problem_list() -> list:
     """Get a list with possible problems for the current mower."""
-    error_list = list(ERRORCODES.values().lower())
+    error_list = list(ERRORCODES.values())
     other_reasons = [
         "off",
         "unknown",
@@ -225,7 +225,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
         translation_key="problem list",
-        value_fn=lambda data: get_problem(data),
+        value_fn=lambda data: get_problem(data).lower(),
     ),
     AutomowerSensorEntityDescription(
         key="cuttingHeight",

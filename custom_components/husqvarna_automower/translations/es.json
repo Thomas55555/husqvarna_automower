@@ -46,27 +46,27 @@
         "sensor": {
             "problem list": {
                 "state": {
-                    "OFF": "Apagado",
-                    "UNKNOWN": "Desconocido",
-                    "STOPPED": "Parado",
-                    "STOPPED_IN_GARDEN": "Parado en el jardín",
-                    "NOT_APPLICABLE": "No aplicable",
-                    "NONE": "Ninguno",
-                    "WEEK_SCHEDULE": "Programación semanal",
-                    "PARK_OVERRIDE": "Anulación de estacionamiento",
-                    "SENSOR": "Temporizador clima",
-                    "DAILY_LIMIT": "Límite diario",
-                    "FOTA": "Actualización inalámbrica",
-                    "FROST": "Hielo"
+                    "off": "Apagado",
+                    "unknwon": "Desconocido",
+                    "stopped": "Parado",
+                    "stopped_in_garden": "Parado en el jardín",
+                    "not_applicable": "No aplicable",
+                    "none": "Ninguno",
+                    "week_schedule": "Programación semanal",
+                    "park_override": "Anulación de estacionamiento",
+                    "sensor": "Temporizador clima",
+                    "daily_limit": "Límite diario",
+                    "fota": "Actualización inalámbrica",
+                    "frost": "Hielo"
                 }
             },
             "mode list":{
                 "state": {
-                    "MAIN_AREA": "Área principal",
-                    "SECONDARY_AREA": "Area secundaria",
-                    "HOME": "Casa",
-                    "DEMO": "Demo",
-                    "UNKNOWN": "Desconocido"
+                    "main_area": "Área principal",
+                    "secondary_area": "Area secundaria",
+                    "home": "Casa",
+                    "demo": "Demo",
+                    "unknown": "Desconocido"
                 }
             }
         }
