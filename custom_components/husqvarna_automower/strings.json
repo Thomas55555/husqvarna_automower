@@ -46,18 +46,18 @@
 		"sensor": {
 			"problem list": {
 				"state": {
-					"OFF": "Off",
-					"UNKNOWN": "Unknown",
-					"STOPPED": "Stopped",
-					"STOPPED_IN_GARDEN": "Stopped in garden",
-					"NOT_APPLICABLE": "Not applicable",
-					"NONE": "None",
-					"WEEK_SCHEDULE": "Week schedule",
-					"PARK_OVERRIDE": "Park override",
-					"SENSOR": "Weather timer",
-					"DAILY_LIMIT": "Daily limit",
-					"FOTA": "FOTA",
-					"FROST": "Frost"
+					"off": "Off",
+					"unknwon": "Unknown",
+					"stopped": "Stopped",
+					"stopped_in_garden": "Stopped in garden",
+					"not_applicable": "Not applicable",
+					"none": "None",
+					"week_schedule": "Week schedule",
+					"park_override": "Park override",
+					"sensor": "Weather timer",
+					"daily_limit": "Daily limit",
+					"fota": "Fota",
+					"frost": "Frost"
 				}
 			},
 			"mode list":{

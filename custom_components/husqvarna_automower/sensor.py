@@ -64,20 +64,20 @@ def get_problem(mower_attributes) -> dict:
 
 def problem_list() -> list:
     """Get a list with possible problems for the current mower."""
-    error_list = list(ERRORCODES.values())
+    error_list = list(ERRORCODES.values().lower())
     other_reasons = [
-        "OFF",
-        "UNKNOWN",
-        "STOPPED",
-        "STOPPED_IN_GARDEN",
-        "NOT_APPLICABLE",
-        "NONE",
-        "WEEK_SCHEDULE",
-        "PARK_OVERRIDE",
-        "SENSOR",
-        "DAILY_LIMIT",
-        "FOTA",
-        "FROST",
+        "off",
+        "unknown",
+        "stopped",
+        "stopped_in_garden",
+        "not_applicable",
+        "none",
+        "week_schedule",
+        "park_override",
+        "sensor",
+        "daily_limit",
+        "fota",
+        "frost",
     ]
     problem_list = error_list + other_reasons
     return problem_list
