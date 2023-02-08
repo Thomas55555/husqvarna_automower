@@ -213,9 +213,9 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=SensorDeviceClass.ENUM,
-        options=["MAIN_AREA", "SECONDARY_AREA", "HOME", "DEMO", "UNKNOWN"],
+        options=["main_area", "secondary_area", "home", "demo", "unknown"],
         translation_key="mode list",
-        value_fn=lambda data: data["mower"]["mode"],
+        value_fn=lambda data: data["mower"]["mode"].lower(),
     ),
     AutomowerSensorEntityDescription(
         key="problem_sensor",
