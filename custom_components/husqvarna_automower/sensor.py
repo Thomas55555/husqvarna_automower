@@ -66,18 +66,18 @@ def problem_list() -> list:
     """Get a list with possible problems for the current mower."""
     error_list = list(ERRORCODES.values())
     other_reasons = [
-        "OFF",
-        "UNKNOWN",
-        "STOPPED",
-        "STOPPED_IN_GARDEN",
-        "NOT_APPLICABLE",
-        "NONE",
-        "WEEK_SCHEDULE",
-        "PARK_OVERRIDE",
-        "SENSOR",
-        "DAILY_LIMIT",
-        "FOTA",
-        "FROST",
+        "off",
+        "unknown",
+        "stopped",
+        "stopped_in_garden",
+        "not_applicable",
+        "none",
+        "week_schedule",
+        "park_override",
+        "sensor",
+        "daily_limit",
+        "fota",
+        "frost",
     ]
     problem_list = error_list + other_reasons
     return problem_list
@@ -213,9 +213,9 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=SensorDeviceClass.ENUM,
-        options=["MAIN_AREA", "SECONDARY_AREA", "HOME", "DEMO", "UNKNOWN"],
+        options=["main_area", "secondary_area", "home", "demo", "unknown"],
         translation_key="mode list",
-        value_fn=lambda data: data["mower"]["mode"],
+        value_fn=lambda data: data["mower"]["mode"].lower(),
     ),
     AutomowerSensorEntityDescription(
         key="problem_sensor",
@@ -225,7 +225,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
         translation_key="problem list",
-        value_fn=lambda data: get_problem(data),
+        value_fn=lambda data: get_problem(data).lower(),
     ),
     AutomowerSensorEntityDescription(
         key="cuttingHeight",

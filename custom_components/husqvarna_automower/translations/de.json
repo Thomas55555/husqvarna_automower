@@ -21,19 +21,28 @@
 		"sensor": {
 			"problem list": {
 				"state": {
-                    "OFF": "Aus",
-                    "UNKNOWN": "Unbekannt",
-                    "STOPPED": "Angehalten",
-                    "STOPPED_IN_GARDEN": "Im Garten angehalten",
-                    "NOT_APPLICABLE": "Nicht anwendbar",
-                    "NONE": "Nichts",
-                    "WEEK_SCHEDULE": "Wochenplaner",
-                    "PARK_OVERRIDE": "Parken erzwungen",
-                    "SENSOR": "Wetter timer",
-                    "DAILY_LIMIT": "Tägliches limit",
-                    "FOTA": "FOTA",
-                    "FROST": "Frost"
+                    "off": "Aus",
+                    "unknwon": "Unbekannt",
+                    "stopped": "Angehalten",
+                    "stopped_in_garden": "Im Garten angehalten",
+                    "not_applicable": "Nicht anwendbar",
+                    "none": "Nichts",
+                    "week_schedule": "Wochenplaner",
+                    "park_override": "Parken erzwungen",
+                    "sensor": "Wetter timer",
+                    "daily_limit": "Tägliches limit",
+                    "fota": "FOTA",
+                    "frost": "Frost"
 				}
+			},
+			"mode list":{
+				"state": {
+                    "main_area": "Hauptbereich",
+                    "secondary_area": "Zweitbereich",
+                    "home": "In der Ladestation",
+                    "demo": "Demo",
+                    "unknown": "Unbekannt"
+                }
 			}
 		}
 	}
