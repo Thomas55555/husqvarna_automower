@@ -1,25 +1,25 @@
 {
   "domain": "husqvarna_automower",
   "name": "Husqvarna Automower",
-  "documentation": "https://github.com/Thomas55555/husqvarna_automower",
-  "issue_tracker": "https://github.com/Thomas55555/husqvarna_automower/issues",
+  "codeowners": [
+    "@Thomas55555"
+  ],
+  "config_flow": true,
   "dependencies": [
     "application_credentials",
     "my",
     "schedule"
   ],
-  "config_flow": true,
-  "codeowners": [
-    "@Thomas55555"
-  ],
+  "documentation": "https://github.com/Thomas55555/husqvarna_automower",
+  "integration_type": "hub",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/Thomas55555/husqvarna_automower/issues",
+  "loggers": ["aioautomower, geopy, numpy, Pillow"],
   "requirements": [
     "aioautomower==2022.9.0",
     "geopy>=2.1.0",
     "numpy>=1.21.6",
     "Pillow>=9.1.1"
   ],
-  "iot_class": "cloud_push",
-  "version": "0.0.0",
-  "loggers": ["aioautomower, geopy, numpy, Pillow"],
-  "integration_type": "hub"
+  "version": "0.0.0"
 }
