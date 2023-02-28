@@ -125,10 +125,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Enable / Disable the camera."""
         if user_input:
             if user_input.get(ENABLE_CAMERA):
-                self.options[ENABLE_CAMERA] = False
                 return await self.async_step_config()
-            if user_input.get(DISABLE_LE):
-                return await self._update_le_config()
+            self.options[ENABLE_CAMERA] = user_input.get(ENABLE_CAMERA)
+            self.options[DISABLE_LE] = user_input.get(DISABLE_LE)
+            return await self._update_config()
 
         data_schema = vol.Schema(
             {
@@ -156,7 +156,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             self.options[MOWER_IMG_PATH] = user_input.get(MOWER_IMG_PATH)
             self.options[MAP_IMG_PATH] = user_input.get(MAP_IMG_PATH)
-            return await self._update_camera_config()
+            return await self._update_config()
 
         data_schema = vol.Schema(
             {
@@ -170,10 +170,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         )
         return self.async_show_form(step_id="config", data_schema=data_schema)
 
-    async def _update_camera_config(self):
-        """Update config entry options."""
-        return self.async_create_entry(title="", data=self.options)
-
-    async def _update_le_config(self):
+    async def _update_config(self):
         """Update config entry options."""
         return self.async_create_entry(title="", data=self.options)

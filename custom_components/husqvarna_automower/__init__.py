@@ -1,6 +1,5 @@
 """The Husqvarna Automower integration."""
 import logging
-from operator import le
 
 import voluptuous as vol
 
@@ -13,7 +12,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, DISABLE_LE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,8 +28,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for k in ap_storage_data:
         api_key = ap_storage_data[k]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
-    # session = aioautomower.AutomowerSession(api_key, access_token, low_energy=True)
-    session = aioautomower.AutomowerSession(api_key, access_token)
+    low_energy = not entry.options.get(DISABLE_LE)
+    session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
             entry,
