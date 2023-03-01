@@ -165,12 +165,10 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
-        value_fn=lambda data: round(
-            data["statistics"]["totalSearchingTime"]
-            / data["statistics"]["totalRunningTime"]
-            * 100,
-            2,
-        ),
+        suggested_display_precision=1,
+        value_fn=lambda data: data["statistics"]["totalSearchingTime"]
+        / data["statistics"]["totalRunningTime"]
+        * 100,
     ),
     AutomowerSensorEntityDescription(
         key="totalCuttingTime_percentage",
@@ -180,12 +178,10 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
-        value_fn=lambda data: round(
-            data["statistics"]["totalCuttingTime"]
-            / data["statistics"]["totalRunningTime"]
-            * 100,
-            2,
-        ),
+        suggested_display_precision=1,
+        value_fn=lambda data: data["statistics"]["totalCuttingTime"]
+        / data["statistics"]["totalRunningTime"]
+        * 100,
     ),
     AutomowerSensorEntityDescription(
         key="battery_level",
