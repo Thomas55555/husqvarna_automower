@@ -33,7 +33,7 @@ Husqvarna Automowers with built-in *AutomowerÂ® Connect* or with the *AutomowerÂ
 
 ## Installation
 
-Requires Home Assistant 2022.9.0b0 or newer.
+Requires Home Assistant 2023.3.0 or newer.
 
 ### Installation through HACS
 
@@ -121,7 +121,7 @@ The camera entity is disabled by default.  The camera entity will plot the curre
 
 The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example: `40.689209,-74.044661`
 
-You can then provide the path to the image you would like to use for the map and mower.  This has been tested with the PNG format, other formats may work.  The `.../resources/map_image.png` default image is over written when the integration is updated, store the custom image in another location.  
+You can then provide the path to the image you would like to use for the map and mower.  This has been tested with the PNG format, other formats may work.  The `.../resources/map_image.png` default image is over written when the integration is updated, store the custom image in another location.
 
 ## Usage
 
