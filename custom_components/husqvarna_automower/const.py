@@ -118,7 +118,7 @@ ERRORCODES = {
     59: "Temporary battery problem",
     60: "Temporary battery problem",
     61: "Temporary battery problem",
-    62: "Temporary battery problem",
+    62: "Battery restriction due to ambient temperature",
     63: "Temporary battery problem",
     64: "Temporary battery problem",
     65: "Temporary battery problem",
