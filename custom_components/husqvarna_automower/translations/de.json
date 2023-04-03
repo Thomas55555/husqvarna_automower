@@ -19,7 +19,7 @@
     },
 	"entity": {
 		"sensor": {
-			"problem list": {
+			"problem_list": {
 				"state": {
                     "off": "Aus",
                     "unknwon": "Unbekannt",
