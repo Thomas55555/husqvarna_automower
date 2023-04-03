@@ -210,7 +210,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=SensorDeviceClass.ENUM,
         options=["main_area", "secondary_area", "home", "demo", "unknown"],
-        translation_key="mode list",
+        translation_key="mode_list",
         value_fn=lambda data: data["mower"]["mode"].lower(),
     ),
     AutomowerSensorEntityDescription(
@@ -220,7 +220,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
-        translation_key="problem list",
+        translation_key="problem_list",
         value_fn=lambda data: get_problem(data).lower(),
     ),
     AutomowerSensorEntityDescription(

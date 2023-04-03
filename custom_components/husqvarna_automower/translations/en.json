@@ -45,7 +45,7 @@
     },
 	"entity": {
 		"sensor": {
-			"problem list": {
+			"problem_list": {
 				"state": {
 					"off": "Off",
 					"unknwon": "Unknown",
@@ -61,7 +61,7 @@
 					"frost": "Frost"
 				}
 			},
-			"mode list":{
+			"mode_list":{
 				"state": {
                     "main_area": "Main area",
                     "secondary_area": "Secondary area",

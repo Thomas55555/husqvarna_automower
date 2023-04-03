@@ -44,7 +44,7 @@
     },
     "entity": {
         "sensor": {
-            "problem list": {
+            "problem_list": {
                 "state": {
                     "off": "Apagado",
                     "unknwon": "Desconocido",
@@ -60,7 +60,7 @@
                     "frost": "Hielo"
                 }
             },
-            "mode list":{
+            "mode_list":{
                 "state": {
                     "main_area": "Área principal",
                     "secondary_area": "Area secundaria",
