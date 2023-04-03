@@ -64,7 +64,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self._next_event = CalendarEvent(
             summary="",
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
-            end="",
+            end=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7, hours=2),
             location="",
             description="",
         )
