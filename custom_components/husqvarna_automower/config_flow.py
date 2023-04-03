@@ -98,7 +98,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.config_entry = config_entry
 
         self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
-        self.disable_le = self.config_entry.options.get(DISABLE_LE, False)
+        self.disable_le = self.config_entry.options.get(DISABLE_LE, True)
         self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
         if self.map_top_left_coord != "":
             self.map_top_left_coord = ",".join(
@@ -125,6 +125,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Enable / Disable the camera."""
         if user_input:
             if user_input.get(ENABLE_CAMERA):
+                self.options[ENABLE_CAMERA] = user_input.get(ENABLE_CAMERA)
                 return await self.async_step_config()
             self.options[ENABLE_CAMERA] = user_input.get(ENABLE_CAMERA)
             self.options[DISABLE_LE] = user_input.get(DISABLE_LE)
