@@ -62,11 +62,11 @@
 			},
 			"mode list":{
 				"state": {
-                    "main_area": "Main area",
-                    "secondary_area": "Secondary area",
-                    "home": "Home",
-                    "demo": "Demo",
-                    "unknown": "Unknown"
+                    "main_area": "main area",
+                    "secondary_area": "secondary area",
+                    "home": "home",
+                    "demo": "demo",
+                    "unknown": "unknown"
                 }
 			}
 		}
