@@ -16,9 +16,10 @@
         "step": {
             "init": {
                 "data": {
-                    "enable_camera": "Enable Map Camera"
+                    "enable_camera": "Enable Map Camera",
+                    "disable_le": "Disbale Low Energy Mode"
                 },
-                "description": "Enable Map Camera",
+                "description": "Select Integration Options",
                 "title": "Husqvarna Automower Options"
             },
             "config": {

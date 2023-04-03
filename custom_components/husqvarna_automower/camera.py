@@ -36,10 +36,11 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        AutomowerCamera(session, idx, entry)
-        for idx, ent in enumerate(session.data["data"])
-    )
+    if entry.options.get(ENABLE_CAMERA):
+        async_add_entities(
+            AutomowerCamera(session, idx, entry)
+            for idx, ent in enumerate(session.data["data"])
+        )
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):

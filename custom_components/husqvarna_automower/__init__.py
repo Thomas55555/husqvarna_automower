@@ -12,7 +12,7 @@ from homeassistant.helpers.config_entry_oauth2_flow import (
     async_get_config_entry_implementation,
 )
 
-from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, DISABLE_LE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +28,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for k in ap_storage_data:
         api_key = ap_storage_data[k]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
-    session = aioautomower.AutomowerSession(api_key, access_token)
+    low_energy = not entry.options.get(DISABLE_LE)
+    session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
     session.register_token_callback(
         lambda token: hass.config_entries.async_update_entry(
             entry,
