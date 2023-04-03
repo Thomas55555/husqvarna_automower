@@ -46,27 +46,27 @@
 		"sensor": {
 			"problem list": {
 				"state": {
-					"off": "off",
-					"unknwon": "unknown",
-					"stopped": "stopped",
-					"stopped_in_garden": "stopped in garden",
-					"not_applicable": "not applicable",
-					"none": "none",
-					"week_schedule": "week schedule",
-					"park_override": "park override",
-					"sensor": "weather timer",
-					"daily_limit": "daily limit",
-					"fota": "fota",
-					"frost": "frost"
+					"off": "Off",
+					"unknwon": "Unknown",
+					"stopped": "Stopped",
+					"stopped_in_garden": "Stopped in garden",
+					"not_applicable": "Not applicable",
+					"none": "None",
+					"week_schedule": "Week schedule",
+					"park_override": "Park override",
+					"sensor": "Weather timer",
+					"daily_limit": "Daily limit",
+					"fota": "Fota",
+					"frost": "Frost"
 				}
 			},
 			"mode list":{
 				"state": {
-                    "main_area": "main area",
-                    "secondary_area": "secondary area",
-                    "home": "home",
-                    "demo": "demo",
-                    "unknown": "unknown"
+                    "main_area": "Main area",
+                    "secondary_area": "Secondary area",
+                    "home": "Home",
+                    "demo": "Demo",
+                    "unknown": "Unknown"
                 }
 			}
 		}
