@@ -35,7 +35,7 @@
                     "frost": "Frost"
 				}
 			},
-			"mode list":{
+			"mode_list":{
 				"state": {
                     "main_area": "Hauptbereich",
                     "secondary_area": "Zweitbereich",

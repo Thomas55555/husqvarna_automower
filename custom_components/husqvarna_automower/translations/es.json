@@ -60,7 +60,7 @@
                     "frost": "Hielo"
                 }
             },
-            "mode list":{
+            "mode_list":{
                 "state": {
                     "main_area": "Área principal",
                     "secondary_area": "Area secundaria",

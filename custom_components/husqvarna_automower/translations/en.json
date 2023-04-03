@@ -61,7 +61,7 @@
 					"frost": "Frost"
 				}
 			},
-			"mode list":{
+			"mode_list":{
 				"state": {
                     "main_area": "Main area",
                     "secondary_area": "Secondary area",
