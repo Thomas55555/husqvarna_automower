@@ -50,7 +50,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     _attr_frame_interval: float = 300
     _attr_name = "Map"
 
-    def __init__(self, session, idx, entry):
+    def __init__(self, session, idx, entry) -> None:
         """Initialize AutomowerCamera."""
         Camera.__init__(self)
         AutomowerEntity.__init__(self, session, idx)

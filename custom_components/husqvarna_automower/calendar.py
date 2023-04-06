@@ -33,7 +33,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, session, idx):
+    def __init__(self, session, idx) -> None:
         """Initialize AutomowerCalendar."""
         super().__init__(session, idx)
         self._event = None
@@ -59,7 +59,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         even_list, next_event = self.get_next_event()
         return even_list
 
-    def get_next_event(self):
+    def get_next_event(self) -> tuple[list[CalendarEvent], CalendarEvent]:
         """Get the current or next event."""
         self._next_event = CalendarEvent(
             summary="",

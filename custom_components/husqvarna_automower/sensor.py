@@ -265,7 +265,7 @@ async def async_setup_entry(
 class AutomowerSensor(SensorEntity, AutomowerEntity):
     """Defining the Automower Sensors with AutomowerSensorEntityDescription."""
 
-    def __init__(self, session, idx, description: AutomowerSensorEntityDescription):
+    def __init__(self, session, idx, description: AutomowerSensorEntityDescription) -> None:
         """Set up AutomowerSensors."""
         super().__init__(session, idx)
         self.entity_description = description
@@ -273,7 +273,7 @@ class AutomowerSensor(SensorEntity, AutomowerEntity):
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     @property
-    def native_value(self):
+    def native_value(self) -> str:
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return self.entity_description.value_fn(mower_attributes)

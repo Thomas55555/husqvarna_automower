@@ -36,7 +36,7 @@ async def async_setup_entry(
 
 
 class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
-    """Defining the AutomowerProblemSensor Entity."""
+    """Defining the AutomowerBatteryChargingBinarySensor Entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
@@ -65,7 +65,7 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
     _attr_entity_registry_enabled_default = False
     _attr_name = "Leaving dock"
 
-    def __init__(self, session, idx):
+    def __init__(self, session, idx) -> None:
         """Initialize AutomowerLeavingDockBinarySensor."""
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_leaving_dock"
