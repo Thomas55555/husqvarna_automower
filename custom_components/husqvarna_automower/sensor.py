@@ -221,7 +221,9 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
         translation_key="problem_list",
-        value_fn=lambda data: get_problem(data).lower(),
+        value_fn=lambda data: None
+        if get_problem(data) is None
+        else get_problem(data).lower(),
     ),
     AutomowerSensorEntityDescription(
         key="cuttingHeight",
