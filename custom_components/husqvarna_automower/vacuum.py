@@ -224,7 +224,6 @@ class HusqvarnaAutomowerEntity(
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return None
 
-
     async def async_start(self) -> None:
         """Resume schedule."""
         command_type = "actions"
