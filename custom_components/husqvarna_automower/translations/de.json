@@ -19,6 +19,22 @@
     },
 	"entity": {
 		"sensor": {
+			"mode_list":{
+				"state": {
+                    "main_area": "Hauptbereich",
+                    "secondary_area": "Zweitbereich",
+                    "home": "In der Ladestation",
+                    "demo": "Demo",
+                    "unknown": "Unbekannt"
+                }
+			},
+			"override_list": {
+				"state": {
+					"not_active": "Nicht aktiv",
+					"force_park": "Park",
+					"force_mow": "Force mow"
+				}
+			},
 			"problem_list": {
 				"state": {
                     "off": "Aus",
@@ -34,15 +50,6 @@
                     "fota": "FOTA",
                     "frost": "Frost"
 				}
-			},
-			"mode_list":{
-				"state": {
-                    "main_area": "Hauptbereich",
-                    "secondary_area": "Zweitbereich",
-                    "home": "In der Ladestation",
-                    "demo": "Demo",
-                    "unknown": "Unbekannt"
-                }
 			}
 		}
 	}
