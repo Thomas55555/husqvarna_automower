@@ -224,14 +224,6 @@ class HusqvarnaAutomowerEntity(
             return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return None
 
-    @property
-    def extra_state_attributes(self) -> dict:
-        """Return the specific state attributes of this mower."""
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        return {
-            ATTR_STATUS: self.__get_status(),
-            "action": mower_attributes["planner"]["override"]["action"],
-        }
 
     async def async_start(self) -> None:
         """Resume schedule."""
