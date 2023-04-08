@@ -4,13 +4,17 @@ import logging
 
 from geopy.geocoders import Nominatim
 
-from homeassistant.components.calendar import CalendarEntity, CalendarEvent
+from homeassistant.components.calendar import (
+    CalendarEntity,
+    CalendarEvent,
+    CalendarEntityFeature,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.dt as dt_util
-
+import voluptuous as vol
 from .const import DOMAIN, WEEKDAYS, WEEKDAYS_TO_RFC5545
 from .entity import AutomowerEntity
 
@@ -32,6 +36,11 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_supported_features = (
+        CalendarEntityFeature.CREATE_EVENT
+        | CalendarEntityFeature.DELETE_EVENT
+        | CalendarEntityFeature.UPDATE_EVENT
+    )
 
     def __init__(self, session, idx):
         """Initialize AutomowerCalendar."""
@@ -66,7 +75,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
             end=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7, hours=2),
             location="",
-            description="",
+            description="Good time to mow",
         )
         event_list = []
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
@@ -91,6 +100,8 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
                         rrule=f"FREQ=WEEKLY;BYDAY={today_rfc}",
+                        uid=f"{self.mower_name}-{task + 1}",
+                        description="Nice day to mow",
                     )
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
@@ -110,3 +121,21 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         """Return the next upcoming event."""
         even_list, next_event = self.get_next_event()
         return next_event
+
+    async def async_update_event(
+        self,
+        uid: str,
+        event: dict[str],
+        recurrence_id: str | None = None,
+        recurrence_range: str | None = None,
+    ) -> None:
+        """Update an existing event on the calendar."""
+        _LOGGER.debug("input: %s", event)
+        try:
+            _LOGGER.debug("rrule: %s", event["rrule"])
+            event["rrule"]
+        except KeyError as exc:
+            raise vol.Invalid("Only reccuring events are allowed") from exc
+        if "YEARLY" in event["rrule"]:
+            raise vol.Invalid("Yearly not allowed")
+        await self.async_update_ha_state(force_refresh=True)
