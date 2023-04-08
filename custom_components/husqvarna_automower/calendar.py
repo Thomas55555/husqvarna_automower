@@ -11,7 +11,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.dt as dt_util
 
-from .const import DOMAIN, WEEKDAYS
+from .const import DOMAIN, WEEKDAYS, WEEKDAYS_TO_RFC5545
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -84,11 +84,13 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 today = (start_of_day + dt_util.dt.timedelta(days=days)).weekday()
                 today_as_string = WEEKDAYS[today]
                 if calendar[today_as_string] is True:
+                    today_rfc = WEEKDAYS_TO_RFC5545[today_as_string]
                     self._event = CalendarEvent(
                         summary=f"{self.mower_name} Mowing schedule {task + 1}",
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
+                        rrule=f"FREQ=WEEKLY;BYDAY={today_rfc}",
                     )
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event

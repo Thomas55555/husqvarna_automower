@@ -215,6 +215,18 @@ WEEKDAYS = (
     "sunday",
 )
 
+
+WEEKDAYS_TO_RFC5545 = {
+    "monday": "MO",
+    "tuesday": "TU",
+    "wednesday": "WE",
+    "thursday": "TH",
+    "friday": "FR",
+    "saturday": "SA",
+    "sunday": "SU",
+}
+
+
 # Models that support electronic cutting height
 ELECTRONIC_CUTTING_HEIGHT_SUPPORT = [
     "320",
