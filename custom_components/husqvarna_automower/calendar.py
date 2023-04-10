@@ -136,6 +136,33 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             event["rrule"]
         except KeyError as exc:
             raise vol.Invalid("Only reccuring events are allowed") from exc
-        if "YEARLY" in event["rrule"]:
-            raise vol.Invalid("Yearly not allowed")
+        if not "WEEKLY" in event["rrule"]:
+            raise vol.Invalid("Please select weekly")
+        if not "BYDAY" in event["rrule"]:
+            raise vol.Invalid("Please select day(s)")
+        days = event["rrule"].lstrip("FREQ=WEKLY;BDA=")
+        day_list = days.split(",")
+        _LOGGER.debug("daylist: %s", day_list)
+        _LOGGER.debug("dtstart: %s", event["dtstart"].hour)
+        for daily_task in WEEKDAYS:
+            if daily_task:
+                start_time = daily_task["from"].split(":")
+                start_time_minutes = int(start_time[0]) * 60 + int(
+                    start_time[1]
+                )
+                end_time = daily_task["to"].split(":")
+                end_time_minutes = int(end_time[0]) * 60 + int(end_time[1])
+                duration = end_time_minutes - start_time_minutes
+                addition = {}
+                relevant_day = False
+                addition = {
+                    "start": start_time_minutes,
+                    "duration": duration,
+                }
+                for relevant_day in WEEKDAYS:
+                    if day == relevant_day:
+                        addition[relevant_day] = True
+                    else:
+                        addition[relevant_day] = False
+                task_list.append(addition)
         await self.async_update_ha_state(force_refresh=True)
