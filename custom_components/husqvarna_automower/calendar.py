@@ -1,20 +1,21 @@
 """Platform for Husqvarna Automower calendar integration."""
-from datetime import datetime
+import json
 import logging
+from datetime import datetime
 
+import homeassistant.util.dt as dt_util
+import voluptuous as vol
+from aiohttp import ClientResponseError
 from geopy.geocoders import Nominatim
-
 from homeassistant.components.calendar import (
     CalendarEntity,
-    CalendarEvent,
     CalendarEntityFeature,
-)
+    CalendarEvent)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-import homeassistant.util.dt as dt_util
-import voluptuous as vol
+
 from .const import DOMAIN, WEEKDAYS, WEEKDAYS_TO_RFC5545
 from .entity import AutomowerEntity
 
@@ -144,25 +145,33 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         day_list = days.split(",")
         _LOGGER.debug("daylist: %s", day_list)
         _LOGGER.debug("dtstart: %s", event["dtstart"].hour)
-        for daily_task in WEEKDAYS:
-            if daily_task:
-                start_time = daily_task["from"].split(":")
-                start_time_minutes = int(start_time[0]) * 60 + int(
-                    start_time[1]
-                )
-                end_time = daily_task["to"].split(":")
-                end_time_minutes = int(end_time[0]) * 60 + int(end_time[1])
-                duration = end_time_minutes - start_time_minutes
-                addition = {}
-                relevant_day = False
-                addition = {
-                    "start": start_time_minutes,
-                    "duration": duration,
-                }
-                for relevant_day in WEEKDAYS:
-                    if day == relevant_day:
-                        addition[relevant_day] = True
-                    else:
-                        addition[relevant_day] = False
-                task_list.append(addition)
+        task_list = []
+        start_time_minutes = int(event["dtstart"].hour) * 60 + int(
+            event["dtstart"].minute
+        )
+        end_time_minutes = int(event["dtend"].hour) * 60 + int(event["dtend"].minute)
+        duration = end_time_minutes - start_time_minutes
+        addition = {
+            "start": start_time_minutes,
+            "duration": duration,
+        }
+        for day in WEEKDAYS:
+            if WEEKDAYS_TO_RFC5545[day] in day_list:
+                addition[day] = True
+            else:
+                addition[day] = False
+        task_list.append(addition)
+        _LOGGER.debug("task_list: %s", task_list)
+        command_type = "calendar"
+        string = {
+            "data": {
+                "type": "calendar",
+                "attributes": {"tasks": task_list},
+            }
+        }
+        payload = json.dumps(string)
+        try:
+            await self.session.action(self.mower_id, payload, command_type)
+        except ClientResponseError as exception:
+            _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
         await self.async_update_ha_state(force_refresh=True)
