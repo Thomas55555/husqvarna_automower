@@ -10,7 +10,8 @@ from geopy.geocoders import Nominatim
 from homeassistant.components.calendar import (
     CalendarEntity,
     CalendarEntityFeature,
-    CalendarEvent)
+    CalendarEvent,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
@@ -51,14 +52,14 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self.loc = None
         self.geolocator = Nominatim(user_agent=self.mower_id)
         self._attr_unique_id = f"{self.mower_id}_calendar"
+        self.mower_attributes = AutomowerEntity.get_mower_attributes(self)
 
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
     ) -> list[CalendarEvent]:
         """Get all events in a specific time frame."""
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        lat = mower_attributes["positions"][0]["latitude"]
-        long = mower_attributes["positions"][0]["longitude"]
+        lat = self.mower_attributes["positions"][0]["latitude"]
+        long = self.mower_attributes["positions"][0]["longitude"]
         position = f"{lat}, {long}"
         result = await hass.async_add_executor_job(self.geolocator.reverse, position)
         try:
@@ -79,9 +80,8 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             description="Good time to mow",
         )
         event_list = []
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
-            calendar = mower_attributes["calendar"]["tasks"][task]
+        for task, tasks in enumerate(self.mower_attributes["calendar"]["tasks"]):
+            calendar = self.mower_attributes["calendar"]["tasks"][task]
             start_of_day = dt_util.start_of_local_day()
             start_mowing = start_of_day + dt_util.dt.timedelta(
                 minutes=calendar["start"]
@@ -101,7 +101,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         location=self.loc,
                         rrule=f"FREQ=WEEKLY;BYDAY={today_rfc}",
-                        uid=f"{self.mower_name}-{task + 1}",
+                        uid=task,
                         description="Nice day to mow",
                     )
                     if self._event.start < self._next_event.start:
@@ -123,6 +123,14 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         even_list, next_event = self.get_next_event()
         return next_event
 
+    async def async_create_event(self, **kwargs) -> None:
+        """Add a new event to calendar."""
+        current_event_list = self.mower_attributes["calendar"]["tasks"]
+        _LOGGER.debug("current_event_list: %s", current_event_list)
+        _LOGGER.debug("kwargs: %s", kwargs)
+        task_list = await self.aysnc_parse_to_husqvarna_string(kwargs)
+        await self.aysnc_send_command_to_mower(current_event_list + task_list)
+
     async def async_update_event(
         self,
         uid: str,
@@ -131,7 +139,36 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         recurrence_range: str | None = None,
     ) -> None:
         """Update an existing event on the calendar."""
+        _LOGGER.debug("uid: %s", uid)
         _LOGGER.debug("input: %s", event)
+        current_event_list = self.mower_attributes["calendar"]["tasks"]
+        _LOGGER.debug("current_event_list: %s", current_event_list)
+        task_list = await self.aysnc_parse_to_husqvarna_string(event)
+        _LOGGER.debug("task_list: %s", task_list)
+        current_event_list[int(uid)] = task_list[0]
+        _LOGGER.debug("current_event_list: %s", current_event_list)
+        _LOGGER.debug("current_event_list[0]: %s", current_event_list[0])
+        _LOGGER.debug("current_event_list[1]: %s", current_event_list[1])
+        await self.aysnc_send_command_to_mower(current_event_list)
+
+    async def async_delete_event(
+        self,
+        uid: str,
+        recurrence_id: str | None = None,
+        recurrence_range: str | None = None,
+    ) -> None:
+        """Delete an event on the calendar."""
+        current_event_list = self.mower_attributes["calendar"]["tasks"]
+        _LOGGER.debug("current_event_list: %s", current_event_list)
+        current_event_list.pop(int(uid))
+        _LOGGER.debug("current_event_list after pop: %s", current_event_list)
+        await self.aysnc_send_command_to_mower(current_event_list)
+
+    async def aysnc_parse_to_husqvarna_string(
+        self,
+        event: str,
+    ) -> list:
+        """Parse from calendar rrule to mower compatible string."""
         try:
             _LOGGER.debug("rrule: %s", event["rrule"])
             event["rrule"]
@@ -141,7 +178,8 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             raise vol.Invalid("Please select weekly")
         if not "BYDAY" in event["rrule"]:
             raise vol.Invalid("Please select day(s)")
-        days = event["rrule"].lstrip("FREQ=WEKLY;BDA=")
+        rr_list = event["rrule"].split(";")
+        days = rr_list[1].lstrip("BYDAY=")
         day_list = days.split(",")
         _LOGGER.debug("daylist: %s", day_list)
         _LOGGER.debug("dtstart: %s", event["dtstart"].hour)
@@ -162,6 +200,13 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 addition[day] = False
         task_list.append(addition)
         _LOGGER.debug("task_list: %s", task_list)
+        return task_list
+
+    async def aysnc_send_command_to_mower(
+        self,
+        task_list: str,
+    ) -> None:
+        """Send command to mower."""
         command_type = "calendar"
         string = {
             "data": {
@@ -174,4 +219,3 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             await self.session.action(self.mower_id, payload, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
-        await self.async_update_ha_state(force_refresh=True)
