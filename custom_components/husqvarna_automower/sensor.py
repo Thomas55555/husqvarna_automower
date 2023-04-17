@@ -214,21 +214,6 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: data["mower"]["mode"].lower(),
     ),
     AutomowerSensorEntityDescription(
-        key="override",
-        name="Override",
-        entity_registry_enabled_default=False,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        device_class=SensorDeviceClass.ENUM,
-        icon="mdi:debug-step-over",
-        options=[
-            "not_active",
-            "force_park",
-            "force_mow",
-        ],
-        translation_key="override_list",
-        value_fn=lambda data: data["planner"]["override"]["action"].lower(),
-    ),
-    AutomowerSensorEntityDescription(
         key="problem_sensor",
         name="Problem Sensor",
         entity_registry_enabled_default=False,
