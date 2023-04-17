@@ -44,22 +44,6 @@
 	},
 	"entity": {
 		"sensor": {
-			"mode_list":{
-				"state": {
-                    "main_area": "Main area",
-                    "secondary_area": "Secondary area",
-                    "home": "Home",
-                    "demo": "Demo",
-                    "unknown": "Unknown"
-                }
-			},
-			"override_list": {
-				"state": {
-					"not_active": "Not active",
-					"force_park": "Force park",
-					"force_mow": "Force mow"
-				}
-			},
 			"problem_list": {
 				"state": {
 					"off": "Off",
@@ -75,6 +59,15 @@
 					"fota": "Fota",
 					"frost": "Frost"
 				}
+			},
+			"mode_list":{
+				"state": {
+                    "main_area": "Main area",
+                    "secondary_area": "Secondary area",
+                    "home": "Home",
+                    "demo": "Demo",
+                    "unknown": "Unknown"
+                }
 			}
 		}
 	}
