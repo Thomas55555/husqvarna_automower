@@ -226,9 +226,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
             "force_mow",
         ],
         translation_key="override_list",
-        value_fn=lambda data: None
-        if data["planner"]["override"]["action"] is None
-        else data["planner"]["override"]["action"].lower(),
+        value_fn=lambda data: ["planner"]["override"]["action"].lower(),
     ),
     AutomowerSensorEntityDescription(
         key="problem_sensor",

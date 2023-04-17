@@ -102,7 +102,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         location=self.loc,
                         rrule=f"FREQ=WEEKLY;BYDAY={today_rfc}",
                         uid=task,
-                        description="Nice day to mow",
                     )
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
@@ -120,14 +119,12 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     @property
     def event(self) -> CalendarEvent:
         """Return the next upcoming event."""
-        even_list, next_event = self.get_next_event()
+        event_list, next_event = self.get_next_event()
         return next_event
 
     async def async_create_event(self, **kwargs) -> None:
         """Add a new event to calendar."""
         current_event_list = self.mower_attributes["calendar"]["tasks"]
-        _LOGGER.debug("current_event_list: %s", current_event_list)
-        _LOGGER.debug("kwargs: %s", kwargs)
         task_list = await self.aysnc_parse_to_husqvarna_string(kwargs)
         await self.aysnc_send_command_to_mower(current_event_list + task_list)
 
@@ -139,16 +136,9 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         recurrence_range: str | None = None,
     ) -> None:
         """Update an existing event on the calendar."""
-        _LOGGER.debug("uid: %s", uid)
-        _LOGGER.debug("input: %s", event)
         current_event_list = self.mower_attributes["calendar"]["tasks"]
-        _LOGGER.debug("current_event_list: %s", current_event_list)
         task_list = await self.aysnc_parse_to_husqvarna_string(event)
-        _LOGGER.debug("task_list: %s", task_list)
         current_event_list[int(uid)] = task_list[0]
-        _LOGGER.debug("current_event_list: %s", current_event_list)
-        _LOGGER.debug("current_event_list[0]: %s", current_event_list[0])
-        _LOGGER.debug("current_event_list[1]: %s", current_event_list[1])
         await self.aysnc_send_command_to_mower(current_event_list)
 
     async def async_delete_event(
@@ -159,9 +149,10 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     ) -> None:
         """Delete an event on the calendar."""
         current_event_list = self.mower_attributes["calendar"]["tasks"]
-        _LOGGER.debug("current_event_list: %s", current_event_list)
+        amount_of_tasks = len(current_event_list)
+        if amount_of_tasks < 2:
+            raise vol.Invalid("You need at least one schedule")
         current_event_list.pop(int(uid))
-        _LOGGER.debug("current_event_list after pop: %s", current_event_list)
         await self.aysnc_send_command_to_mower(current_event_list)
 
     async def aysnc_parse_to_husqvarna_string(
@@ -170,7 +161,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     ) -> list:
         """Parse from calendar rrule to mower compatible string."""
         try:
-            _LOGGER.debug("rrule: %s", event["rrule"])
             event["rrule"]
         except KeyError as exc:
             raise vol.Invalid("Only reccuring events are allowed") from exc
@@ -181,8 +171,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         rr_list = event["rrule"].split(";")
         days = rr_list[1].lstrip("BYDAY=")
         day_list = days.split(",")
-        _LOGGER.debug("daylist: %s", day_list)
-        _LOGGER.debug("dtstart: %s", event["dtstart"].hour)
         task_list = []
         start_time_minutes = int(event["dtstart"].hour) * 60 + int(
             event["dtstart"].minute
@@ -199,7 +187,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             else:
                 addition[day] = False
         task_list.append(addition)
-        _LOGGER.debug("task_list: %s", task_list)
         return task_list
 
     async def aysnc_send_command_to_mower(
