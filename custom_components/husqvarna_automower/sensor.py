@@ -65,6 +65,7 @@ def get_problem(mower_attributes) -> dict:
 def problem_list() -> list:
     """Get a list with possible problems for the current mower."""
     error_list = list(ERRORCODES.values())
+    error_list_low = [x.lower() for x in error_list]
     other_reasons = [
         "off",
         "unknown",
@@ -79,8 +80,7 @@ def problem_list() -> list:
         "fota",
         "frost",
     ]
-    problem_list = error_list + other_reasons
-    return problem_list
+    return error_list_low + other_reasons
 
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
