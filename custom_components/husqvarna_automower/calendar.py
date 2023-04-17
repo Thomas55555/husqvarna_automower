@@ -54,6 +54,12 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self._attr_unique_id = f"{self.mower_id}_calendar"
         self.mower_attributes = AutomowerEntity.get_mower_attributes(self)
 
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
+
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
     ) -> list[CalendarEvent]:
