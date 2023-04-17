@@ -77,7 +77,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
             end=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7, hours=2),
             location="",
-            description="Good time to mow",
         )
         event_list = []
         for task, tasks in enumerate(self.mower_attributes["calendar"]["tasks"]):
