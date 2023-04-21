@@ -133,7 +133,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         current_event_list = self.mower_attributes["calendar"]["tasks"]
         task_list = await self.aysnc_parse_to_husqvarna_string(kwargs)
         await self.aysnc_send_command_to_mower(current_event_list + task_list)
-        await self.async_update_ha_state(force_refresh=True)
+        await self.async_get_events()
 
     async def async_update_event(
         self,
@@ -147,7 +147,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         task_list = await self.aysnc_parse_to_husqvarna_string(event)
         current_event_list[int(uid)] = task_list[0]
         await self.aysnc_send_command_to_mower(current_event_list)
-        await self.async_update_ha_state(force_refresh=True)
+        await self.async_get_events()
 
     async def async_delete_event(
         self,
@@ -162,7 +162,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             raise vol.Invalid("You need at least one schedule")
         current_event_list.pop(int(uid))
         await self.aysnc_send_command_to_mower(current_event_list)
-        await self.async_update_ha_state(force_refresh=True)
+        await self.async_get_events()
 
     async def aysnc_parse_to_husqvarna_string(
         self,
