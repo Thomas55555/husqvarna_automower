@@ -64,11 +64,13 @@ In order to use this integration you must properly configure OAuth2 credentials 
 
 Your Husqvarna account username/password used for the *Automower® Connect*  phone app is required.  Most users probably created a Husqvarna account during initial mower setup.
 
-1. Go to <https://developer.husqvarnagroup.cloud/> and sign in with Husqvarna account.  Sign in page has password recovery/reset using registered email address if needed.  Authorize *Developer Porthole* to access Husqvarna account when prompted.
+1. Make sure, that the exgernal url on the page `Settings -> Network` in the field `Internet` is set to your external url.
 
-2. After signing in you will be automatically redirected to "Your applications". (Otherwise go to: <https://developer.husqvarnagroup.cloud/applications>)
+2. Go to <https://developer.husqvarnagroup.cloud/> and sign in with Husqvarna account.  Sign in page has password recovery/reset using registered email address if needed.  Authorize *Developer Porthole* to access Husqvarna account when prompted.
 
-3. Create a new application:
+3. After signing in you will be automatically redirected to "Your applications". (Otherwise go to: <https://developer.husqvarnagroup.cloud/applications>)
+
+4. Create a new application:
 
    * Name is required but can be anything, for example "My Home Assistant"
 
@@ -84,11 +86,11 @@ Your Husqvarna account username/password used for the *Automower® Connect*  pho
 
    * Click **CREATE**.  *Application Key* and *Application Secret* will be generated and shown.  Protect these like a username and password.
 
-4. Click on **CONNECT NEW API** and connect the **Authentication API**.
+5. Click on **CONNECT NEW API** and connect the **Authentication API**.
 
-5. Click on **CONNECT NEW API** again and connect the **Husqvarna Automower API**.
+6. Click on **CONNECT NEW API** again and connect the **Husqvarna Automower API**.
 
-6. Leave this tab open in browser and continue with Home Assistant configuration.
+7. Leave this tab open in browser and continue with Home Assistant configuration.
 
 ### Home Assistant
 
