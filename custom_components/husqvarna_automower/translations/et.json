@@ -48,7 +48,7 @@
 			"problem_list": {
 				"state": {
 					"off": "Väljas",
-					"unknwon": "Teadmata",
+					"unknown": "Teadmata",
 					"stopped": "Peatunud",
 					"stopped_in_garden": "Peatunud aias",
 					"not_applicable": "Pole kohalduv",
