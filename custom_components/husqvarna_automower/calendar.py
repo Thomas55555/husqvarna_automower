@@ -37,7 +37,7 @@ async def async_setup_entry(
 class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_supported_features = (
         CalendarEntityFeature.CREATE_EVENT
         | CalendarEntityFeature.DELETE_EVENT
