@@ -47,7 +47,7 @@
 			"problem_list": {
 				"state": {
 					"off": "Off",
-					"unknwon": "Unknown",
+					"unknown": "Unknown",
 					"stopped": "Stopped",
 					"stopped_in_garden": "Stopped in garden",
 					"not_applicable": "Not applicable",
