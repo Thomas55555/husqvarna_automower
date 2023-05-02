@@ -38,7 +38,6 @@ async def async_setup_entry(
 class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerProblemSensor Entity."""
 
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
     _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
     _attr_name = "Battery charging"
@@ -61,7 +60,6 @@ class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
 class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerProblemSensor Entity."""
 
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
     _attr_name = "Leaving dock"
 
@@ -83,7 +81,6 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
 class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerErrorSensor Entity."""
 
-    _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default: bool = False
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
     _attr_name = "Error"
