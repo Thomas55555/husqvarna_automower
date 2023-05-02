@@ -22,7 +22,7 @@
 			"problem_list": {
 				"state": {
                     "off": "Aus",
-                    "unknwon": "Unbekannt",
+                    "unknown": "Unbekannt",
                     "stopped": "Angehalten",
                     "stopped_in_garden": "Im Garten angehalten",
                     "not_applicable": "Nicht anwendbar",
