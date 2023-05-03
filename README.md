@@ -15,10 +15,12 @@ Custom component to support Automower.
 - [Configuration](#configuration)
   - [Husqvarna API-Key](#husqvarna-api-key)
   - [Home Assistant](#home-assistant)
-  - [Camera Sensor](#Camera-sensor)
+  - [Camera Sensor](#camera-sensor)
 - [Usage](#usage)
-- [Debugging](#Debugging)
-- [Troubleshooting](#Troubleshooting)
+  - [Services](#services)
+  - [Automation Example](#automation-example)
+- [Debugging](#debugging)
+- [Troubleshooting](#troubleshooting)
 
 ## About
 
@@ -151,6 +153,7 @@ You can then provide the path to the image you would like to use for the map and
 * `select.automower_headlight_mode`
   Set the mower headlight operating mode
 
+
 ### Services
 
 * `husqvarna_automower.calendar`
@@ -190,6 +193,33 @@ You can then provide the path to the image you would like to use for the map and
   ```
   See Husqvarna [API reference](https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger) for additional details.
 
+
+### Automation Example
+Let your mower only mow during daytime to protect wildlife. Schedule is updated daily.
+
+```
+- alias: Automower_set_schedule
+  id: "enklfjf76"
+  description: "Mow from dawn till dusk"
+  trigger:
+    - platform: time
+      at: "23:58"
+  action:
+    service: husqvarna_automower.calendar
+    data:
+      start: '{{ states("sensor.sun_next_rising") | as_timestamp| timestamp_custom("%H:%M") }}'
+      end: '{{ states("sensor.sun_next_setting") | as_timestamp| timestamp_custom("%H:%M") }}'
+      monday: true
+      tuesday: true
+      wednesday: true
+      thursday: true
+      friday: true
+      saturday: true
+      sunday: true
+    target:
+      entity_id: vacuum.haffi
+ ```
+ 
 ## Debugging
 
 To enable debug logging for this integration and related libraries you can control this in your Home Assistant `configuration.yaml` file.
