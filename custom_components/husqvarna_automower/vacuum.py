@@ -5,6 +5,7 @@ import logging
 from aiohttp import ClientResponseError
 import voluptuous as vol
 
+from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
     STATE_CLEANING,
@@ -21,8 +22,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConditionErrorMessage
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.storage import Store
 
-from .const import DOMAIN, ERRORCODES
+from .const import DOMAIN, ERRORCODES, WEEKDAYS
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
@@ -51,15 +53,6 @@ async def async_setup_entry(
     platform = entity_platform.current_platform.get()
 
     platform.async_register_entity_service(
-        "park_and_start",
-        {
-            vol.Required("command"): cv.string,
-            vol.Required("duration"): vol.Coerce(int),
-        },
-        "async_park_and_start",
-    )
-
-    platform.async_register_entity_service(
         "calendar",
         {
             vol.Required("start"): cv.time,
@@ -73,6 +66,14 @@ async def async_setup_entry(
             vol.Required("sunday"): cv.boolean,
         },
         "async_custom_calendar_command",
+    )
+
+    platform.async_register_entity_service(
+        "schedule_selector",
+        {
+            vol.Required("schedule_selector"): cv.string,
+        },
+        "async_schedule_selector",
     )
 
     platform.async_register_entity_service(
@@ -99,14 +100,14 @@ class HusqvarnaAutomowerStateMixin(object):
             "WAIT_POWER_UP",
         ]:
             return STATE_IDLE
-        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
-            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
-        ):
-            return STATE_DOCKED
         if mower_attributes["mower"]["activity"] in ["MOWING", "LEAVING"]:
             return STATE_CLEANING
         if mower_attributes["mower"]["activity"] == "GOING_HOME":
             return STATE_RETURNING
+        if (mower_attributes["mower"]["state"] == "RESTRICTED") or (
+            mower_attributes["mower"]["activity"] in ["PARKED_IN_CS", "CHARGING"]
+        ):
+            return STATE_DOCKED
         if (
             mower_attributes["mower"]["state"]
             in [
@@ -146,7 +147,6 @@ class HusqvarnaAutomowerEntity(
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""
         super().__init__(session, idx)
-        self._attr_name = self.mower_name
         self._attr_unique_id = self.session.data["data"][self.idx]["id"]
 
     @property
@@ -269,24 +269,6 @@ class HusqvarnaAutomowerEntity(
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
 
-    async def async_park_and_start(self, command, duration, **kwargs) -> None:
-        """Send a custom command to the mower."""
-        _LOGGER.warning(
-            "The service `park_and_start` is depracated. Please use the number entites `number.park_for` or `number.mow_for` instead"
-        )
-        command_type = "actions"
-        string = {
-            "data": {
-                "type": command,
-                "attributes": {"duration": duration},
-            }
-        }
-        payload = json.dumps(string)
-        try:
-            await self.session.action(self.mower_id, payload, command_type)
-        except ClientResponseError as exception:
-            _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
-
     async def async_custom_calendar_command(
         self,
         start,
@@ -334,6 +316,62 @@ class HusqvarnaAutomowerEntity(
             await self.session.action(self.mower_id, payload, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
+
+    async def async_schedule_selector(
+        self,
+        schedule_selector,
+        **kwargs,
+    ) -> None:
+        """Send a schedule created by the schedule helper to the mower."""
+        schedule_list = schedule_selector.split(".")
+        schedule_id = schedule_list[1]
+        _LOGGER.debug("schedule_selector: %s", schedule_id)
+        schedule_storage = Store(self.hass, 1, SCHEDULE_DOMAIN)
+        schedule_storage_list = await schedule_storage.async_load()
+        for ent, schedules in enumerate(schedule_storage_list["items"]):
+            _LOGGER.debug("schedule: %s, ent %i", schedules, ent)
+            if schedules["id"] == schedule_id:
+                schedules.pop("name")
+                schedules.pop("id")
+                _LOGGER.debug("relevant schedule: %s", schedules)
+                task_list = []
+                for day, schedule in schedules.items():
+                    for daily_task in schedule:
+                        if daily_task:
+                            start_time = daily_task["from"].split(":")
+                            start_time_minutes = int(start_time[0]) * 60 + int(
+                                start_time[1]
+                            )
+                            end_time = daily_task["to"].split(":")
+                            end_time_minutes = int(end_time[0]) * 60 + int(end_time[1])
+                            duration = end_time_minutes - start_time_minutes
+                            addition = {}
+                            relevant_day = False
+                            addition = {
+                                "start": start_time_minutes,
+                                "duration": duration,
+                            }
+                            for relevant_day in WEEKDAYS:
+                                if day == relevant_day:
+                                    addition[relevant_day] = True
+                                else:
+                                    addition[relevant_day] = False
+                            task_list.append(addition)
+                    _LOGGER.debug("task_list: %s", task_list)
+                command_type = "calendar"
+                string = {
+                    "data": {
+                        "type": "calendar",
+                        "attributes": {"tasks": task_list},
+                    }
+                }
+                payload = json.dumps(string)
+                try:
+                    await self.session.action(self.mower_id, payload, command_type)
+                except ClientResponseError as exception:
+                    _LOGGER.error(
+                        "Command couldn't be sent to the command que: %s", exception
+                    )
 
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""

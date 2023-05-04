@@ -36,10 +36,11 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        AutomowerCamera(session, idx, entry)
-        for idx, ent in enumerate(session.data["data"])
-    )
+    if entry.options.get(ENABLE_CAMERA):
+        async_add_entities(
+            AutomowerCamera(session, idx, entry)
+            for idx, ent in enumerate(session.data["data"])
+        )
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
@@ -47,6 +48,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
+    _attr_name = "Map"
 
     def __init__(self, session, idx, entry):
         """Initialize AutomowerCamera."""
@@ -55,7 +57,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
         self.entry = entry
         self._position_history = []
-        self._attr_name = self.mower_name
         self._attr_unique_id = f"{self.mower_id}_camera"
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._image_bytes = None
@@ -123,7 +124,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
         location = (position_history[0]["latitude"], position_history[0]["longitude"])
         if len(position_history) == 1:
-            self._position_history += position_history
+            self._position_history = position_history + self._position_history
             position_history = self._position_history
         else:
             self._position_history = position_history

@@ -11,5 +11,8 @@ jobs:
   validate:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v2"
-      - uses: home-assistant/actions/hassfest@master
+        - name: "Checkout the repository"
+          uses: "actions/checkout@v3"
+
+        - name: "Run hassfest validation"
+          uses: "home-assistant/actions/hassfest@master"

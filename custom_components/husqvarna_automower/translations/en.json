@@ -16,9 +16,10 @@
         "step": {
             "init": {
                 "data": {
-                    "enable_camera": "Enable Map Camera"
+                    "enable_camera": "Enable Map Camera",
+                    "disable_le": "Disbale Low Energy Mode"
                 },
-                "description": "Enable Map Camera",
+                "description": "Select Integration Options",
                 "title": "Husqvarna Automower Options"
             },
             "config": {
@@ -40,6 +41,35 @@
         }
     },
     "application_credentials": {
-      "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
-    }
+        "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
+    },
+	"entity": {
+		"sensor": {
+			"problem_list": {
+				"state": {
+					"off": "Off",
+					"unknown": "Unknown",
+					"stopped": "Stopped",
+					"stopped_in_garden": "Stopped in garden",
+					"not_applicable": "Not applicable",
+					"none": "None",
+					"week_schedule": "Week schedule",
+					"park_override": "Park override",
+					"sensor": "Weather timer",
+					"daily_limit": "Daily limit",
+					"fota": "Fota",
+					"frost": "Frost"
+				}
+			},
+			"mode_list":{
+				"state": {
+                    "main_area": "Main area",
+                    "secondary_area": "Secondary area",
+                    "home": "Home",
+                    "demo": "Demo",
+                    "unknown": "Unknown"
+                }
+			}
+		}
+	}
 }

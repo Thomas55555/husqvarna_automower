@@ -16,6 +16,8 @@ class AutomowerEntity(CoordinatorEntity, Entity):
     """Defining the Automower Basic Entity."""
 
     def __init__(self, coordinator, idx) -> None:
+    _attr_has_entity_name = True
+
         """Initialize AutomowerEntity."""
         super().__init__(coordinator, idx)
         self.coordinator = coordinator
@@ -33,8 +35,11 @@ class AutomowerEntity(CoordinatorEntity, Entity):
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
-        naive = datetime.utcfromtimestamp(timestamp / 1000)
-        local = dt_util.as_local(naive)
+        if timestamp != 0:
+            naive = datetime.utcfromtimestamp(timestamp / 1000)
+            local = dt_util.as_local(naive)
+        if timestamp == 0:
+            local = None
         return local
 
     async def async_added_to_hass(self) -> None:

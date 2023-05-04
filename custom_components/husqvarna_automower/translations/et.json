@@ -12,9 +12,64 @@
             "single_instance_allowed": "Ainult üks Husqvarna Automoweri seadistamine on lubatud."
         }
     },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "enable_camera": "Luba kaardikaamera",
+                    "disable_le": "Keela väikese energiatarbega režiim"
+                },
+                "description": "Vali sidumise suvandid",
+                "title": "Husqvarna Automower suvandid"
+            },
+            "config": {
+                "data": {
+                    "gps_top_left": "Pildi vasakpoolse ülemise nurga GPS koordinaadid",
+                    "gps_bottom_right": "Pildi parempoolse alumise nurga GPS koordinaadid",
+                    "mower_img_path": "Niiduki asukoha kujutise failitee",
+                    "map_img_path": "Kaardikujutise failitee"
+
+                },
+                "description": "Kaamera seaded",
+                "title": "Husqvarna Automower suvandid"
+            }
+        }
+    },
     "system_health": {
         "info": {
             "can_reach_server": "Husqvarna võtmeserver on kättesaadav"
         }
-    }
+    },
+    "application_credentials": {
+        "description": "Loo konto [Husqvarna developers portal]({oauth_creds_url}). Ühenda Authentication API ja Automower Connect API. Sea ümbersuunamise URI https://my.home-assistant.io/redirect/oauth. Kui sa pole veel seadistanud My HomeAssistant asukohta, sisesta see URL oma asukohaks {redirect_uri}"
+    },
+	"entity": {
+		"sensor": {
+			"problem_list": {
+				"state": {
+					"off": "Väljas",
+					"unknown": "Teadmata",
+					"stopped": "Peatunud",
+					"stopped_in_garden": "Peatunud aias",
+					"not_applicable": "Pole kohalduv",
+					"none": "Puudub",
+					"week_schedule": "Nädala ajakava",
+					"park_override": "Parkimise tühistamine",
+					"sensor": "Ilmataimer",
+					"daily_limit": "Päevane limiit",
+					"fota": "Püsivara uuendamine",
+					"frost": "Härmatis"
+				}
+			},
+			"mode_list":{
+				"state": {
+                    "main_area": "Peamine niiduala",
+                    "secondary_area": "Teisene niiduala",
+                    "home": "Laadimisjaam",
+                    "demo": "Demo",
+                    "unknown": "Teadmata"
+                }
+			}
+		}
+	}
 }

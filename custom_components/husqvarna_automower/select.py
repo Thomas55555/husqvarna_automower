@@ -37,12 +37,12 @@ class AutomowerSelect(AutomowerEntity, CoordinatorEntity, SelectEntity):
     _attr_options = HEADLIGHTMODES
     _attr_icon = "mdi:car-light-high"
     _attr_entity_category = EntityCategory.CONFIG
+    _attr_name = "Headlight mode"
 
     def __init__(self, coordinator, idx):
         """Initialize AutomowerSelect."""
         super().__init__(coordinator, idx)
         self.idx = idx
-        self._attr_name = f"{self.mower_name} Headlight mode"
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
     @property

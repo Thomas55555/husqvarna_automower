@@ -12,7 +12,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .const import DOMAIN
+from .const import CHANGING_CUTTING_HEIGHT_SUPPORT, DOMAIN
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,7 +27,10 @@ async def async_setup_entry(
     async_add_entities(
         AutomowerNumber(session, idx)
         for idx, ent in enumerate(session.data["data"])
-        if "4" in session.data["data"][idx]["attributes"]["system"]["model"]
+        if any(
+            ele in session.data["data"][idx]["attributes"]["system"]["model"]
+            for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
+        )
     )
     async_add_entities(
         AutomowerParkStartNumberEntity(session, idx, description)
@@ -61,11 +64,11 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_icon = "mdi:grass"
     _attr_native_min_value = 1
     _attr_native_max_value = 9
+    _attr_name = "Cutting height"
 
     def __init__(self, session, idx):
         """Initialize AutomowerNumber."""
         super().__init__(session, idx)
-        self._attr_name = f"{self.mower_name} Cutting Height"
         self._attr_unique_id = f"{self.mower_id}_cuttingheight"
 
     @property
@@ -86,7 +89,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {"cuttingHeight": value},
+                "attributes": {"cuttingHeight": int(value)},
             }
         }
         payload = json.dumps(string)
@@ -109,7 +112,7 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description
-        self._attr_name = f"{self.mower_name} {description.name}"
+        self._attr_name = description.name
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     @property
