@@ -22,7 +22,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
-    coordinator = AutomowerCoordinator(hass, session)
+    coordinator = AutomowerCoordinator(hass)
     await coordinator.async_config_entry_first_refresh()
     async_add_entities(
         AutomowerBatteryChargingBinarySensor(coordinator, idx)

@@ -20,18 +20,18 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up select platform."""
-    session = hass.data[DOMAIN][entry.entry_id]
-    coordinator = AutomowerCoordinator(hass, session)
+    coordinator: AutomowerCoordinator = hass.data[DOMAIN][entry.entry_id]
     await coordinator.async_config_entry_first_refresh()
+    _LOGGER.debug("coordinator: %s", coordinator.data)
     async_add_entities(
-        AutomowerSelect(coordinator, idx)
+        AutomowerSelect(hass, coordinator)
         for idx, ent in enumerate(coordinator.data["data"])
         if not coordinator.data["data"][idx]["attributes"]["system"]["model"]
         in ["550", "Ceora"]
     )
 
 
-class AutomowerSelect(AutomowerEntity, CoordinatorEntity, SelectEntity):
+class AutomowerSelect(AutomowerCoordinator, SelectEntity):
     """Defining the Headlight Mode Select Entity."""
 
     _attr_options = HEADLIGHTMODES
@@ -39,10 +39,10 @@ class AutomowerSelect(AutomowerEntity, CoordinatorEntity, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_name = "Headlight mode"
 
-    def __init__(self, coordinator, idx):
+    def __init__(self, coordinator) -> None:
         """Initialize AutomowerSelect."""
-        super().__init__(coordinator, idx)
-        self.idx = idx
+        super().__init__(coordinator)
+        # self.idx = idx
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
     @property

@@ -5,6 +5,8 @@ import async_timeout
 import voluptuous as vol
 
 import aioautomower
+from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_TOKEN, Platform
 from asyncio.exceptions import TimeoutError
 from homeassistant.components.application_credentials import DATA_STORAGE
 from homeassistant.config_entries import ConfigEntry
@@ -31,26 +33,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         api_key = ap_storage_data[k]["client_id"]
     access_token = entry.data.get(CONF_TOKEN)
     low_energy = not entry.options.get(DISABLE_LE)
-    session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
-    session.register_token_callback(
-        lambda token: hass.config_entries.async_update_entry(
-            entry,
-            data={"auth_implementation": DOMAIN, CONF_TOKEN: token},
-        )
-    )
+    automower_api = aioautomower.AutomowerSession(api_key, access_token, low_energy)
+    coordinator = AutomowerCoordinator(hass, api=automower_api)
+    await coordinator.async_config_entry_first_refresh()
 
-    try:
-        await session.connect()
-    except TimeoutError as error:
-        _LOGGER.debug("Asyncio timeout: %s", error)
-        raise ConfigEntryNotReady from error
-    except Exception as error:
-        _LOGGER.debug("Exception in async_setup_entry: %s", error)
-        # If we haven't used the refresh_token (ie. been offline) for 10 days,
-        # we need to login using username and password in the config flow again.
-        raise ConfigEntryAuthFailed from Exception
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    hass.data[DOMAIN][entry.entry_id] = session
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
     return True
@@ -84,17 +72,17 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
 class AutomowerCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
 
-    def __init__(self, hass, session):
+    def __init__(self, hass, *, api):
+        self.session = api
+        self.hass = hass
+
+
         """Initialize my coordinator."""
         super().__init__(
             hass,
             _LOGGER,
-            # Name of the data. For logging purposes.
-            name="Husqvarna Automower",
-            # Polling interval. Will only be polled if there are subscribers.
-            # update_interval=30,
+            name=DOMAIN,
         )
-        self.api = session
 
     async def _async_update_data(self):
         """Fetch data from API endpoint.
@@ -102,14 +90,21 @@ class AutomowerCoordinator(DataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
+        self.session.register_token_callback(
+            lambda token: self.hass.config_entries.async_update_entry(
+                self.entry,
+                data={"auth_implementation": DOMAIN, CONF_TOKEN: token},
+            )
+        )
         try:
-            # Note: asyncio.TimeoutError and aiohttp.ClientError are already
-            # handled by the data update coordinator.
-            async with async_timeout.timeout(10):
-                return await self.api.get_status()
-        except Exception as err:
-            # Raising ConfigEntryAuthFailed will cancel future updates
-            # and start a config flow with SOURCE_REAUTH (async_step_reauth)
-            raise ConfigEntryAuthFailed from err
-        except Exception as err:
-            raise UpdateFailed(f"Error communicating with API: {err}")
+            data = await self.session.connect()
+        except TimeoutError as error:
+            _LOGGER.debug("Asyncio timeout: %s", error)
+            raise ConfigEntryNotReady from error
+        except Exception as error:
+            _LOGGER.debug("Exception in async_setup_entry: %s", error)
+            # If we haven't used the refresh_token (ie. been offline) for 10 days,
+            # we need to login using username and password in the config flow again.
+            raise ConfigEntryAuthFailed from Exception
+        _LOGGER.debug("session:%s", self.session.data)
+        return self.session.data
