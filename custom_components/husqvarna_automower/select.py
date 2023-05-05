@@ -8,6 +8,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from . import AutomowerDataUpdateCoordinator
 
 from .const import DOMAIN, HEADLIGHTMODES
 from .entity import AutomowerEntity
@@ -20,15 +22,17 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     session = hass.data[DOMAIN][entry.entry_id]
+    _LOGGER.debug("session: %s", session)
     async_add_entities(
         AutomowerSelect(session, idx)
-        for idx, ent in enumerate(session.data["data"])
-        if not session.data["data"][idx]["attributes"]["system"]["model"]
-        in ["550", "Ceora"]
+        for idx, ent in enumerate(session)
+        if not session[idx]["attributes"]["system"]["model"] in ["550", "Ceora"]
     )
 
 
-class AutomowerSelect(SelectEntity, AutomowerEntity):
+class AutomowerSelect(
+    SelectEntity, AutomowerEntity, CoordinatorEntity[AutomowerDataUpdateCoordinator]
+):
     """Defining the Headlight Mode Select Entity."""
 
     _attr_options = HEADLIGHTMODES
