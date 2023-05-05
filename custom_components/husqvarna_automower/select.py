@@ -24,7 +24,7 @@ async def async_setup_entry(
     await coordinator.async_config_entry_first_refresh()
     _LOGGER.debug("coordinator: %s", coordinator.data)
     async_add_entities(
-        AutomowerSelect(hass, coordinator)
+        AutomowerSelect(coordinator)
         for idx, ent in enumerate(coordinator.data["data"])
         if not coordinator.data["data"][idx]["attributes"]["system"]["model"]
         in ["550", "Ceora"]
@@ -41,7 +41,7 @@ class AutomowerSelect(AutomowerCoordinator, SelectEntity):
 
     def __init__(self, coordinator) -> None:
         """Initialize AutomowerSelect."""
-        super().__init__(coordinator)
+        super().__init__(api)
         # self.idx = idx
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 

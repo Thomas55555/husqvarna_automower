@@ -10,6 +10,7 @@ from homeassistant.const import CONF_TOKEN, Platform
 from asyncio.exceptions import TimeoutError
 from homeassistant.components.application_credentials import DATA_STORAGE
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -34,7 +35,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     access_token = entry.data.get(CONF_TOKEN)
     low_energy = not entry.options.get(DISABLE_LE)
     automower_api = aioautomower.AutomowerSession(api_key, access_token, low_energy)
-    coordinator = AutomowerCoordinator(hass, api=automower_api)
+    coordinator = AutomowerCoordinator(hass)
     await coordinator.async_config_entry_first_refresh()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
@@ -72,10 +73,9 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
 class AutomowerCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
 
-    def __init__(self, hass, *, api):
+    def __init__(self, hass):
         self.session = api
         self.hass = hass
-
 
         """Initialize my coordinator."""
         super().__init__(
