@@ -69,6 +69,6 @@ class AutomowerSelect(
         }
         payload = json.dumps(string)
         try:
-            await self.session.action(self.mower_id, payload, command_type)
+            await self.coordinator.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
