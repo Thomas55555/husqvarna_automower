@@ -21,12 +21,13 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up select platform."""
-    session = hass.data[DOMAIN][entry.entry_id]
-    _LOGGER.debug("session: %s", session)
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+    _LOGGER.debug("session: %s", coordinator.session.data)
     async_add_entities(
-        AutomowerSelect(session, idx)
-        for idx, ent in enumerate(session)
-        if not session[idx]["attributes"]["system"]["model"] in ["550", "Ceora"]
+        AutomowerSelect(coordinator, idx)
+        for idx, ent in enumerate(coordinator.session.data["data"])
+        if not coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
+        in ["550", "Ceora"]
     )
 
 
@@ -45,11 +46,11 @@ class AutomowerSelect(
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
-    @property
-    def available(self) -> bool:
-        """Return True if the device is available."""
-        available = self.get_mower_attributes()["metadata"]["connected"]
-        return available
+    # @property
+    # def available(self) -> bool:
+    #     """Return True if the device is available."""
+    #     available = self.get_mower_attributes()["metadata"]["connected"]
+    #     return available
 
     @property
     def current_option(self) -> str:
