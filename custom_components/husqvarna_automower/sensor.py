@@ -26,6 +26,7 @@ class AutomowerSensorRequiredKeysMixin:
     """Mixin for required keys."""
 
     value_fn: Callable[[AutomowerEntity], int]
+    available_fn: Callable[[AutomowerEntity], bool]
 
 
 @dataclass
@@ -94,6 +95,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         value_fn=lambda data: data["statistics"]["cuttingBladeUsageTime"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalChargingTime",
@@ -105,6 +107,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         value_fn=lambda data: data["statistics"]["totalChargingTime"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalCuttingTime",
@@ -116,6 +119,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         value_fn=lambda data: data["statistics"]["totalCuttingTime"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalRunningTime",
@@ -127,6 +131,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         value_fn=lambda data: data["statistics"]["totalRunningTime"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalSearchingTime",
@@ -138,6 +143,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         value_fn=lambda data: data["statistics"]["totalSearchingTime"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="numberOfChargingCycles",
@@ -147,6 +153,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         value_fn=lambda data: data["statistics"]["numberOfChargingCycles"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="numberOfCollisions",
@@ -156,6 +163,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         value_fn=lambda data: data["statistics"]["numberOfCollisions"],
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalSearchingTime_percentage",
@@ -169,6 +177,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: data["statistics"]["totalSearchingTime"]
         / data["statistics"]["totalRunningTime"]
         * 100,
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="totalCuttingTime_percentage",
@@ -182,16 +191,20 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: data["statistics"]["totalCuttingTime"]
         / data["statistics"]["totalRunningTime"]
         * 100,
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="battery_level",
         name="Battery level",
         entity_registry_enabled_default=True,
-        entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.MEASUREMENT,
         device_class=SensorDeviceClass.BATTERY,
         native_unit_of_measurement=PERCENTAGE,
         value_fn=lambda data: data["battery"]["batteryPercent"],
+        available_fn=lambda data: False
+        if (data["battery"]["batteryPercent"] is 0)
+        and (data["metadata"]["connected"] is False)
+        else True,
     ),
     AutomowerSensorEntityDescription(
         key="next_start",
@@ -201,6 +214,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: AutomowerEntity.datetime_object(
             data, data["planner"]["nextStartTimestamp"]
         ),
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="mode",
@@ -210,6 +224,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         options=["main_area", "secondary_area", "home", "demo", "unknown"],
         translation_key="mode_list",
         value_fn=lambda data: data["mower"]["mode"].lower(),
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="problem_sensor",
@@ -221,6 +236,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: None
         if get_problem(data) is None
         else get_problem(data).lower(),
+        available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="cuttingHeight",
@@ -229,6 +245,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         icon="mdi:grass",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: data["cuttingHeight"],
+        available_fn=lambda data: True,
     ),
 )
 
@@ -273,3 +290,9 @@ class AutomowerSensor(SensorEntity, AutomowerEntity):
         """Return the state of the sensor."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         return self.entity_description.value_fn(mower_attributes)
+
+    @property
+    def available(self):
+        """Return the availability of the sensor."""
+        mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        return self.entity_description.available_fn(mower_attributes)
