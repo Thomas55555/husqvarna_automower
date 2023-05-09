@@ -242,14 +242,20 @@ async def async_setup_entry(
     for idx, ent in enumerate(coordinator.session.data["data"]):
         for description in SENSOR_TYPES:
             try:
-                description.value_fn(coordinator.session.data["data"][idx]["attributes"])
+                description.value_fn(
+                    coordinator.session.data["data"][idx]["attributes"]
+                )
                 if description.key == "cuttingHeight":
                     if any(
                         ele
-                        in coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
+                        in coordinator.session.data["data"][idx]["attributes"][
+                            "system"
+                        ]["model"]
                         for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
                     ):
-                        entity_list.append(AutomowerSensor(coordinator, idx, description))
+                        entity_list.append(
+                            AutomowerSensor(coordinator, idx, description)
+                        )
                 if description.key != "cuttingHeight":
                     entity_list.append(AutomowerSensor(coordinator, idx, description))
             except KeyError:

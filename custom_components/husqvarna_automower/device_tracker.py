@@ -18,7 +18,8 @@ async def async_setup_entry(
     """Set up device_tracker platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerTracker(coordinator, idx) for idx, ent in enumerate(coordinator.session.data["data"])
+        AutomowerTracker(coordinator, idx)
+        for idx, ent in enumerate(coordinator.session.data["data"])
     )
 
 

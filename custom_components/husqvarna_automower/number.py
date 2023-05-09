@@ -28,7 +28,8 @@ async def async_setup_entry(
         AutomowerNumber(coordinator, idx)
         for idx, ent in enumerate(coordinator.session.data["data"])
         if any(
-            ele in coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
+            ele
+            in coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
             for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
         )
     )

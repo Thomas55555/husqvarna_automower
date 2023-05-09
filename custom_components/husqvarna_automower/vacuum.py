@@ -367,7 +367,9 @@ class HusqvarnaAutomowerEntity(
                 }
                 payload = json.dumps(string)
                 try:
-                    await self.coordinator.session.action(self.mower_id, payload, command_type)
+                    await self.coordinator.session.action(
+                        self.mower_id, payload, command_type
+                    )
                 except ClientResponseError as exception:
                     _LOGGER.error(
                         "Command couldn't be sent to the command que: %s", exception
@@ -376,6 +378,8 @@ class HusqvarnaAutomowerEntity(
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""
         try:
-            await self.coordinator.session.action(self.mower_id, json_string, command_type)
+            await self.coordinator.session.action(
+                self.mower_id, json_string, command_type
+            )
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
