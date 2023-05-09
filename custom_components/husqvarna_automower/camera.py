@@ -35,11 +35,11 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up select platform."""
-    session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][entry.entry_id]
     if entry.options.get(ENABLE_CAMERA):
         async_add_entities(
-            AutomowerCamera(session, idx, entry)
-            for idx, ent in enumerate(session.data["data"])
+            AutomowerCamera(coordinator, idx, entry)
+            for idx, ent in enumerate(coordinator.session.data["data"])
         )
 
 

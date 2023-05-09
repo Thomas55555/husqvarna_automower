@@ -22,19 +22,20 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up number platform."""
-    session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
-        AutomowerNumber(session, idx)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerNumber(coordinator, idx)
+        for idx, ent in enumerate(coordinator.session.data["data"])
         if any(
-            ele in session.data["data"][idx]["attributes"]["system"]["model"]
+            ele
+            in coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
             for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
         )
     )
     async_add_entities(
-        AutomowerParkStartNumberEntity(session, idx, description)
-        for idx, ent in enumerate(session.data["data"])
+        AutomowerParkStartNumberEntity(coordinator, idx, description)
+        for idx, ent in enumerate(coordinator.session.data["data"])
         for description in NUMBER_SENSOR_TYPES
     )
 
@@ -94,7 +95,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
         }
         payload = json.dumps(string)
         try:
-            await self.session.action(self.mower_id, payload, command_type)
+            await self.coordinator.session.action(self.mower_id, payload, command_type)
         except Exception as exception:
             raise UpdateFailed(exception) from exception
 

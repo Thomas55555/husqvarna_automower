@@ -5,22 +5,27 @@ import logging
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.util import dt as dt_util
-
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from .const import DOMAIN, HUSQVARNA_URL
+from . import AutomowerDataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class AutomowerEntity(Entity):
+class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
     """Defining the Automower Basic Entity."""
 
     _attr_has_entity_name = True
 
     def __init__(self, session, idx) -> None:
         """Initialize AutomowerEntity."""
-        self.session = session
+        super().__init__(session)
+        # self.session = session
+        _LOGGER.debug("session base: %s", self.coordinator.session.data)
         self.idx = idx
-        self.mower = self.session.data["data"][self.idx]
+        self.mower = self.coordinator.session.data["data"][self.idx]
 
         mower_attributes = self.get_mower_attributes()
         self.mower_id = self.mower["id"]
@@ -31,7 +36,7 @@ class AutomowerEntity(Entity):
 
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
-        return self.session.data["data"][self.idx]["attributes"]
+        return self.mower["attributes"]
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
@@ -45,7 +50,7 @@ class AutomowerEntity(Entity):
     async def async_added_to_hass(self) -> None:
         """Call when entity about to be added to Home Assistant."""
         await super().async_added_to_hass()
-        self.session.register_data_callback(
+        self.coordinator.session.register_data_callback(
             lambda _: self.async_write_ha_state(), schedule_immediately=True
         )
 

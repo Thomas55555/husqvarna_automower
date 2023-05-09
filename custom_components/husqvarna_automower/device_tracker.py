@@ -16,9 +16,10 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up device_tracker platform."""
-    session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerTracker(session, idx) for idx, ent in enumerate(session.data["data"])
+        AutomowerTracker(coordinator, idx)
+        for idx, ent in enumerate(coordinator.session.data["data"])
     )
 
 

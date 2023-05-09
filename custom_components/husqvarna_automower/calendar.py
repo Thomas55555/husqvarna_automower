@@ -28,9 +28,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up calendar platform."""
     _LOGGER.debug("entry: %s", entry)
-    session = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        AutomowerCalendar(session, idx) for idx, ent in enumerate(session.data["data"])
+        AutomowerCalendar(coordinator, idx)
+        for idx, ent in enumerate(coordinator.session.data["data"])
     )
 
 
