@@ -19,10 +19,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
-    """Class to manage fetching BMW data."""
+    """Class to manage fetching Husqvarna data."""
 
     def __init__(self, hass: HomeAssistant, *, entry: ConfigEntry) -> None:
-        """Initialize account-wide BMW data updater."""
+        """Initialize data updater."""
         super().__init__(
             hass,
             _LOGGER,
@@ -46,8 +46,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
         )
 
     async def _async_update_data(self) -> None:
-        """Fetch data from BMW."""
-
+        """Fetch data from Husqvarna."""
         try:
             await self.session.connect()
         except TimeoutError as error:
@@ -62,7 +61,6 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
-
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
