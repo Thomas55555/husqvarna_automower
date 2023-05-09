@@ -8,8 +8,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from . import AutomowerDataUpdateCoordinator
 
 from .const import DOMAIN, HEADLIGHTMODES
 from .entity import AutomowerEntity
@@ -22,7 +20,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    _LOGGER.debug("session: %s", coordinator.session.data)
     async_add_entities(
         AutomowerSelect(coordinator, idx)
         for idx, ent in enumerate(coordinator.session.data["data"])
@@ -31,9 +28,7 @@ async def async_setup_entry(
     )
 
 
-class AutomowerSelect(
-    SelectEntity, AutomowerEntity, CoordinatorEntity[AutomowerDataUpdateCoordinator]
-):
+class AutomowerSelect(SelectEntity, AutomowerEntity):
     """Defining the Headlight Mode Select Entity."""
 
     _attr_options = HEADLIGHTMODES
@@ -46,11 +41,11 @@ class AutomowerSelect(
         super().__init__(session, idx)
         self._attr_unique_id = f"{self.mower_id}_headlight_mode"
 
-    # @property
-    # def available(self) -> bool:
-    #     """Return True if the device is available."""
-    #     available = self.get_mower_attributes()["metadata"]["connected"]
-    #     return available
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
 
     @property
     def current_option(self) -> str:

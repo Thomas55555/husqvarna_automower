@@ -14,14 +14,14 @@ DISABLE_LE = "disable_le"
 
 # Platforms
 PLATFORMS = [
-    #Platform.BINARY_SENSOR,
-    #Platform.CALENDAR,
-    #Platform.CAMERA,
-    #Platform.DEVICE_TRACKER,
-    #Platform.NUMBER,
+    Platform.BINARY_SENSOR,
+    Platform.CALENDAR,
+    Platform.CAMERA,
+    Platform.DEVICE_TRACKER,
+    Platform.NUMBER,
     Platform.SELECT,
-    #Platform.SENSOR,
-    #Platform.VACUUM,
+    Platform.SENSOR,
+    Platform.VACUUM,
 ]
 
 # Configuration and options
