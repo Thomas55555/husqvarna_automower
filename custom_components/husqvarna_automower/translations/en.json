@@ -17,7 +17,7 @@
             "init": {
                 "data": {
                     "enable_camera": "Enable Map Camera",
-                    "disable_le": "Disbale Low Energy Mode"
+                    "disable_le": "Disable Low Energy Mode"
                 },
                 "description": "Select Integration Options",
                 "title": "Husqvarna Automower Options"
