@@ -43,33 +43,33 @@
     "application_credentials": {
         "description": "Loo konto [Husqvarna developers portal]({oauth_creds_url}). Ühenda Authentication API ja Automower Connect API. Sea ümbersuunamise URI https://my.home-assistant.io/redirect/oauth. Kui sa pole veel seadistanud My HomeAssistant asukohta, sisesta see URL oma asukohaks {redirect_uri}"
     },
-	"entity": {
-		"sensor": {
-			"problem_list": {
-				"state": {
-					"off": "Väljas",
-					"unknown": "Teadmata",
-					"stopped": "Peatunud",
-					"stopped_in_garden": "Peatunud aias",
-					"not_applicable": "Pole kohalduv",
-					"none": "Puudub",
-					"week_schedule": "Nädala ajakava",
-					"park_override": "Parkimise tühistamine",
-					"sensor": "Ilmataimer",
-					"daily_limit": "Päevane limiit",
-					"fota": "Püsivara uuendamine",
-					"frost": "Härmatis"
-				}
-			},
-			"mode_list":{
-				"state": {
+    "entity": {
+        "sensor": {
+            "problem_list": {
+                "state": {
+                    "off": "Väljas",
+                    "unknown": "Teadmata",
+                    "stopped": "Peatunud",
+                    "stopped_in_garden": "Peatunud aias",
+                    "not_applicable": "Pole kohalduv",
+                    "none": "Puudub",
+                    "week_schedule": "Nädala ajakava",
+                    "park_override": "Parkimise tühistamine",
+                    "sensor": "Ilmataimer",
+                    "daily_limit": "Päevane limiit",
+                    "fota": "Püsivara uuendamine",
+                    "frost": "Härmatis"
+                }
+            },
+            "mode_list":{
+                "state": {
                     "main_area": "Peamine niiduala",
                     "secondary_area": "Teisene niiduala",
                     "home": "Laadimisjaam",
                     "demo": "Demo",
                     "unknown": "Teadmata"
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }
