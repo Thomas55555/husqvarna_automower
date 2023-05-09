@@ -265,7 +265,9 @@ async def async_setup_entry(
 class AutomowerSensor(SensorEntity, AutomowerEntity):
     """Defining the Automower Sensors with AutomowerSensorEntityDescription."""
 
-    def __init__(self, session, idx, description: AutomowerSensorEntityDescription) -> None:
+    def __init__(
+        self, session, idx, description: AutomowerSensorEntityDescription
+    ) -> None:
         """Set up AutomowerSensors."""
         super().__init__(session, idx)
         self.entity_description = description
