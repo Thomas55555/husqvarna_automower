@@ -19,7 +19,7 @@ from homeassistant.components.vacuum import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConditionErrorMessage
+from homeassistant.exceptions import ConditionErrorMessage, HomeAssistantError
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
@@ -316,6 +316,7 @@ class HusqvarnaAutomowerEntity(
             await self.coordinator.session.action(self.mower_id, payload, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
+            raise HomeAssistantError("Command not allowed") from exception
 
     async def async_schedule_selector(
         self,
@@ -374,6 +375,7 @@ class HusqvarnaAutomowerEntity(
                     _LOGGER.error(
                         "Command couldn't be sent to the command que: %s", exception
                     )
+                    raise HomeAssistantError("Command not allowed.") from exception
 
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""
@@ -383,3 +385,4 @@ class HusqvarnaAutomowerEntity(
             )
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
+            raise HomeAssistantError("Command not allowed.") from exception
