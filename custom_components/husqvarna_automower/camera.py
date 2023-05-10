@@ -67,7 +67,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         if self.entry.options.get(ENABLE_CAMERA, False):
             self.top_left_coord = self.entry.options.get(GPS_TOP_LEFT)
             self.bottom_right_coord = self.entry.options.get(GPS_BOTTOM_RIGHT)
-            self.session.register_data_callback(
+            self.coordinator.session.register_data_callback(
                 lambda data: self._generate_image(data), schedule_immediately=True
             )
         else:

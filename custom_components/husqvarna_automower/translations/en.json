@@ -28,7 +28,6 @@
                     "gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
                     "mower_img_path": "Path to the mower location image",
                     "map_img_path": "Path to the map image"
-
                 },
                 "description": "Camera Settings",
                 "title": "Husqvarna Automower Options"
@@ -43,33 +42,39 @@
     "application_credentials": {
         "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
     },
-	"entity": {
-		"sensor": {
-			"problem_list": {
-				"state": {
-					"off": "Off",
-					"unknown": "Unknown",
-					"stopped": "Stopped",
-					"stopped_in_garden": "Stopped in garden",
-					"not_applicable": "Not applicable",
-					"none": "None",
-					"week_schedule": "Week schedule",
-					"park_override": "Park override",
-					"sensor": "Weather timer",
-					"daily_limit": "Daily limit",
-					"fota": "Fota",
-					"frost": "Frost"
-				}
-			},
-			"mode_list":{
-				"state": {
+    "entity": {
+        "sensor": {
+            "problem_list": {
+                "state": {
+                    "off": "Off",
+                    "unknown": "Unknown",
+                    "stopped": "Stopped",
+                    "stopped_in_garden": "Stopped in garden",
+                    "not_applicable": "Not applicable",
+                    "none": "None",
+                    "week_schedule": "Week schedule",
+                    "park_override": "Park override",
+                    "sensor": "Weather timer",
+                    "daily_limit": "Daily limit",
+                    "fota": "Fota",
+                    "frost": "Frost"
+                }
+            },
+            "mode_list": {
+                "state": {
                     "main_area": "Main area",
                     "secondary_area": "Secondary area",
                     "home": "Home",
                     "demo": "Demo",
                     "unknown": "Unknown"
                 }
-			}
-		}
-	}
+            }
+        }
+    },
+    "issues": {
+        "wrong_scope": {
+            "title": "The scope of your token is wrong",
+            "description": "To use websocket and instant mower state update change it. For more details go here: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+        }
+    }
 }
