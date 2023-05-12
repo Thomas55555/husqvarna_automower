@@ -62,12 +62,10 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         self._image_bytes = None
         self._image_to_bytes()
 
-        self.session = session
-
         if self.entry.options.get(ENABLE_CAMERA, False):
             self.top_left_coord = self.entry.options.get(GPS_TOP_LEFT)
             self.bottom_right_coord = self.entry.options.get(GPS_BOTTOM_RIGHT)
-            self.session.register_data_callback(
+            self.coordinator.session.register_data_callback(
                 lambda data: self._generate_image(data), schedule_immediately=True
             )
         else:
@@ -97,7 +95,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     async def async_camera_image(
         self, width: Optional[int] = None, height: Optional[int] = None
     ) -> Optional[bytes]:
-        """Return the caerma image."""
+        """Return the camera image."""
         return self._image_bytes
 
     def _image_to_bytes(self):

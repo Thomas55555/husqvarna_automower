@@ -64,19 +64,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-    _LOGGER.debug("1")
     coordinator = AutomowerDataUpdateCoordinator(
         hass,
         entry=entry,
     )
-    _LOGGER.debug("2")
     await coordinator.async_config_entry_first_refresh()
-    _LOGGER.debug("2,5")
 
     hass.data.setdefault(DOMAIN, {})
-    _LOGGER.debug("4")
     hass.data[DOMAIN][entry.entry_id] = coordinator
-    _LOGGER.debug("5")
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
