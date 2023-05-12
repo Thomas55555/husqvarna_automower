@@ -11,6 +11,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.config_entry_oauth2_flow import (
     async_get_config_entry_implementation,
 )
+from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, DISABLE_LE
@@ -28,16 +29,23 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
             _LOGGER,
             name=DOMAIN,
         )
-        _LOGGER.debug("3")
         api_key = None
         ap_storage = hass.data.get("application_credentials")[DATA_STORAGE]
         ap_storage_data = ap_storage.__dict__["data"]
         for k in ap_storage_data:
             api_key = ap_storage_data[k]["client_id"]
         access_token = entry.data.get(CONF_TOKEN)
+        if not "amc:api" in access_token["scope"]:
+            async_create_issue(
+                hass,
+                DOMAIN,
+                "wrong_scope",
+                is_fixable=False,
+                severity=IssueSeverity.WARNING,
+                translation_key="wrong_scope",
+            )
         low_energy = not entry.options.get(DISABLE_LE)
         self.session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
-        _LOGGER.debug("coordinator: %s", self.session)
         self.session.register_token_callback(
             lambda token: hass.config_entries.async_update_entry(
                 entry,
@@ -64,19 +72,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-    _LOGGER.debug("1")
     coordinator = AutomowerDataUpdateCoordinator(
         hass,
         entry=entry,
     )
-    _LOGGER.debug("2")
     await coordinator.async_config_entry_first_refresh()
-    _LOGGER.debug("2,5")
 
     hass.data.setdefault(DOMAIN, {})
-    _LOGGER.debug("4")
     hass.data[DOMAIN][entry.entry_id] = coordinator
-    _LOGGER.debug("5")
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
