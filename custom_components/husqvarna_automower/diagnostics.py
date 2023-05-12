@@ -19,10 +19,10 @@ async def async_get_config_entry_diagnostics(
     hass: HomeAssistant, entry: ConfigEntry
 ) -> dict:
     """Return diagnostics of the config entry and mower data."""
-    session = hass.data[DOMAIN][entry.entry_id].data["data"]
+    coordinator = hass.data[DOMAIN][entry.entry_id]
     diag_data = {
         "config_entry": async_redact_data(entry.as_dict(), TO_REDACT),
-        "data_of_all_mowers": async_redact_data(session, TO_REDACT),
+        "data_of_all_mowers": async_redact_data(coordinator.data["data"], TO_REDACT),
     }
 
     return diag_data

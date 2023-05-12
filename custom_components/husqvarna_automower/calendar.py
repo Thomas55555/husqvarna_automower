@@ -213,6 +213,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         }
         payload = json.dumps(string)
         try:
-            await self.session.action(self.mower_id, payload, command_type)
+            await self.coordinator.session.action(self.mower_id, payload, command_type)
         except ClientResponseError as exception:
             _LOGGER.error("Command couldn't be sent to the command que: %s", exception)
