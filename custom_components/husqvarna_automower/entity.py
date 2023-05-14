@@ -34,7 +34,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
 
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
-        return self.mower["attributes"]
+        return self.coordinator.session.data["data"][self.idx]["attributes"]
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
