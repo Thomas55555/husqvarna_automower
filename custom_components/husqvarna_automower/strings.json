@@ -39,7 +39,7 @@
 		}
 	},
 	"application_credentials": {
-		"description": "Create an account on [Husqvarna develoeprs portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
+		"description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
 	},
 	"entity": {
 		"sensor": {
