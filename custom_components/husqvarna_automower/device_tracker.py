@@ -17,10 +17,17 @@ async def async_setup_entry(
 ) -> None:
     """Set up device_tracker platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        AutomowerTracker(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
-    )
+    entity_list = []
+    for idx, ent in enumerate(coordinator.session.data["data"]):
+        try:
+            coordinator.session.data["data"][idx]["attributes"]["positions"][0][
+                "latitude"
+            ]
+            entity_list.append(AutomowerTracker(coordinator, idx))
+        except IndexError:
+            pass
+
+    async_add_entities(entity_list)
 
 
 class AutomowerTracker(TrackerEntity, AutomowerEntity):
