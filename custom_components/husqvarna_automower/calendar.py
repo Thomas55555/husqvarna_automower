@@ -65,13 +65,18 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     ) -> list[CalendarEvent]:
         """Get all events in a specific time frame."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        lat = mower_attributes["positions"][0]["latitude"]
-        long = mower_attributes["positions"][0]["longitude"]
-        position = f"{lat}, {long}"
-        result = await hass.async_add_executor_job(self.geolocator.reverse, position)
         try:
-            self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
-        except Exception:
+            lat = mower_attributes["positions"][0]["latitude"]
+            long = mower_attributes["positions"][0]["longitude"]
+            position = f"{lat}, {long}"
+            result = await hass.async_add_executor_job(
+                self.geolocator.reverse, position
+            )
+            try:
+                self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
+            except Exception:
+                self.loc = None
+        except IndexError:
             self.loc = None
 
         even_list, next_event = self.get_next_event()
