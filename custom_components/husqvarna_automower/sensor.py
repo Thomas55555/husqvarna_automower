@@ -263,12 +263,18 @@ async def async_setup_entry(
                     coordinator.session.data["data"][idx]["attributes"]
                 )
                 if description.key == "cuttingHeight":
-                    if any(
-                        ele
-                        in coordinator.session.data["data"][idx]["attributes"][
-                            "system"
-                        ]["model"]
-                        for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+                    if (
+                        any(
+                            ele
+                            in coordinator.session.data["data"][idx]["attributes"][
+                                "system"
+                            ]["model"]
+                            for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+                        )
+                        and coordinator.session.data["data"][idx]["attributes"][
+                            "cuttingHeight"
+                        ]
+                        is not None
                     ):
                         entity_list.append(
                             AutomowerSensor(coordinator, idx, description)

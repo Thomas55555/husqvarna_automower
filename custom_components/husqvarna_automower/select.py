@@ -25,6 +25,8 @@ async def async_setup_entry(
         for idx, ent in enumerate(coordinator.session.data["data"])
         if not coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
         in ["550", "Ceora"]
+        and coordinator.session.data["data"][idx]["attributes"]["headlight"]["mode"]
+        is not None
     )
 
 
