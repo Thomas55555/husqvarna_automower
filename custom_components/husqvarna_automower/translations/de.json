@@ -33,7 +33,7 @@
 				    "daily_limit": "Tägliches limit",
 				    "fota": "FOTA",
 				    "frost": "Frost",
-				    "parked until further notice": "Bis auf weiters geparkt"
+				    "parked_until_further_notice": "Bis auf weiters geparkt"
 				}
 			},
 			"mode_list":{
