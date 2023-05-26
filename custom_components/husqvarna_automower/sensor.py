@@ -40,7 +40,7 @@ def get_problem(mower_attributes) -> dict:
     """Get the mower attributes of the current mower."""
     if mower_attributes["mower"]["state"] == "RESTRICTED":
         if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-            return "parked until further notice"
+            return "parked_until_further_notice"
         return mower_attributes["planner"]["restrictedReason"]
     if mower_attributes["mower"]["state"] in [
         "ERROR",
@@ -80,7 +80,7 @@ def problem_list() -> list:
         "daily_limit",
         "fota",
         "frost",
-        "parked until further notice",
+        "parked_until_further_notice",
     ]
     return error_list_low + other_reasons
 
