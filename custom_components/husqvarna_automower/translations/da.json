@@ -18,7 +18,7 @@
                 "data": {
                     "enable_camera": "Aktiver kort-kamera"
                 },
-                "description": "Aktiver kort-kamera",
+                "description": "Vælg indstillinger for integrationen",
                 "title": "Husqvarna Automower indstillinger"
             },
             "config": {
