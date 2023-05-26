@@ -41,5 +41,41 @@
     },
     "application_credentials": {
         "description": "Lav en bruger på [Husqvarna developers portal]({oauth_creds_url}). Forbind Authentication API'en og Automower Connect API'en. Som redirect-URI bruges https://my.home-assistant.io/redirect/oauth. Hvis du endnu ikke har opsat My HomeAssistant så brug i stedet denne URL: {redirect_uri}"
+    },
+    "entity": {
+        "sensor": {
+            "problem_list": {
+                "state": {
+                    "off": "Slukket",
+                    "unknown": "Ukendt",
+                    "stopped": "Stoppet",
+                    "stopped_in_garden": "Stoppet i haven",
+                    "not_applicable": "Ikke relevant",
+                    "none": "Ingen",
+                    "week_schedule": "Ugeplan",
+                    "park_override": "Parkeret manuelt",
+                    "sensor": "Vejrtimer",
+                    "daily_limit": "Daglig grænse",
+                    "fota": "FOTA",
+                    "frost": "Frostbeskyttelse",
+                    "parked_until_further_notice": "Parkeret indtil videre"
+                }
+            },
+            "mode_list": {
+                "state": {
+                    "main_area": "Primært område",
+                    "secondary_area": "Sekundært område",
+                    "home": "Hjemme",
+                    "demo": "Demo",
+                    "unknown": "Ukendt"
+                }
+            }
+        }
+    },
+    "issues": {
+        "wrong_scope": {
+            "title": "Din tokens gyldighedsområde er forkert",
+            "description": "Ret det for at bruge websocket og få opdateringer om plæneklipperens tilstand med det samme. Se flere detaljer her: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+        }
     }
 }
