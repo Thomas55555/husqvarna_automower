@@ -57,7 +57,8 @@
                     "sensor": "Weather timer",
                     "daily_limit": "Daily limit",
                     "fota": "Fota",
-                    "frost": "Frost"
+                    "frost": "Frost",
+                    "parked_until_further_notice": "Parked until further notice"
                 }
             },
             "mode_list": {

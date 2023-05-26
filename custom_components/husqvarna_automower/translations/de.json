@@ -21,28 +21,29 @@
 		"sensor": {
 			"problem_list": {
 				"state": {
-                    "off": "Aus",
-                    "unknown": "Unbekannt",
-                    "stopped": "Angehalten",
-                    "stopped_in_garden": "Im Garten angehalten",
-                    "not_applicable": "Nicht anwendbar",
-                    "none": "Nichts",
-                    "week_schedule": "Wochenplaner",
-                    "park_override": "Parken erzwungen",
-                    "sensor": "Wetter timer",
-                    "daily_limit": "Tägliches limit",
-                    "fota": "FOTA",
-                    "frost": "Frost"
+				    "off": "Aus",
+				    "unknown": "Unbekannt",
+				    "stopped": "Angehalten",
+				    "stopped_in_garden": "Im Garten angehalten",
+				    "not_applicable": "Nicht anwendbar",
+				    "none": "Nichts",
+				    "week_schedule": "Wochenplaner",
+				    "park_override": "Parken erzwungen",
+				    "sensor": "Wetter timer",
+				    "daily_limit": "Tägliches limit",
+				    "fota": "FOTA",
+				    "frost": "Frost",
+				    "parked_until_further_notice": "Bis auf weiters geparkt"
 				}
 			},
 			"mode_list":{
 				"state": {
-                    "main_area": "Hauptbereich",
-                    "secondary_area": "Zweitbereich",
-                    "home": "In der Ladestation",
-                    "demo": "Demo",
-                    "unknown": "Unbekannt"
-                }
+				    "main_area": "Hauptbereich",
+				    "secondary_area": "Zweitbereich",
+				    "home": "In der Ladestation",
+				    "demo": "Demo",
+				    "unknown": "Unbekannt"
+				}
 			}
 		}
 	}
