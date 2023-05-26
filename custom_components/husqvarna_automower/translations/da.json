@@ -8,7 +8,7 @@
         },
         "abort": {
             "missing_configuration": "Komponenten er ikke konfigureret. Følg venligst dokumentationen.",
-            "reauth_successful": "Genautentificeringen var succesfuld",
+            "reauth_successful": "Genautentificeringen lykkedes",
             "single_instance_allowed": "Kun én konfigurering af Husqvarna Automower er tilladt."
         }
     },
