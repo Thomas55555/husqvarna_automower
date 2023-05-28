@@ -111,7 +111,9 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     def turn_off(self):
         """Turn the camera off."""
-        self.coordinator.session.unregister_data_callback(lambda data: self._generate_image(data))
+        self.coordinator.session.unregister_data_callback(
+            lambda data: self._generate_image(data)
+        )
 
     @property
     def supported_features(self) -> int:
