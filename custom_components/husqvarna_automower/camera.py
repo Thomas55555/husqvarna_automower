@@ -46,7 +46,6 @@ async def async_setup_entry(
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     """Representation of the AutomowerCamera element."""
 
-    _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
     _attr_name = "Map"
 
