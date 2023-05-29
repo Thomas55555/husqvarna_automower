@@ -46,7 +46,6 @@ async def async_setup_entry(
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     """Representation of the AutomowerCamera element."""
 
-    _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
     _attr_name = "Map"
 
@@ -105,13 +104,15 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     def turn_on(self):
         """Turn the camera on."""
-        self.session.register_data_callback(
+        self.coordinator.session.register_data_callback(
             lambda data: self._generate_image(data), schedule_immediately=True
         )
 
     def turn_off(self):
         """Turn the camera off."""
-        self.session.unregister_data_callback(lambda data: self._generate_image(data))
+        self.coordinator.session.unregister_data_callback(
+            lambda data: self._generate_image(data)
+        )
 
     @property
     def supported_features(self) -> int:
