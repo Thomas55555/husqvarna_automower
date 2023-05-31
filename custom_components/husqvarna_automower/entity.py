@@ -55,7 +55,9 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
     async def async_will_remove_from_hass(self) -> None:
         """Call when entity is being removed from Home Assistant."""
         await super().async_will_remove_from_hass()
-        self.session.unregister_data_callback(lambda _: self.async_write_ha_state())
+        self.coordinator.session.unregister_data_callback(
+            lambda _: self.async_write_ha_state()
+        )
 
     @property
     def device_info(self) -> DeviceInfo:
