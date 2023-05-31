@@ -98,7 +98,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.config_entry = config_entry
 
         self.camera_enabled = self.config_entry.options.get(ENABLE_CAMERA, False)
-        self.disable_le = self.config_entry.options.get(DISABLE_LE, True)
         self.map_top_left_coord = self.config_entry.options.get(GPS_TOP_LEFT, "")
         if self.map_top_left_coord != "":
             self.map_top_left_coord = ",".join(
@@ -128,13 +127,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 self.options[ENABLE_CAMERA] = user_input.get(ENABLE_CAMERA)
                 return await self.async_step_config()
             self.options[ENABLE_CAMERA] = user_input.get(ENABLE_CAMERA)
-            self.options[DISABLE_LE] = user_input.get(DISABLE_LE)
             return await self._update_config()
 
         data_schema = vol.Schema(
             {
                 vol.Required(ENABLE_CAMERA, default=self.camera_enabled): bool,
-                vol.Required(DISABLE_LE, default=self.disable_le): bool,
             }
         )
         return self.async_show_form(step_id="init", data_schema=data_schema)

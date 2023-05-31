@@ -44,7 +44,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 severity=IssueSeverity.WARNING,
                 translation_key="wrong_scope",
             )
-        low_energy = not entry.options.get(DISABLE_LE)
+        low_energy = False
         self.session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
         self.session.register_token_callback(
             lambda token: hass.config_entries.async_update_entry(
