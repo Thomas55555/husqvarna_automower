@@ -61,7 +61,7 @@
                     "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
 				}
 			},
-			"mode_list":{
+			"mode_list": {
 				"state": {
                     "main_area": "Peamine niiduala",
                     "secondary_area": "Teisene niiduala",
@@ -81,7 +81,14 @@
         "camera": {
             "quirk": {
                 "state": {
-                    "cleaning": "Niidab"
+                    "cleaning": "Niidab",
+					"docked": "Dokitud",
+					"error": "Viga",
+					"idle": "[%key:common::state::idle%]",
+					"off": "[%key:common::state::off%]",
+					"on": "[%key:common::state::on%]",
+					"paused": "[%key:common::state::paused%]",
+					"returning": "Läheb laadimisjaama"
                 }
             }
         }
