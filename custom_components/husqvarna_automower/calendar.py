@@ -124,6 +124,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         location=self.loc,
                         rrule=f"FREQ=WEEKLY;BYDAY={day_list}",
                         uid=task,
+                        recurrence_id=f"Recure{task}",
                     )
                     if self._event.start < self._next_event.start:
                         self._next_event = self._event
