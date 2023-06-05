@@ -70,7 +70,21 @@
                     "unknown": "Teadmata"
                 }
 			}
-		}
+		},
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Niidab"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Niidab"
+                }
+            }
+        }
 	},
     "issues": {
         "wrong_scope": {

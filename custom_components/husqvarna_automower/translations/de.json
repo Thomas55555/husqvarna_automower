@@ -45,6 +45,20 @@
 				    "unknown": "Unbekannt"
 				}
 			}
-		}
+		},
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Mähen"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Mähen"
+                }
+            }
+        }
 	}
 }

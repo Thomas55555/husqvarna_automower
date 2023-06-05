@@ -68,12 +68,26 @@
 					"unknown": "Unknown"
 				}
 			}
+		},
+		"vacuum": {
+			"quirk": {
+				"state": {
+					"cleaning": "Mowing"
+				}
+			}
+		},
+		"camera": {
+			"quirk": {
+				"state": {
+					"cleaning": "Mowing"
+				}
+			}
 		}
 	},
-    "issues": {
-        "wrong_scope": {
-            "title": "The scope of your token is wrong",
-            "description": "To use websocket and instant mower state update change it. For more details go here: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
-        }
-    }
+	"issues": {
+		"wrong_scope": {
+			"title": "The scope of your token is wrong",
+			"description": "To use websocket and instant mower state update change it. For more details go here: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+		}
+	}
 }

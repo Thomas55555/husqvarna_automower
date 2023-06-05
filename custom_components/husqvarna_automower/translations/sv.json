@@ -41,5 +41,21 @@
     },
     "application_credentials": {
       "description": "Skapa ett konto på [Husqvarna developers portal]({oauth_creds_url}). Anslut Authentication API and Automower Connect API. Som redirect-URI anges https://my.home-assistant.io/redirect/oauth. Om du inte har konfigurerat My HomeAssistant, ange istället denna URL: {redirect_uri}"
+    },
+    "entity": {
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Klipper"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Klipper"
+                }
+            }
+        }
     }
 }
