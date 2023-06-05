@@ -70,6 +70,20 @@
                     "unknown": "Ukendt"
                 }
             }
+        },
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Slår græs"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Slår græs"
+                }
+            }
         }
     },
     "issues": {

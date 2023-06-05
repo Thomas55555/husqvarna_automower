@@ -70,6 +70,20 @@
                     "unknown": "Unknown"
                 }
             }
+        },
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Mowing"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Mowing"
+                }
+            }
         }
     },
     "issues": {

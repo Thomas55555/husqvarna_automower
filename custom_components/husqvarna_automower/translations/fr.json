@@ -15,5 +15,21 @@
         "info": {
             "can_reach_server": "Joindre le serveur de jetons Husqvarna."
         }
+    },
+    "entity": {
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Tonte"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Tonte"
+                }
+            }
+        }
     }
 }
