@@ -1,5 +1,4 @@
 """Test for diagnostics module."""
-import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -9,8 +8,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from ..const import DOMAIN
 from ..diagnostics import TO_REDACT, async_get_config_entry_diagnostics
 from .const import AUTOMER_SM_CONFIG, AUTOMOWER_CONFIG_DATA
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio

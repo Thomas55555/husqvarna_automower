@@ -1,8 +1,6 @@
 """Tests for config flow module."""
-import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
@@ -37,8 +35,6 @@ from .const import (
     MWR_ONE_ID,
     MWR_TWO_ID,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 def get_suggested(schema, key):

@@ -1,7 +1,6 @@
 """Tests for camera module."""
 import asyncio
 import io
-import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -24,8 +23,6 @@ from .const import (
     MWR_TWO_ID,
     MWR_TWO_IDX,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio

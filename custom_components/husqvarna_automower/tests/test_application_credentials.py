@@ -1,24 +1,23 @@
-"""Tests for entity module."""
-
+"""Tests for application credentials module."""
 from copy import deepcopy
-from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from aioautomower import AutomowerSession
-from dateutil import tz
+from homeassistant.components.application_credentials import AuthorizationServer
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from ..application_credentials import (
+    async_get_authorization_server,
+    async_get_description_placeholders,
+)
 from ..const import DOMAIN
-from ..entity import AutomowerEntity
 from .const import (
     AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
     AUTOMOWER_SM_SESSION_DATA,
-    MWR_ONE_ID,
-    MWR_ONE_IDX,
 )
 
 
@@ -50,6 +49,7 @@ async def setup_entity(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            action=AsyncMock(),
         ),
     ) as automower_session_mock:
         automower_coordinator_mock = MagicMock(
@@ -65,16 +65,17 @@ async def setup_entity(hass: HomeAssistant):
 
 
 @pytest.mark.asyncio
-async def test_entity_datetime_object(hass: HomeAssistant):
-    """test entity datetime object."""
+async def test_application_credentials(hass: HomeAssistant):
+    """test application credentials."""
     await setup_entity(hass)
-    coordinator = hass.data[DOMAIN]["automower_test"]
-    entity = AutomowerEntity(coordinator, MWR_ONE_IDX)
 
-    assert entity.idx == MWR_ONE_IDX
-    assert entity.mower_id == MWR_ONE_ID
+    with patch(
+        "custom_components.husqvarna_automower.application_credentials.AuthorizationServer",
+        MagicMock(spec=AuthorizationServer),
+    ) as mock_auth_server:
+        await async_get_authorization_server(hass)
+        mock_auth_server.assert_called_once()
 
-    assert entity.datetime_object(1685991600000) == datetime(
-        2023, 6, 5, 19, 0, tzinfo=tz.gettz("US/Pacific")
-    )
-    assert entity.datetime_object(0) is None
+    result = await async_get_description_placeholders(hass)
+    assert result["oauth_creds_url"] == "https://developer.husqvarnagroup.cloud/login"
+    assert "redirect_uri" in result

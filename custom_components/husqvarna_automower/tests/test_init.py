@@ -1,5 +1,4 @@
 """Tests for init module."""
-import logging
 from asyncio.exceptions import TimeoutError
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -21,8 +20,6 @@ from .const import (
     AUTOMOWER_CONFIG_DATA_BAD_SCOPE,
     AUTOMOWER_SM_SESSION_DATA,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def configure_application_credentials(hass: HomeAssistant):

@@ -1,5 +1,4 @@
 """Tests for sensor module."""
-import logging
 from copy import deepcopy
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -21,8 +20,6 @@ from .const import (
     MWR_ONE_IDX,
     NO_ZONE_PNT,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio

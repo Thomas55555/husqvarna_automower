@@ -1,5 +1,4 @@
 """Tests for device tracker module."""
-import logging
 from copy import deepcopy
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -20,8 +19,6 @@ from .const import (
     MWR_ONE_IDX,
 )
 from .test_init import configure_application_credentials
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio
