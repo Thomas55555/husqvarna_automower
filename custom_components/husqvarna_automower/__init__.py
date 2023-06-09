@@ -8,13 +8,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
-from homeassistant.helpers.config_entry_oauth2_flow import (
-    async_get_config_entry_implementation,
-)
 from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, DISABLE_LE
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +32,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator[None]):
         for k in ap_storage_data:
             api_key = ap_storage_data[k]["client_id"]
         access_token = entry.data.get(CONF_TOKEN)
-        if not "amc:api" in access_token["scope"]:
+        if "amc:api" not in access_token["scope"]:
             async_create_issue(
                 hass,
                 DOMAIN,

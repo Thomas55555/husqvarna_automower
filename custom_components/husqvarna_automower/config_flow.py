@@ -11,7 +11,6 @@ from homeassistant.helpers import config_entry_oauth2_flow
 
 from .const import (
     DOMAIN,
-    DISABLE_LE,
     ENABLE_CAMERA,
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,

@@ -191,9 +191,9 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             event["rrule"]
         except KeyError as exc:
             raise vol.Invalid("Only reccuring events are allowed") from exc
-        if not "WEEKLY" in event["rrule"]:
+        if "WEEKLY" not in event["rrule"]:
             raise vol.Invalid("Please select weekly")
-        if not "BYDAY" in event["rrule"]:
+        if "BYDAY" not in event["rrule"]:
             raise vol.Invalid("Please select day(s)")
         rr_list = event["rrule"].split(";")
         days = rr_list[1].lstrip("BYDAY=")

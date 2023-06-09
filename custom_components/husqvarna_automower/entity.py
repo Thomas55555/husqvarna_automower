@@ -3,12 +3,11 @@
 from datetime import datetime
 import logging
 
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.util import dt as dt_util
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, HUSQVARNA_URL
 from . import AutomowerDataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 
 _LOGGER = logging.getLogger(__name__)

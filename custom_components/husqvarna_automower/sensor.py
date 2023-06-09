@@ -204,7 +204,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: data["battery"]["batteryPercent"],
         available_fn=lambda data: False
         if (data["battery"]["batteryPercent"] == 0)
-        and (data["metadata"]["connected"] == False)
+        and (data["metadata"]["connected"] is False)
         else True,
     ),
     AutomowerSensorEntityDescription(
