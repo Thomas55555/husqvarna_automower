@@ -1,7 +1,8 @@
 """Creates a sensor entity for the mower."""
+import json
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -14,8 +15,20 @@ from homeassistant.const import PERCENTAGE, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from shapely.geometry import Point, Polygon
 
-from .const import DOMAIN, ERRORCODES, NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
+from .const import (
+    CONF_ZONES,
+    DOMAIN,
+    ERROR_STATES,
+    ERRORCODES,
+    HOME_LOCATION,
+    NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT,
+    ZONE_COORD,
+    ZONE_ID,
+    ZONE_MOWERS,
+    ZONE_NAME,
+)
 from .entity import AutomowerEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,11 +55,7 @@ def get_problem(mower_attributes) -> dict:
         if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
             return "parked_until_further_notice"
         return mower_attributes["planner"]["restrictedReason"]
-    if mower_attributes["mower"]["state"] in [
-        "ERROR",
-        "FATAL_ERROR",
-        "ERROR_AT_POWER_UP",
-    ]:
+    if mower_attributes["mower"]["state"] in ERROR_STATES:
         return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
     if mower_attributes["mower"]["state"] in [
         "UNKNOWN",
@@ -204,7 +213,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         value_fn=lambda data: data["battery"]["batteryPercent"],
         available_fn=lambda data: False
         if (data["battery"]["batteryPercent"] == 0)
-        and (data["metadata"]["connected"] == False)
+        and (data["metadata"]["connected"] is False)
         else True,
     ),
     AutomowerSensorEntityDescription(
@@ -258,6 +267,7 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
     for idx, ent in enumerate(coordinator.session.data["data"]):
+        entity_list.append(AutomowerZoneSensor(coordinator, idx, entry))
         for description in SENSOR_TYPES:
             try:
                 description.value_fn(
@@ -284,8 +294,69 @@ async def async_setup_entry(
                     entity_list.append(AutomowerSensor(coordinator, idx, description))
             except KeyError:
                 pass
-
     async_add_entities(entity_list)
+
+
+class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
+    """Define the AutomowerZoneSensor."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, coordinator, idx, entry):
+        """Initialize the zone object."""
+        super().__init__(coordinator, idx)
+        self._attr_name = "Zone Sensor"
+        self._attr_unique_id = f"{self.mower_id}_zone_sensor"
+        self.entry = entry
+        self.zones = self._load_zones()
+        self.home_location = self.entry.options.get(self.mower_id, {}).get(
+            HOME_LOCATION, None
+        )
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
+
+    def _load_zones(self):
+        """Load zones from a config entry."""
+        zones = json.loads(self.entry.options.get(CONF_ZONES, "{}"))
+        if not isinstance(zones, dict):
+            return {}
+        sel_zones = {}
+        for zone_id, zone in zones.items():
+            if self.mower_id in zone.get(ZONE_MOWERS):
+                sel_zones[zone_id] = zone
+
+        return sel_zones
+
+    def _find_current_zone(self):
+        """Find current zone."""
+        if self._is_home and self.home_location:
+            self.zone = {ZONE_NAME: "Home"}
+            self.zone_id = "home"
+            return
+
+        lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
+        lon = AutomowerEntity.get_mower_attributes(self)["positions"][0]["longitude"]
+        location = Point(lat, lon)
+        for zone_id, zone in self.zones.items():
+            zone_poly = Polygon(zone.get(ZONE_COORD))
+            if zone_poly.contains(location):
+                self.zone = zone
+                self.zone_id = zone_id
+                return
+        self.zone = {ZONE_NAME: "Unknown"}
+        self.zone_id = "unknown"
+
+    @property
+    def native_value(self) -> str:
+        """Return a the current zone of the mower."""
+        self._find_current_zone()
+        return self.zone.get(ZONE_NAME)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return the specific state attributes of this mower."""
+        return {ZONE_ID: self.zone_id}
 
 
 class AutomowerSensor(SensorEntity, AutomowerEntity):

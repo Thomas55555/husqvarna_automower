@@ -14,25 +14,59 @@
 	},
 	"options": {
 		"step": {
-			"init": {
-				"data": {
-					"enable_camera": "Enable Map Camera"
+			"select": {
+				"menu_options": {
+					"camera_select": "Configure Map Camera",
+					"le_init": "Configure Low Energy Mode",
+					"geofence_init": "Configure Zones"
 				},
-				"description": "Enable Map Camera",
+				"description": "Select Config Option",
 				"title": "Husqvarna Automower Options"
 			},
-			"config": {
+			"le_init": {
 				"data": {
+					"disable_le": "Disable Low Energy Mode."
+				},
+				"description": "Set Low Energy Mode",
+				"title": "Husqvarna Automower Options"
+			},
+			"zone_edit": {"data": {
+				"name": "Zone Name",
+				"zone_coordinates": "Zone Coordinates lat,long;lat,long...",
+				"display": "Show zone on map camera",
+				"color": "Zone RGB color",
+				"delete": "Delete this zone"
+				},
+				"description": "Configure Zone",
+				"title": "Husqvarna Automower Options"
+			},
+			"camera_config": {
+				"data": {
+					"enable_camera": "Enable Map Camera",
 					"gps_top_left": "GPS Coordinates of the Top Left Image Corner",
 					"gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
 					"mower_img_path": "Path to the mower location image",
-					"map_img_path": "Path to the map image"
+					"map_img_path": "Path to the map image",
+					"map_path_color": "Path RGB color",
+					"map_img_rotation": "Amount, in degrees, image is rotated from true North",
+					"home_location": "GPS Coordinates of the charging station."
 				},
 				"description": "Camera Settings",
 				"title": "Husqvarna Automower Options"
 			}
+		},
+		"error": {
+			"invalid_str": "Lat and Lon required, usa a comma to seperate",
+			"not_wgs84": "Coordinates are not valid, not in WGS84 datum",
+			"cant_parse": "Coordinates are not valid, lat and lon sperated by a comma in signed degree format",
+			"not_file": "Invalid path, not a file",
+			"too_few_points": "Must have atleast 3 points to define a zone",
+			"points_match": "Top Left and Bottom Right coordinates can't be the same",
+			"not_image": "Seleted file is not a valid image",
+			"color_error": "Values are RGB, seperated by a comma, 0-255",
+			"rotation_error": "Value is in degrees and must be between -360 and 360"
 		}
-	},
+	  },
 	"system_health": {
 		"info": {
 			"can_reach_server": "Reach Husqvarna Token Server"

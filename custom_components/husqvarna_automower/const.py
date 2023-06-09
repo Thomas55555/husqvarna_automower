@@ -1,5 +1,6 @@
 """The constants for the Husqvarna Automower integration."""
 from homeassistant.const import Platform
+from shapely.geometry import Polygon
 
 # Base component constants
 NAME = "husqvarna_automower"
@@ -32,13 +33,33 @@ CONF_TOKEN_TYPE = "token_type"
 CONF_REFRESH_TOKEN = "refresh_token"
 ACCESS_TOKEN_RAW = "access_token_raw"
 POSITIONS = "positions"
+HOME_LOCATION = "home_location"
 
 # Camera configuration
+SEL_CAMERA = "selected_camera"
 ENABLE_CAMERA = "enable_camera"
 GPS_TOP_LEFT = "gps_top_left"
 GPS_BOTTOM_RIGHT = "gps_bottom_right"
 MOWER_IMG_PATH = "mower_img_path"
 MAP_IMG_PATH = "map_img_path"
+MAP_IMG_ROTATION = "map_img_rotation"
+MAP_PATH_COLOR = "map_path_color"
+ADD_CAMERAS = "additional_mowers"
+
+
+# Zone configuration
+CONF_ZONES = "configured_zones"
+ZONE_COORD = "zone_coordinates"
+ZONE_NAME = "name"
+ZONE_DISPLAY = "display"
+ZONE_COLOR = "color"
+ZONE_DEL = "delete"
+ZONE_SEL = "selected_zone"
+ZONE_NEW = "new"
+ZONE_ID = "zone_id"
+ZONE_FINISH = "save"
+ZONE_MOWERS = "sel_mowers"
+LAT_LON_BOUNDS = Polygon.from_bounds(xmin=-90.0, ymin=-180.0, xmax=90.0, ymax=180.0)
 
 
 # Defaults
@@ -54,6 +75,8 @@ If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
+
+ERROR_STATES = ["ERROR", "FATAL_ERROR", "ERROR_AT_POWER_UP"]
 
 # Errorcodes
 ERRORCODES = {
@@ -253,3 +276,32 @@ NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT = ["405", "415", "435", "544", "546", "55
 CHANGING_CUTTING_HEIGHT_SUPPORT = list(
     set(ELECTRONIC_CUTTING_HEIGHT_SUPPORT) - set(NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT)
 )
+
+MWR_STATE_TO_STATUS = {
+    "UNKNOWN": "Unknown",
+    "NOT_APPLICABLE": "Not applicable",
+    "PAUSED": "Paused",
+    "WAIT_UPDATING": "Updating",
+    "WAIT_POWER_UP": "Powering up",
+    "OFF": "Off",
+    "STOPPED": "Stopped",
+}
+
+MWR_ACTIVITY_TO_STATUS = {
+    "UNKNOWN": "Unknown",
+    "NOT_APPLICABLE": "Not applicable",
+    "MOWING": "Mowing",
+    "GOING_HOME": "Going to charging station",
+    # "CHARGING": f"Charging{next_start_short}"
+    "LEAVING": "Leaving charging station",
+    "PARKED_IN_CS": "Parked",
+    "STOPPED_IN_GARDEN": "Stopped",
+}
+
+MWR_RES_REASON_TO_STATUS = {
+    # "WEEK_SCHEDULE": f"Schedule{next_start_short}"
+    "PARK_OVERRIDE": "Park override",
+    "SENSOR": "Weather timer",
+    "DAILY_LIMIT": "Daily limit",
+    "NOT_APPLICABLE": "Parked until further notice",
+}

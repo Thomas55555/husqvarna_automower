@@ -11,3 +11,6 @@ secrets.yaml
 __pycache__/
 deps/
 !.github/
+custom_components/husqvarna_automower/tests/output/*.png
+*.lock
+coverage.xml

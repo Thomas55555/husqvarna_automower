@@ -3,7 +3,6 @@ import json
 import logging
 
 from aiohttp import ClientResponseError
-
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import TIME_MINUTES
