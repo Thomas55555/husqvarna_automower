@@ -16,7 +16,7 @@ from .const import DOMAIN, HUSQVARNA_URL
 _LOGGER = logging.getLogger(__name__)
 
 
-class AutomowerEntity(CoordinatorEntity):
+class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
     """Defining the Automower Basic Entity."""
 
     _attr_has_entity_name = True
