@@ -69,6 +69,20 @@
                     "unknown": "Desconocido"
                 }
             }
+        },
+        "vacuum": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Segando"
+                }
+            }
+        },
+        "camera": {
+            "quirk": {
+                "state": {
+                    "cleaning": "Segando"
+                }
+            }
         }
     }
 }
