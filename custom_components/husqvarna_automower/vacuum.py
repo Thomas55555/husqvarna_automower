@@ -26,6 +26,7 @@ from homeassistant.helpers.storage import Store
 
 from .const import (
     DOMAIN,
+    ERROR_ACTIVITIES,
     ERROR_STATES,
     ERRORCODES,
     MWR_ACTIVITY_TO_STATUS,
@@ -127,11 +128,7 @@ class HusqvarnaAutomowerStateMixin(object):
                 "STOPPED",
                 "OFF",
             ]
-        ) or mower_attributes["mower"]["activity"] in [
-            "STOPPED_IN_GARDEN",
-            "UNKNOWN",
-            "NOT_APPLICABLE",
-        ]:
+        ) or mower_attributes["mower"]["activity"] in ERROR_ACTIVITIES:
             return STATE_ERROR
 
     @property

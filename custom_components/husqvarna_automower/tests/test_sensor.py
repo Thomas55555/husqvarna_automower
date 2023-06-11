@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN, NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT, ZONE_ID
-from ..sensor import AutomowerZoneSensor, get_problem
+from ..sensor import AutomowerZoneSensor, get_problem, SENSOR_TYPES
 from .const import (
     AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
@@ -138,6 +138,15 @@ async def test_zone_sensor_bad_json(hass: HomeAssistant):
 async def test_sensors_no_cut(hass: HomeAssistant):
     """test sensors if cutting height is missing."""
     config_entry = await setup_zone_sensor(hass, enable_cut=False)
+
+@pytest.mark.asyncio
+async def test_statistics_sensors(hass: HomeAssistant):
+    """test statistics sensors."""
+    TEST_SENSOR_TYPES = deepcopy(SENSOR_TYPES)
+    for s in TEST_SENSOR_TYPES:
+        s.entity_registry_enabled_default = True
+    with patch("custom_components.husqvarna_automower.sensor.SENSOR_TYPES", TEST_SENSOR_TYPES):
+        config_entry = await setup_zone_sensor(hass)
 
 
 @pytest.mark.asyncio

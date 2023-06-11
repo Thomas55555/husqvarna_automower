@@ -77,6 +77,7 @@ If you have any issues with this you need to open an issue here:
 """
 
 ERROR_STATES = ["ERROR", "FATAL_ERROR", "ERROR_AT_POWER_UP"]
+ERROR_ACTIVITIES = ["STOPPED_IN_GARDEN", "UNKNOWN", "NOT_APPLICABLE"]
 
 # Errorcodes
 ERRORCODES = {
@@ -292,14 +293,12 @@ MWR_ACTIVITY_TO_STATUS = {
     "NOT_APPLICABLE": "Not applicable",
     "MOWING": "Mowing",
     "GOING_HOME": "Going to charging station",
-    # "CHARGING": f"Charging{next_start_short}"
     "LEAVING": "Leaving charging station",
     "PARKED_IN_CS": "Parked",
     "STOPPED_IN_GARDEN": "Stopped",
 }
 
 MWR_RES_REASON_TO_STATUS = {
-    # "WEEK_SCHEDULE": f"Schedule{next_start_short}"
     "PARK_OVERRIDE": "Park override",
     "SENSOR": "Weather timer",
     "DAILY_LIMIT": "Daily limit",

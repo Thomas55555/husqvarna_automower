@@ -13,7 +13,7 @@ from ..application_credentials import (
     async_get_authorization_server,
     async_get_description_placeholders,
 )
-from ..const import DOMAIN
+from ..const import DOMAIN, HUSQVARNA_URL
 from .const import (
     AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
@@ -77,5 +77,5 @@ async def test_application_credentials(hass: HomeAssistant):
         mock_auth_server.assert_called_once()
 
     result = await async_get_description_placeholders(hass)
-    assert result["oauth_creds_url"] == "https://developer.husqvarnagroup.cloud/login"
+    assert result["oauth_creds_url"] == HUSQVARNA_URL
     assert "redirect_uri" in result

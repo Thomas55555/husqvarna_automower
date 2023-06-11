@@ -21,6 +21,7 @@ from .const import (
     CONF_ZONES,
     DOMAIN,
     ERROR_STATES,
+    ERROR_ACTIVITIES,
     ERRORCODES,
     HOME_LOCATION,
     NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT,
@@ -63,11 +64,7 @@ def get_problem(mower_attributes) -> dict:
         "OFF",
     ]:
         return mower_attributes["mower"]["state"]
-    if mower_attributes["mower"]["activity"] in [
-        "STOPPED_IN_GARDEN",
-        "UNKNOWN",
-        "NOT_APPLICABLE",
-    ]:
+    if mower_attributes["mower"]["activity"] in ERROR_ACTIVITIES:
         return mower_attributes["mower"]["activity"]
     return None
 
