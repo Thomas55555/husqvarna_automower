@@ -1,18 +1,8 @@
 # Home Assistant integration for Husqvarna Automower
 
-[![codecov](https://codecov.io/gh/prairiesnpr/husqvarna_automower/branch/dev/graph/badge.svg?token=L3T457D0WJ)](https://codecov.io/gh/prairiesnpr/husqvarna_automower)
-
-# This fork varies from @Thomas55555 as follows
-
-## Note: if you are using @Thomas55555's repo or an earlier version of this repo (7ef7028 and earlier), the way options are stored have changed and will need to be entered again.
-
-- Adds a zone sensor to track the zone the mower is in.  This is configurable and supports polygon zones.
-- Uses a binary error sensor that has an error number and state for attributes.
-- Better mower location icon
-- Allows setting a home position, this is where the mower charger is located, when the mower is home the location of the zone will indicate home and the map camera will show the mower at the charger instead of it's reported position.
-- Zones can be given a color and drawn on the map camera.
-- Path color for map camera is configurable.
-- Supports multiple mowers with a seperate zone sensor and map camera for each (Not tested, only have one Automower)
+![Maintenance](https://img.shields.io/maintenance/yes/2023.svg)
+[![buy me a coffee](https://img.shields.io/badge/If%20you%20like%20it-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/Thomas55555)
+[![downloads](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)](https://img.shields.io/github/downloads/Thomas55555/husqvarna_automower/total.svg)
 
 Custom component to support Automower.
 
@@ -264,7 +254,7 @@ Let your mower only mow during daytime to protect wildlife. Schedule is updated 
     target:
       entity_id: vacuum.haffi
  ```
- 
+
 ## Debugging
 
 To enable debug logging for this integration and related libraries you can control this in your Home Assistant `configuration.yaml` file.
