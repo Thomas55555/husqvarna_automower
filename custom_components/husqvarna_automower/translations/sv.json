@@ -86,7 +86,7 @@
                 "name": "Antal kollisioner"
             },
             "cutting_blade_usage_time": {
-                "name": "Knivblad avnända"
+                "name": "Knivblad använda"
             },
             "total_charging_time": {
                 "name": "Total laddningstid"
