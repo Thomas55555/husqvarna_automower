@@ -22,7 +22,6 @@ from homeassistant.exceptions import ConditionErrorMessage, HomeAssistantError
 from homeassistant.helpers.storage import Store
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-
 from ..const import DOMAIN
 from ..vacuum import HusqvarnaAutomowerEntity
 from .const import (

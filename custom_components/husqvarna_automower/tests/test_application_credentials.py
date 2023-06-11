@@ -14,11 +14,7 @@ from ..application_credentials import (
     async_get_description_placeholders,
 )
 from ..const import DOMAIN, HUSQVARNA_URL
-from .const import (
-    AUTOMER_DM_CONFIG,
-    AUTOMOWER_CONFIG_DATA,
-    AUTOMOWER_SM_SESSION_DATA,
-)
+from .const import AUTOMER_DM_CONFIG, AUTOMOWER_CONFIG_DATA, AUTOMOWER_SM_SESSION_DATA
 
 
 @pytest.mark.asyncio

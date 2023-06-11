@@ -20,8 +20,8 @@ from shapely.geometry import Point, Polygon
 from .const import (
     CONF_ZONES,
     DOMAIN,
-    ERROR_STATES,
     ERROR_ACTIVITIES,
+    ERROR_STATES,
     ERRORCODES,
     HOME_LOCATION,
     NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT,
