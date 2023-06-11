@@ -140,10 +140,9 @@ class HusqvarnaAutomowerEntity(
 ):
     """Defining each mower Entity."""
 
-    _attr_device_class = f"{DOMAIN}__mower"
     _attr_icon = "mdi:robot-mower"
     _attr_supported_features = SUPPORT_STATE_SERVICES
-    _attr_translation_key = "quirk"
+    _attr_translation_key = "mower"
 
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""

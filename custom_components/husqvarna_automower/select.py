@@ -36,7 +36,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     _attr_options = HEADLIGHTMODES
     _attr_icon = "mdi:car-light-high"
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_name = "Headlight mode"
+    _attr_translation_key = "headlight_mode"
 
     def __init__(self, session, idx):
         """Initialize AutomowerSelect."""
@@ -53,7 +53,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
     def current_option(self) -> str:
         """Return a the current option for the entity."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        return mower_attributes["headlight"]["mode"]
+        return mower_attributes["headlight"]["mode"].lower()
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
@@ -61,7 +61,7 @@ class AutomowerSelect(SelectEntity, AutomowerEntity):
         string = {
             "data": {
                 "type": "settings",
-                "attributes": {"headlight": {"mode": option}},
+                "attributes": {"headlight": {"mode": option.upper()}},
             }
         }
         payload = json.dumps(string)

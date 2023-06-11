@@ -43,8 +43,78 @@
         "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
     },
     "entity": {
+        "binary_sensor": {
+            "battery_charging": {
+                "name": "Battery charging"
+            },
+            "leaving_dock": {
+                "name": "Leaving dock"
+            },
+            "error": {
+                "name": "Error"
+            }
+        },
+        "number": {
+            "cutting_height": {
+                "name": "Cutting height"
+            },
+            "mow_for": {
+                "name": "Mow for"
+            },
+            "park_for": {
+                "name": "Park for"
+            }
+        },
+        "select": {
+            "headlight_mode": {
+                "name": "Headlight mode",
+                "state": {
+                    "always_on": "Always on",
+                    "always_off": "Always Off",
+                    "evening_only": "Evening only",
+                    "evening_and_night": "Evening and night"
+                }
+            }
+        },
         "sensor": {
+            "cutting_height": {
+                "name": "Cutting height"
+            },
+            "number_of_charging_cycles": {
+                "name": "Number of charging cycles"
+            },
+            "number_of_collisions": {
+                "name": "Number of collisions"
+            },
+            "cutting_blade_usage_time": {
+                "name": "Cutting blade usage time"
+            },
+            "total_charging_time": {
+                "name": "Total charging time"
+            },
+            "total_cutting_time": {
+                "name": "Total cutting time"
+            },
+            "total_running_time": {
+                "name": "Total running time"
+            },
+            "total_searching_time": {
+                "name": "Total searching time"
+            },
+            "searching_time_percent": {
+                "name": "Searching time percent"
+            },
+            "cutting_time_percent": {
+                "name": "Cutting time percent"
+            },
+            "battery_level": {
+                "name": "Battery level"
+            },
+            "next_start": {
+                "name": "Next start"
+            },
             "problem_list": {
+                "name": "Problem sensor",
                 "state": {
                     "off": "Off",
                     "unknown": "Unknown",
@@ -62,6 +132,7 @@
                 }
             },
             "mode_list": {
+                "name": "Mode",
                 "state": {
                     "main_area": "Main area",
                     "secondary_area": "Secondary area",
@@ -72,24 +143,17 @@
             }
         },
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Mowing"
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower": {
                 "state": {
-					"cleaning": "Mowing",
-					"docked": "Docked",
-					"error": "Error",
-					"idle": "[%key:common::state::idle%]",
-					"off": "[%key:common::state::off%]",
-					"on": "[%key:common::state::on%]",
-					"paused": "[%key:common::state::paused%]",
-					"returning": "Returning to dock"
-				}
+                    "cleaning": "Mowing"
+                }
             }
         }
     },

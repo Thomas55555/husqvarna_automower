@@ -43,14 +43,14 @@ async def async_setup_entry(
 NUMBER_SENSOR_TYPES: tuple[NumberEntityDescription, ...] = (
     NumberEntityDescription(
         key="Park",
-        name="Park for",
+        translation_key="park_for",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
         native_unit_of_measurement=TIME_MINUTES,
     ),
     NumberEntityDescription(
         key="Start",
-        name="Mow for",
+        translation_key="mow_for",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
         native_unit_of_measurement=TIME_MINUTES,
@@ -65,7 +65,7 @@ class AutomowerNumber(NumberEntity, AutomowerEntity):
     _attr_icon = "mdi:grass"
     _attr_native_min_value = 1
     _attr_native_max_value = 9
-    _attr_name = "Cutting height"
+    _attr_translation_key = "cutting_height"
 
     def __init__(self, session, idx):
         """Initialize AutomowerNumber."""
@@ -113,7 +113,6 @@ class AutomowerParkStartNumberEntity(NumberEntity, AutomowerEntity):
         super().__init__(session, idx)
         self.description = description
         self.entity_description = description
-        self._attr_name = description.name
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     @property

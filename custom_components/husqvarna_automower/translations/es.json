@@ -27,7 +27,6 @@
                     "gps_bottom_right": "Coordenadas GPS Coordinates de la esquina inferior derecha de la imagen",
                     "mower_img_path": "Ruta a la localizacion de la imagen del cortacesped",
                     "map_img_path": "Ruta a la localizacion de la imagen del mapa"
-
                 },
                 "description": "Ajustes de la cámara",
                 "title": "Opciones de Husqvarna Automower"
@@ -60,7 +59,7 @@
                     "frost": "Hielo"
                 }
             },
-            "mode_list":{
+            "mode_list": {
                 "state": {
                     "main_area": "Área principal",
                     "secondary_area": "Area secundaria",
@@ -71,14 +70,14 @@
             }
         },
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Segando"
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Segando"
                 }

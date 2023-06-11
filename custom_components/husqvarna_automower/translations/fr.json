@@ -18,14 +18,14 @@
     },
     "entity": {
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Tonte"
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Tonte"
                 }
