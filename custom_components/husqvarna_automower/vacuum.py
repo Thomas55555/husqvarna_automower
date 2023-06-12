@@ -223,7 +223,7 @@ class HusqvarnaAutomowerEntity(
             "ERROR_AT_POWER_UP",
         ]:
             errorcode = mower_attributes["mower"]["errorCode"]
-            return ERRORCODES.get(errorcode, f'error_{errorcode}')
+            return ERRORCODES.get(errorcode, f"error_{errorcode}")
         return None
 
     @property
