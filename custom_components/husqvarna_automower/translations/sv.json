@@ -145,15 +145,60 @@
             "mower": {
                 "state": {
                     "cleaning": "Klipper"
+                },
+                "state_attributes": {
+                    "status": {
+                        "name": "Status",
+                        "state": {
+                            "cleaning": "Klipper",
+                            "off": "Från",
+                            "unknown": "Okänd",
+                            "stopped": "Stoppad",
+                            "not_applicable": "Ej tillämpligt",
+                            "paused": "Pausad",
+                            "going_to_charging_station": "På väg till laddningsstation",
+                            "leaving_charging_station": "Lämnar laddningsstation",
+                            "parked": "Parkerad",
+                            "park_override": "Parkering åsidosatt",
+                            "daily_limit": "Daglig begränsning",
+                            "fota": "Fota",
+                            "updating": "Updaterar",
+                            "powering_up": "Startar",
+                            "weather_timer": "Vädertimer",
+                            "parked_until_further_notice": "Parkerad tills vidare"
+                        }
+                    },
+                    "action": {
+                        "name": "Aktion",
+                        "state": {
+                            "force_mow": "Forcera klippning",
+                            "not_active": "Inaktiv",
+                            "unknown": "Okänd"
+                        }
+                    }
                 }
             }
         },
         "camera": {
-            "mower": {
+            "mower_cam": {
+                "name": "Karta",
                 "state": {
-                    "cleaning": "Klipper"
+                    "cleaning": "Klipper",
+                    "docked": "Dockad",
+                    "error": "Fel",
+                    "idle": "Inaktiv",
+                    "off": "Från",
+                    "on": "Till",
+                    "paused": "Pausad",
+                    "returning": "Återvänder till dockan"
                 }
             }
+        }
+    },
+    "issues": {
+        "wrong_scope": {
+            "title": "Felaktigt scope för token",
+            "description": "Ändra scope för att kunna använda websocket och omedelbara uppdateringar av status för klipparen. Läs mer här: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
         }
     }
 }

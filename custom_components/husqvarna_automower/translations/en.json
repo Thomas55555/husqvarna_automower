@@ -146,13 +146,52 @@
             "mower": {
                 "state": {
                     "cleaning": "Mowing"
+                },
+                "state_attributes": {
+                    "status": {
+                        "name": "Status",
+                        "state": {
+                            "cleaning": "Mowing",
+                            "off": "Off",
+                            "unknown": "Unknown",
+                            "stopped": "Stopped",
+                            "not_applicable": "Not applicable",
+                            "paused": "Paused",
+                            "going_to_charging_station": "Going to charging station",
+                            "leaving_charging_station": "Leaving charging station",
+                            "parked": "Parked",
+                            "park_override": "Park override",
+                            "daily_limit": "Daily limit",
+                            "fota": "Fota",
+                            "updating": "Updating",
+                            "powering_up": "Powering up",
+                            "weather_timer": "Weather timer",
+                            "parked_until_further_notice": "Parked until further notice"
+                        }
+                    },
+                    "action": {
+                        "name": "Action",
+                        "state": {
+                            "force_mow": "Force mowing",
+                            "not_active": "Not active",
+                            "unknown": "Unknown"
+                        }
+                    }
                 }
             }
         },
         "camera": {
-            "mower": {
+            "mower_cam": {
+                "name": "Map",
                 "state": {
-                    "cleaning": "Mowing"
+                    "cleaning": "Mowing",
+                    "docked": "Docked",
+                    "error": "Error",
+                    "idle": "Idle",
+                    "off": "Off",
+                    "on": "On",
+                    "paused": "Paused",
+                    "returning": "Returning to dock"
                 }
             }
         }
