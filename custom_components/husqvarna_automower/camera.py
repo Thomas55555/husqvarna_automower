@@ -9,7 +9,7 @@ from typing import Optional
 
 import numpy as np
 from geopy.distance import distance, geodesic
-from homeassistant.components.camera import SUPPORT_ON_OFF, Camera
+from homeassistant.components.camera import Camera, CameraEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -61,8 +61,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     """Representation of the AutomowerCamera element."""
 
     _attr_frame_interval: float = 300
-    _attr_name = "Map"
-    _attr_translation_key = "quirk"
+    _attr_translation_key = "mower_cam"
 
     def __init__(self, session, idx, entry) -> None:
         """Initialize AutomowerCamera."""
@@ -126,7 +125,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     @property
     def model(self) -> str:
         """Return the mower model."""
-        return self._model
+        return self.model_name
 
     async def async_camera_image(
         self, width: Optional[int] = None, height: Optional[int] = None
@@ -210,7 +209,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     @property
     def supported_features(self) -> int:
         """Show supported features."""
-        return SUPPORT_ON_OFF
+        return CameraEntityFeature.ON_OFF
 
     def _find_image_scale(self):
         """Find the scale ration in m/px and center of image."""

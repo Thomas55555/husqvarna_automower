@@ -136,7 +136,8 @@ class HusqvarnaAutomowerStateMixin(object):
         """Define an error message if the vacuum is in STATE_ERROR."""
         if self.state == STATE_ERROR:
             mower_attributes = AutomowerEntity.get_mower_attributes(self)
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+            errorcode = mower_attributes["mower"]["errorCode"]
+            return ERRORCODES.get(errorcode, f"error_{errorcode}")
         return None
 
 
@@ -145,10 +146,9 @@ class HusqvarnaAutomowerEntity(
 ):
     """Defining each mower Entity."""
 
-    _attr_device_class = f"{DOMAIN}__mower"
     _attr_icon = "mdi:robot-mower"
     _attr_supported_features = SUPPORT_STATE_SERVICES
-    _attr_translation_key = "quirk"
+    _attr_translation_key = "mower"
 
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""
@@ -187,6 +187,16 @@ class HusqvarnaAutomowerEntity(
                 return MWR_ACTIVITY_TO_STATUS.get(mower_attributes["mower"]["activity"])
             if mower_attributes["mower"]["activity"] == "CHARGING":
                 return f"Charging{next_start_short}"
+            if mower_attributes["mower"]["activity"] == "LEAVING":
+                return "leaving_charging_station"
+            if mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
+                return "parked"
+            if mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
+                return "stopped"
+        if mower_attributes["mower"]["state"] == "WAIT_UPDATING":
+            return "updating"
+        if mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
+            return "powering_up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
             if (
                 mower_attributes["planner"]["restrictedReason"]
@@ -205,9 +215,11 @@ class HusqvarnaAutomowerEntity(
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        action = mower_attributes["planner"]["override"]["action"]
+        action = action.lower() if action is not None else action
         return {
             ATTR_STATUS: self.__get_status(),
-            "action": mower_attributes["planner"]["override"]["action"],
+            "action": action,
         }
 
     async def async_start(self) -> None:

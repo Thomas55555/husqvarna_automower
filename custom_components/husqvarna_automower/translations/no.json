@@ -27,7 +27,6 @@
                     "gps_bottom_right": "GPS koordinater for det nedre høyre hjørne av bildet",
                     "mower_img_path": "Filsti til bilde af robotklipper",
                     "map_img_path": "Filsti til bilde af kartet"
-
                 },
                 "description": "Kamera instillinger",
                 "title": "Husqvarna Automower instillinger"
@@ -44,14 +43,14 @@
     },
     "entity": {
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Klipper"
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Klipper"
                 }

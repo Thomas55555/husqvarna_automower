@@ -1,18 +1,18 @@
 {
-	"config": {
-		"step": {
-			"reauth_confirm": {
-				"description": "The Husqvarna Automower integration needs to re-authenticate your account.",
-				"title": "Reauthenticate Integration"
-			}
-		},
-		"abort": {
-			"missing_configuration": "The component is not configured. Please follow the documentation.",
-			"reauth_successful": "The reauthentication was successful",
-			"single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
-		}
-	},
-	"options": {
+    "config": {
+        "step": {
+            "reauth_confirm": {
+                "description": "The Husqvarna Automower integration needs to re-authenticate with Husqvarna",
+                "title": "Reauthenticate Integration"
+            }
+        },
+        "abort": {
+            "missing_configuration": "The component is not configured. Please follow the documentation.",
+            "reauth_successful": "The reauthentication was successful",
+            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
+        }
+    },
+    "options": {
 		"step": {
 			"select": {
 				"menu_options": {
@@ -60,61 +60,94 @@
 			"need_one_mower": "Need at least one mower for a zone."
 		}
 		},
-	"system_health": {
-		"info": {
-			"can_reach_server": "Reach Husqvarna Token Server"
-		}
-	},
-	"application_credentials": {
-		"description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
-	},
-	"entity": {
-		"sensor": {
-			"problem_list": {
-				"state": {
-					"off": "Off",
-					"unknown": "Unknown",
-					"stopped": "Stopped",
-					"stopped_in_garden": "Stopped in garden",
-					"not_applicable": "Not applicable",
-					"none": "None",
-					"week_schedule": "Week schedule",
-					"park_override": "Park override",
-					"sensor": "Weather timer",
-					"daily_limit": "Daily limit",
-					"fota": "Fota",
-					"frost": "Frost"
-				}
-			},
-			"mode_list": {
-				"state": {
-					"main_area": "Main area",
-					"secondary_area": "Secondary area",
-					"home": "Home",
-					"demo": "Demo",
-					"unknown": "Unknown"
-				}
-			}
+    "system_health": {
+        "info": {
+            "can_reach_server": "Reach Husqvarna Token server"
+        }
+    },
+    "application_credentials": {
+        "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
+    },
+    "entity": {
+        "sensor": {
+            "problem_list": {
+                "state": {
+                    "off": "Off",
+                    "unknown": "Unknown",
+                    "stopped": "Stopped",
+                    "stopped_in_garden": "Stopped in garden",
+                    "not_applicable": "Not applicable",
+                    "none": "None",
+                    "week_schedule": "Week schedule",
+                    "park_override": "Park override",
+                    "sensor": "Weather timer",
+                    "daily_limit": "Daily limit",
+                    "fota": "Fota",
+                    "frost": "Frost",
+                    "parked_until_further_notice": "Parked until further notice"
+                }
+            },
+            "mode_list": {
+                "state": {
+                    "main_area": "Main area",
+                    "secondary_area": "Secondary area",
+                    "home": "Home",
+                    "demo": "Demo",
+                    "unknown": "Unknown"
+                }
+            }
         },
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Mowing"
+                },
+                "state_attributes": {
+                    "status": {
+                        "name": "Status",
+                        "state": {
+                            "cleaning": "Mowing",
+                            "off": "Off",
+                            "unknown": "Unknown",
+                            "stopped": "Stopped",
+                            "not_applicable": "Not applicable",
+                            "paused": "Paused",
+                            "going_to_charging_station": "Going to charging station",
+                            "leaving_charging_station": "Leaving charging station",
+                            "parked": "Parked",
+                            "park_override": "Park override",
+                            "daily_limit": "Daily limit",
+                            "fota": "Fota",
+                            "updating": "Updating",
+                            "powering_up": "Powering up",
+                            "weather_timer": "Weather timer",
+                            "parked_until_further_notice": "Parked until further notice"
+                        }
+                    },
+                    "action": {
+                        "name": "Action",
+                        "state": {
+                            "force_mow": "Force mowing",
+                            "not_active": "Not active",
+                            "unknown": "Unknown"
+                        }
+                    }
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower_cam": {
+                "name": "Map",
                 "state": {
-					"cleaning": "Mowing",
-					"docked": "Docked",
-					"error": "Error",
-					"idle": "[%key:common::state::idle%]",
-					"off": "[%key:common::state::off%]",
-					"on": "[%key:common::state::on%]",
-					"paused": "[%key:common::state::paused%]",
-					"returning": "Returning to dock"
-				}
+                    "cleaning": "Mowing",
+                    "docked": "Docked",
+                    "error": "Error",
+                    "idle": "Idle",
+                    "off": "Off",
+                    "on": "On",
+                    "paused": "Paused",
+                    "returning": "Returning to dock"
+                }
             }
 		}
 	},

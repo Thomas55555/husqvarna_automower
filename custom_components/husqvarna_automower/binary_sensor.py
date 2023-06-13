@@ -39,7 +39,7 @@ class AutomowerBatteryChargingBinarySensor(BinarySensorEntity, AutomowerEntity):
 
     _attr_entity_registry_enabled_default = False
     _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
-    _attr_name = "Battery charging"
+    _attr_translation_key = "battery_charging"
 
     def __init__(self, session, idx):
         """Initialize AutomowerBatteryChargingBinarySensor."""
@@ -59,7 +59,7 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerProblemSensor Entity."""
 
     _attr_entity_registry_enabled_default = False
-    _attr_name = "Leaving dock"
+    _attr_translation_key = "leaving_dock"
 
     def __init__(self, session, idx) -> None:
         """Initialize AutomowerLeavingDockBinarySensor."""
@@ -80,7 +80,7 @@ class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
 
     _attr_entity_registry_enabled_default: bool = False
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
-    _attr_name = "Error"
+    _attr_translation_key = "error"
 
     def __init__(self, session, idx):
         """Initialize AutomowerErrorBinarySensor."""

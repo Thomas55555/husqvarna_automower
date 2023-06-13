@@ -225,7 +225,7 @@ ERRORCODES = {
 }
 
 # Headlight modes
-HEADLIGHTMODES = ["ALWAYS_ON", "ALWAYS_OFF", "EVENING_ONLY", "EVENING_AND_NIGHT"]
+HEADLIGHTMODES = ["always_on", "always_off", "evening_only", "evening_and_night"]
 
 # Weekdays
 WEEKDAYS = (
@@ -278,28 +278,28 @@ CHANGING_CUTTING_HEIGHT_SUPPORT = list(
 )
 
 MWR_STATE_TO_STATUS = {
-    "UNKNOWN": "Unknown",
-    "NOT_APPLICABLE": "Not applicable",
-    "PAUSED": "Paused",
-    "WAIT_UPDATING": "Updating",
-    "WAIT_POWER_UP": "Powering up",
-    "OFF": "Off",
-    "STOPPED": "Stopped",
+    "UNKNOWN": "unknown",
+    "NOT_APPLICABLE": "not_applicable",
+    "PAUSED": "paused",
+    "WAIT_UPDATING": "updating",
+    "WAIT_POWER_UP": "powering_up",
+    "OFF": "off",
+    "STOPPED": "stopped",
 }
 
 MWR_ACTIVITY_TO_STATUS = {
-    "UNKNOWN": "Unknown",
-    "NOT_APPLICABLE": "Not applicable",
-    "MOWING": "Mowing",
-    "GOING_HOME": "Going to charging station",
-    "LEAVING": "Leaving charging station",
-    "PARKED_IN_CS": "Parked",
-    "STOPPED_IN_GARDEN": "Stopped",
+    "UNKNOWN": "unknown",
+    "NOT_APPLICABLE": "not_applicable",
+    "MOWING": "mowing",
+    "GOING_HOME": "going_to_charging_station",
+    "LEAVING": "leaving_charging_station",
+    "PARKED_IN_CS": "parked",
+    "STOPPED_IN_GARDEN": "stopped",
 }
 
 MWR_RES_REASON_TO_STATUS = {
-    "PARK_OVERRIDE": "Park override",
-    "SENSOR": "Weather timer",
-    "DAILY_LIMIT": "Daily limit",
-    "NOT_APPLICABLE": "Parked until further notice",
+    "PARK_OVERRIDE": "park_override",
+    "SENSOR": "weather_timer",
+    "DAILY_LIMIT": "daily_limit",
+    "NOT_APPLICABLE": "parked_until_further_notice",
 }
