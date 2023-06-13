@@ -264,7 +264,8 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
     for idx, ent in enumerate(coordinator.session.data["data"]):
-        entity_list.append(AutomowerZoneSensor(coordinator, idx, entry))
+        if entry.options.get(CONF_ZONES):
+            entity_list.append(AutomowerZoneSensor(coordinator, idx, entry))
         for description in SENSOR_TYPES:
             try:
                 description.value_fn(
@@ -298,7 +299,6 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
     """Define the AutomowerZoneSensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_entity_registry_enabled_default = False
 
     def __init__(self, coordinator, idx, entry):
         """Initialize the zone object."""

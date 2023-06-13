@@ -8,7 +8,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import (
     ADD_CAMERAS,
-    DISABLE_LE,
     DOMAIN,
     ENABLE_CAMERA,
     GPS_BOTTOM_RIGHT,
@@ -75,16 +74,6 @@ async def test_options_le_enable(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
         assert result["type"] == FlowResultType.MENU
         assert result["step_id"] == "select"
-
-        result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"next_step_id": "le_init"}
-        )
-        assert result["type"] == FlowResultType.FORM
-        assert result["step_id"] == "le_init"
-
-        result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {DISABLE_LE: True}
-        )
 
 
 async def test_options_camera_config_existing_options(hass: HomeAssistant) -> None:
@@ -408,7 +397,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738",
+                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613",
                 ZONE_NAME: "Front Garden",
                 ZONE_COLOR: "255,0,0",
                 ZONE_DISPLAY: True,
@@ -434,6 +423,23 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         )
 
         assert result["errors"] == {ZONE_COLOR: "color_error"}
+
+        assert result["type"] == FlowResultType.FORM
+        assert result["step_id"] == "zone_edit"
+
+        # Create Zone, no mower selected
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"],
+            {
+                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                ZONE_NAME: "Front Garden",
+                ZONE_COLOR: "255,0,0",
+                ZONE_DISPLAY: True,
+                ZONE_MOWERS: [],
+            },
+        )
+
+        assert result["errors"] == {ZONE_MOWERS: "need_one_mower"}
 
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "zone_edit"

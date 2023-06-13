@@ -17,17 +17,9 @@
 			"select": {
 				"menu_options": {
 					"camera_select": "Configure Map Camera",
-					"le_init": "Configure Low Energy Mode",
 					"geofence_init": "Configure Zones"
 				},
 				"description": "Select Config Option",
-				"title": "Husqvarna Automower Options"
-			},
-			"le_init": {
-				"data": {
-					"disable_le": "Disable Low Energy Mode."
-				},
-				"description": "Set Low Energy Mode",
 				"title": "Husqvarna Automower Options"
 			},
 			"zone_edit": {"data": {
@@ -64,7 +56,8 @@
 			"points_match": "Top Left and Bottom Right coordinates can't be the same",
 			"not_image": "Seleted file is not a valid image",
 			"color_error": "Values are RGB, seperated by a comma, 0-255",
-			"rotation_error": "Value is in degrees and must be between -360 and 360"
+			"rotation_error": "Value is in degrees and must be between -360 and 360",
+			"need_one_mower": "Need at least one mower for a zone."
 		}
 		},
 	"system_health": {

@@ -49,16 +49,17 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        AutomowerCamera(coordinator, idx, entry)
-        for idx, ent in enumerate(coordinator.session.data["data"])
-    )
+    entity_list = []
+    for idx, ent in enumerate(coordinator.session.data["data"]):
+        if entry.options.get(ent["id"], {}).get(ENABLE_CAMERA):
+            entity_list.append(AutomowerCamera(coordinator, idx, entry))
+
+    async_add_entities(entity_list)
 
 
 class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     """Representation of the AutomowerCamera element."""
 
-    _attr_entity_registry_enabled_default = False
     _attr_frame_interval: float = 300
     _attr_name = "Map"
     _attr_translation_key = "quirk"
@@ -152,6 +153,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
     def _overlay_zones(self) -> None:
         """Draw zone overlays."""
         zones = json.loads(self.entry.options.get(CONF_ZONES, "{}"))
+
         if not isinstance(zones, dict):
             return
 
@@ -165,6 +167,10 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
                     )
                     for point in zone.get(ZONE_COORD)
                 ]
+
+                if len(zone_poly) < 3:
+                    return
+
                 poly_img = Image.new(
                     "RGBA", (self._map_image.size[0], self._map_image.size[1])
                 )

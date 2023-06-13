@@ -13,7 +13,6 @@ from homeassistant.helpers.selector import selector
 from .const import (
     ADD_CAMERAS,
     CONF_ZONES,
-    DISABLE_LE,
     DOMAIN,
     ENABLE_CAMERA,
     GPS_BOTTOM_RIGHT,
@@ -129,7 +128,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     {"name": ent["attributes"]["system"]["name"], "id": ent["id"]}
                 )
         self.options = self.config_entry.options.copy()
-        self.disable_le = self.config_entry.options.get(DISABLE_LE, True)
 
         self.configured_zones = json.loads(self.options.get(CONF_ZONES, "{}"))
         if not isinstance(self.configured_zones, dict):
@@ -179,7 +177,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_select(self, user_input=None):
         """Select Configuration Item."""
         return self.async_show_menu(
-            step_id="select", menu_options=["le_init", "camera_select", "geofence_init"]
+            step_id="select", menu_options=["camera_select", "geofence_init"]
         )
 
     async def async_step_geofence_init(self, user_input=None):
@@ -244,7 +242,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                                 .replace(" ", "_")
                             )
 
-                        if len(zone_coord) < 4:
+                        if len(zone_coord) < 3:
                             errors[ZONE_COORD] = "too_few_points"
 
                         zone_color = ValidateRGB(user_input.get(ZONE_COLOR))
@@ -254,6 +252,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                             zone_int_colors = zone_color.rgb_val
                         else:
                             errors[ZONE_COLOR] = "color_error"
+
+                        if len(user_input.get(ZONE_MOWERS)) < 1:
+                            errors[ZONE_MOWERS] = "need_one_mower"
 
                         if not errors:
                             self.configured_zones[self.sel_zone_id] = {
@@ -307,19 +308,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="zone_edit", data_schema=vol.Schema(data_schema), errors=errors
         )
-
-    async def async_step_le_init(self, user_input=None):
-        """Enable / Disable the low energy mode."""
-        if user_input:
-            self.options[DISABLE_LE] = user_input.get(DISABLE_LE)
-            return await self._update_config()
-
-        data_schema = vol.Schema(
-            {
-                vol.Required(DISABLE_LE, default=self.disable_le): bool,
-            }
-        )
-        return self.async_show_form(step_id="le_init", data_schema=data_schema)
 
     async def async_step_camera_select(self, user_input=None):
         """Select camera to configure."""

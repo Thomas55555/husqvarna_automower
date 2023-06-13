@@ -23,7 +23,6 @@ from .const import (
 
 
 @pytest.mark.asyncio
-@patch.object(AutomowerZoneSensor, "_attr_entity_registry_enabled_default", True)
 async def setup_zone_sensor(
     hass: HomeAssistant, zone_overide: str = None, enable_cut: bool = True
 ):

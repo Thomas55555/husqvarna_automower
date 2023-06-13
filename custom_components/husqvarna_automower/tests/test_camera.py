@@ -31,14 +31,14 @@ async def setup_camera(
     mwr_id: int,
     mwr_idx: str,
     enable_camera: bool = True,
-    include_zones: bool = True,
+    replacement_conf_zones: str = "",
 ):
     """Set up camera and config entry"""
 
     options = AUTOMER_DM_CONFIG.copy()
 
-    if not include_zones:
-        options[CONF_ZONES] = "[]"
+    if replacement_conf_zones != "":
+        options[CONF_ZONES] = replacement_conf_zones
 
     options[mwr_id]["enable_camera"] = enable_camera
 
@@ -183,8 +183,42 @@ async def test_load_camera_disabled(hass: HomeAssistant):
 
 
 @pytest.mark.asyncio
-async def test_load_camera_disabled_no_zone(hass: HomeAssistant):
-    """test automower initialization no zones"""
+async def test_load_camera_enabled_bad_zone(hass: HomeAssistant):
+    """test automower initialization bad zone, not a dict"""
     camera, automower_coordinator_mock = await setup_camera(
-        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_camera=True, include_zones=False
+        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_camera=True, replacement_conf_zones="[]"
+    )
+
+
+@pytest.mark.asyncio
+async def test_load_camera_enabled_empty_zone(hass: HomeAssistant):
+    """test automower initialization empty zone dict"""
+    camera, automower_coordinator_mock = await setup_camera(
+        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_camera=True, replacement_conf_zones="{}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_load_camera_enabled_zone_without_mower(hass: HomeAssistant):
+    """test automower initialization with a zone, but no mower selected"""
+    replacement_zones = '{"front_garden": {"zone_coordinates": [[35.5408367, -82.5524521], [35.5403893, -82.552613], [35.5399462, -82.5506738]], "sel_mowers": [], "color": [255, 0, 0], "name": "Front Garden", "display": true}}'
+    camera, automower_coordinator_mock = await setup_camera(
+        hass,
+        MWR_ONE_ID,
+        MWR_ONE_IDX,
+        enable_camera=True,
+        replacement_conf_zones=replacement_zones,
+    )
+
+
+@pytest.mark.asyncio
+async def test_load_camera_enabled_zone_no_coordinates(hass: HomeAssistant):
+    """test automower initialization with a zone, but no coordinates in zone"""
+    replacement_zones = '{"front_garden": {"zone_coordinates": [], "sel_mowers": ["c7233734-b219-4287-a173-08e3643f89f0"], "color": [255, 0, 0], "name": "Front Garden", "display": true}}'
+    camera, automower_coordinator_mock = await setup_camera(
+        hass,
+        MWR_ONE_ID,
+        MWR_ONE_IDX,
+        enable_camera=True,
+        replacement_conf_zones=replacement_zones,
     )

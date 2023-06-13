@@ -8,7 +8,6 @@ Custom component to support Automower.
 
 
 - [Home Assistant integration for Husqvarna Automower](#home-assistant-integration-for-husqvarna-automower)
-- [This fork varies from @Thomas55555 as follows](#this-fork-varies-from-thomas55555-as-follows)
   - [About](#about)
   - [Supported devices](#supported-devices)
   - [Installation](#installation)
