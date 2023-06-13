@@ -202,7 +202,7 @@ ERRORCODES = {
 }
 
 # Headlight modes
-HEADLIGHTMODES = ["ALWAYS_ON", "ALWAYS_OFF", "EVENING_ONLY", "EVENING_AND_NIGHT"]
+HEADLIGHTMODES = ["always_on", "always_off", "evening_only", "evening_and_night"]
 
 # Weekdays
 WEEKDAYS = (

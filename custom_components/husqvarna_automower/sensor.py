@@ -88,7 +88,7 @@ def problem_list() -> list:
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     AutomowerSensorEntityDescription(
         key="cuttingBladeUsageTime",
-        name="Cutting blade usage time",
+        translation_key="cutting_blade_usage_time",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -100,7 +100,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalChargingTime",
-        name="Total charging time",
+        translation_key="total_charging_time",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -112,7 +112,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalCuttingTime",
-        name="Total cutting time",
+        translation_key="total_cutting_time",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -124,7 +124,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalRunningTime",
-        name="Total running time",
+        translation_key="total_running_time",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -136,7 +136,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalSearchingTime",
-        name="Total searching time",
+        translation_key="total_searching_time",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -148,7 +148,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="numberOfChargingCycles",
-        name="Number of charging cycles",
+        translation_key="number_of_charging_cycles",
         icon="mdi:battery-sync-outline",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -158,7 +158,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="numberOfCollisions",
-        name="Number of collisions",
+        translation_key="number_of_collisions",
         icon="mdi:counter",
         entity_registry_enabled_default=False,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -168,7 +168,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalSearchingTime_percentage",
-        name="Searching time percent",
+        translation_key="searching_time_percent",
         icon="mdi:percent",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -182,7 +182,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="totalCuttingTime_percentage",
-        name="Cutting time percent",
+        translation_key="cutting_time_percent",
         icon="mdi:percent",
         entity_registry_enabled_default=True,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -196,7 +196,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="battery_level",
-        name="Battery level",
+        translation_key="battery_level",
         entity_registry_enabled_default=True,
         state_class=SensorStateClass.MEASUREMENT,
         device_class=SensorDeviceClass.BATTERY,
@@ -209,7 +209,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="next_start",
-        name="Next start",
+        translation_key="next_start",
         entity_registry_enabled_default=True,
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: AutomowerEntity.datetime_object(
@@ -219,21 +219,19 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="mode",
-        name="Mode",
+        translation_key="mode_list",
         entity_registry_enabled_default=False,
         device_class=SensorDeviceClass.ENUM,
         options=["main_area", "secondary_area", "home", "demo", "unknown"],
-        translation_key="mode_list",
         value_fn=lambda data: data["mower"]["mode"].lower(),
         available_fn=lambda data: True,
     ),
     AutomowerSensorEntityDescription(
         key="problem_sensor",
-        name="Problem Sensor",
+        translation_key="problem_list",
         entity_registry_enabled_default=False,
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
-        translation_key="problem_list",
         value_fn=lambda data: None
         if get_problem(data) is None
         else get_problem(data).lower(),
@@ -241,7 +239,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     AutomowerSensorEntityDescription(
         key="cuttingHeight",
-        name="Cutting height",
+        translation_key="cutting_height",
         entity_registry_enabled_default=True,
         icon="mdi:grass",
         state_class=SensorStateClass.MEASUREMENT,
@@ -297,7 +295,6 @@ class AutomowerSensor(SensorEntity, AutomowerEntity):
         """Set up AutomowerSensors."""
         super().__init__(session, idx)
         self.entity_description = description
-        self._attr_name = description.name
         self._attr_unique_id = f"{self.mower_id}_{description.key}"
 
     @property

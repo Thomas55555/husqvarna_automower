@@ -131,7 +131,8 @@ class HusqvarnaAutomowerStateMixin(object):
         """Define an error message if the vacuum is in STATE_ERROR."""
         if self.state == STATE_ERROR:
             mower_attributes = AutomowerEntity.get_mower_attributes(self)
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+            errorcode = mower_attributes["mower"]["errorCode"]
+            return ERRORCODES.get(errorcode, f"error_{errorcode}")
         return None
 
 
@@ -140,10 +141,9 @@ class HusqvarnaAutomowerEntity(
 ):
     """Defining each mower Entity."""
 
-    _attr_device_class = f"{DOMAIN}__mower"
     _attr_icon = "mdi:robot-mower"
     _attr_supported_features = SUPPORT_STATE_SERVICES
-    _attr_translation_key = "quirk"
+    _attr_translation_key = "mower"
 
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""
@@ -176,62 +176,65 @@ class HusqvarnaAutomowerEntity(
             )
             next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
         if mower_attributes["mower"]["state"] == "UNKNOWN":
-            return "Unknown"
+            return "unknown"
         if mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
-            return "Not applicable"
+            return "not_applicable"
         if mower_attributes["mower"]["state"] == "PAUSED":
-            return "Paused"
+            return "paused"
         if mower_attributes["mower"]["state"] == "IN_OPERATION":
             if mower_attributes["mower"]["activity"] == "UNKNOWN":
-                return "Unknown"
+                return "unknown"
             if mower_attributes["mower"]["activity"] == "NOT_APPLICABLE":
-                return "Not applicable"
+                return "not_applicable"
             if mower_attributes["mower"]["activity"] == "MOWING":
-                return "Mowing"
+                return "cleaning"
             if mower_attributes["mower"]["activity"] == "GOING_HOME":
-                return "Going to charging station"
+                return "going to charging station"
             if mower_attributes["mower"]["activity"] == "CHARGING":
                 return f"Charging{next_start_short}"
             if mower_attributes["mower"]["activity"] == "LEAVING":
-                return "Leaving charging station"
+                return "leaving_charging_station"
             if mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
-                return "Parked"
+                return "parked"
             if mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
-                return "Stopped"
+                return "stopped"
         if mower_attributes["mower"]["state"] == "WAIT_UPDATING":
-            return "Updating"
+            return "updating"
         if mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
-            return "Powering up"
+            return "powering_up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
             if mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
                 return f"Schedule{next_start_short}"
             if mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
-                return "Park override"
+                return "park_override"
             if mower_attributes["planner"]["restrictedReason"] == "SENSOR":
-                return "Weather timer"
+                return "weather_timer"
             if mower_attributes["planner"]["restrictedReason"] == "DAILY_LIMIT":
-                return "Daily limit"
+                return "daily_limit"
             if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-                return "Parked until further notice"
+                return "parked_until_further_notice"
         if mower_attributes["mower"]["state"] == "OFF":
-            return "Off"
+            return "off"
         if mower_attributes["mower"]["state"] == "STOPPED":
-            return "Stopped"
+            return "stopped"
         if mower_attributes["mower"]["state"] in [
             "ERROR",
             "FATAL_ERROR",
             "ERROR_AT_POWER_UP",
         ]:
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
+            errorcode = mower_attributes["mower"]["errorCode"]
+            return ERRORCODES.get(errorcode, f"error_{errorcode}")
         return None
 
     @property
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
+        action = mower_attributes["planner"]["override"]["action"]
+        action = action.lower() if action is not None else action
         return {
             ATTR_STATUS: self.__get_status(),
-            "action": mower_attributes["planner"]["override"]["action"],
+            "action": action,
         }
 
     async def async_start(self) -> None:

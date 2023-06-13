@@ -42,57 +42,57 @@
     "application_credentials": {
         "description": "Loo konto [Husqvarna developers portal]({oauth_creds_url}). Ühenda Authentication API ja Automower Connect API. Sea ümbersuunamise URI https://my.home-assistant.io/redirect/oauth. Kui sa pole veel seadistanud My HomeAssistant asukohta, sisesta see URL oma asukohaks {redirect_uri}"
     },
-	"entity": {
-		"sensor": {
-			"problem_list": {
-				"state": {
-					"off": "Väljas",
-					"unknown": "Teadmata",
-					"stopped": "Peatunud",
-					"stopped_in_garden": "Peatunud aias",
-					"not_applicable": "Pole kohalduv",
-					"none": "Puudub",
-					"week_schedule": "Nädala ajakava",
-					"park_override": "Parkimise tühistamine",
-					"sensor": "Ilmataimer",
-					"daily_limit": "Päevane limiit",
-					"fota": "Püsivara uuendamine",
-					"frost": "Härmatis",
+    "entity": {
+        "sensor": {
+            "problem_list": {
+                "state": {
+                    "off": "Väljas",
+                    "unknown": "Teadmata",
+                    "stopped": "Peatunud",
+                    "stopped_in_garden": "Peatunud aias",
+                    "not_applicable": "Pole kohalduv",
+                    "none": "Puudub",
+                    "week_schedule": "Nädala ajakava",
+                    "park_override": "Parkimise tühistamine",
+                    "sensor": "Ilmataimer",
+                    "daily_limit": "Päevane limiit",
+                    "fota": "Püsivara uuendamine",
+                    "frost": "Härmatis",
                     "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
-				}
-			},
-			"mode_list": {
-				"state": {
+                }
+            },
+            "mode_list": {
+                "state": {
                     "main_area": "Peamine niiduala",
                     "secondary_area": "Teisene niiduala",
                     "home": "Laadimisjaam",
                     "demo": "Demo",
                     "unknown": "Teadmata"
                 }
-			}
-		},
+            }
+        },
         "vacuum": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Niidab"
                 }
             }
         },
         "camera": {
-            "quirk": {
+            "mower": {
                 "state": {
                     "cleaning": "Niidab",
-					"docked": "Dokitud",
-					"error": "Viga",
-					"idle": "[%key:common::state::idle%]",
-					"off": "[%key:common::state::off%]",
-					"on": "[%key:common::state::on%]",
-					"paused": "[%key:common::state::paused%]",
-					"returning": "Läheb laadimisjaama"
+                    "docked": "Dokitud",
+                    "error": "Viga",
+                    "idle": "[%key:common::state::idle%]",
+                    "off": "[%key:common::state::off%]",
+                    "on": "[%key:common::state::on%]",
+                    "paused": "[%key:common::state::paused%]",
+                    "returning": "Läheb laadimisjaama"
                 }
             }
         }
-	},
+    },
     "issues": {
         "wrong_scope": {
             "title": "Sinu juurdepääsutõendi kehtivusala on vale",

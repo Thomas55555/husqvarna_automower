@@ -28,7 +28,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         mower_attributes = self.get_mower_attributes()
         self.mower_id = self.mower["id"]
         self.mower_name = mower_attributes["system"]["name"]
-        self.model = mower_attributes["system"]["model"]
+        self.model_name = mower_attributes["system"]["model"]
 
         self._available = self.get_mower_attributes()["metadata"]["connected"]
 
@@ -66,7 +66,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
             identifiers={(DOMAIN, self.mower_id)},
             name=self.mower_name,
             manufacturer="Husqvarna",
-            model=self.model,
+            model=self.model_name,
             configuration_url=HUSQVARNA_URL,
             suggested_area="Garden",
         )
