@@ -18,6 +18,17 @@
         }
     },
     "entity": {
+        "select": {
+            "headlight_mode": {
+                "name": "Schweinwerfer Zeitplan",
+                "state": {
+                    "always_on": "Immer an",
+                    "always_off": "Immer aus",
+                    "evening_only": "Nur abends",
+                    "evening_and_night": "Abends und nachts"
+                }
+            }
+        },
         "sensor": {
             "problem_list": {
                 "state": {
