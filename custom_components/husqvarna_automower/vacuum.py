@@ -187,16 +187,6 @@ class HusqvarnaAutomowerEntity(
                 return MWR_ACTIVITY_TO_STATUS.get(mower_attributes["mower"]["activity"])
             if mower_attributes["mower"]["activity"] == "CHARGING":
                 return f"Charging{next_start_short}"
-            if mower_attributes["mower"]["activity"] == "LEAVING":
-                return "leaving_charging_station"
-            if mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
-                return "parked"
-            if mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
-                return "stopped"
-        if mower_attributes["mower"]["state"] == "WAIT_UPDATING":
-            return "updating"
-        if mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
-            return "powering_up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
             if (
                 mower_attributes["planner"]["restrictedReason"]

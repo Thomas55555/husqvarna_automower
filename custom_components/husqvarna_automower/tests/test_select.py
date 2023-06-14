@@ -87,7 +87,7 @@ async def test_number_cut_height(hass: HomeAssistant):
     assert select.available == True
 
     # Current Option
-    assert select.current_option == "EVENING_ONLY"
+    assert select.current_option == "evening_only"
 
     # Select Option
     await select.async_select_option(HEADLIGHTMODES[0])
