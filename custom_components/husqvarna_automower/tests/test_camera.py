@@ -165,6 +165,19 @@ async def test_load_camera_enabled(hass: HomeAssistant):
     await asyncio.to_thread(camera_one._generate_image, {})
     assert camera_one._position_history[MWR_ONE_ID] == exp_result
 
+    # Single position history, but it's the first position update
+    exp_result = [
+        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
+            "positions"
+        ][0]
+    ]
+    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
+        "positions"
+    ] = exp_result
+    camera_one._position_history = {}
+    await asyncio.to_thread(camera_one._generate_image, {})
+    assert camera_one._position_history[MWR_ONE_ID] == exp_result
+
 
 @pytest.mark.asyncio
 async def test_load_camera_disabled(hass: HomeAssistant):
