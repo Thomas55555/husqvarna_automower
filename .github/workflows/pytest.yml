@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
       - name: Install pipenv
         run: |
@@ -28,17 +28,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
+          key: ${{ runner.os }}-pipenv-pytest-${{ hashFiles('**/Pipfile.lock') }}
       - name: Install dependencies
         run: |
           pipenv install --deploy --dev
-
       - name: Run test suite
         run: |
           pipenv run test --asyncio-mode=auto custom_components/husqvarna_automower --cov=custom_components.husqvarna_automower --cov-report xml -v
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-            token: ${{ secrets.YOUR_SECRET_TOKEN }}
+            token: ${{ secrets.CODECOV_TOKEN }}
 
