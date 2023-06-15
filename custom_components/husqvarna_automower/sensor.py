@@ -297,11 +297,11 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
     """Define the AutomowerZoneSensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_translation_key="zone"
 
     def __init__(self, coordinator, idx, entry):
         """Initialize the zone object."""
         super().__init__(coordinator, idx)
-        self._attr_name = "Zone Sensor"
         self._attr_unique_id = f"{self.mower_id}_zone_sensor"
         self.entry = entry
         self.zones = self._load_zones()
