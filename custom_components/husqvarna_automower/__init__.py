@@ -157,7 +157,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
                     MAP_IMG_PATH, os.path.join(base_path, "resources/map_image.png")
                 ),
                 MAP_IMG_ROTATION: 0,
-                MAP_PATH_COLOR: "255,0,0",
+                MAP_PATH_COLOR: [255, 0, 0],
                 HOME_LOCATION: "",
             }
 

@@ -15,10 +15,9 @@ from homeassistant.helpers.issue_registry import async_get
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .. import async_reload_entry, update_listener
-from ..const import DOMAIN
+from ..const import DOMAIN, MAP_IMG_ROTATION, MAP_PATH_COLOR, HOME_LOCATION
 from .const import (
     AUTOMER_SM_CONFIG,
-    AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
     AUTOMOWER_CONFIG_DATA_BAD_SCOPE,
     AUTOMOWER_SM_SESSION_DATA,
@@ -209,6 +208,9 @@ async def test_async_migrate_entry(hass: HomeAssistant):
         for mwr, config in config_entry.options.items():
             for opt_key in old_options_fmt.keys():
                 assert config[opt_key] == old_options_fmt[opt_key]
+            assert config[MAP_IMG_ROTATION] == 0
+            assert config[MAP_PATH_COLOR] == [255, 0, 0]
+            assert config[HOME_LOCATION] == ""
 
         assert await config_entry.async_unload(hass)
         await hass.async_block_till_done()
