@@ -254,7 +254,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         else:
                             errors[ZONE_COLOR] = "color_error"
 
-                        if len(user_input.get(ZONE_MOWERS)) < 1:
+                        if len(user_input.get(ZONE_MOWERS, [])) < 1:
                             errors[ZONE_MOWERS] = "need_one_mower"
 
                         if not errors:
@@ -270,21 +270,28 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 self.options.update({CONF_ZONES: self.configured_zones})
                 return await self.async_step_geofence_init()
 
-        sel_zone = self.configured_zones.get(self.sel_zone_id, {})
-        current_coordinates = sel_zone.get(ZONE_COORD, "")
+            sel_zone_name = user_input.get(ZONE_NAME, "")
+            sel_zone_coordinates = user_input.get(ZONE_COORD, "")
+            display_zone = user_input.get(ZONE_DISPLAY, False)
+            display_color = user_input.get(ZONE_COLOR, "255, 255, 255")
 
-        str_zone = ""
-        sel_zone_name = sel_zone.get(ZONE_NAME, "")
+        else:
+            sel_zone = self.configured_zones.get(self.sel_zone_id, {})
 
-        for coord in current_coordinates:
-            str_zone += ",".join([str(x) for x in coord])
-            str_zone += ";"
+            current_coordinates = sel_zone.get(ZONE_COORD, "")
 
-        sel_zone_coordinates = str_zone
+            str_zone = ""
+            sel_zone_name = sel_zone.get(ZONE_NAME, "")
 
-        display_zone = sel_zone.get(ZONE_DISPLAY, False)
-        display_color = sel_zone.get(ZONE_COLOR, [255, 255, 255])
-        display_color = ",".join([str(i) for i in display_color])
+            for coord in current_coordinates:
+                str_zone += ",".join([str(x) for x in coord])
+                str_zone += ";"
+
+            sel_zone_coordinates = str_zone
+
+            display_zone = sel_zone.get(ZONE_DISPLAY, False)
+            display_color = sel_zone.get(ZONE_COLOR, [255, 255, 255])
+            display_color = ",".join([str(i) for i in display_color])
 
         data_schema = {
             vol.Required(ZONE_NAME, default=sel_zone_name): str,
@@ -492,5 +499,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_config(self):
         """Update config entry options."""
-        self.options[CONF_ZONES] = json.dumps(self.options.get(CONF_ZONES))
+        if isinstance(self.options.get(CONF_ZONES), dict):
+            self.options[CONF_ZONES] = json.dumps(self.options.get(CONF_ZONES))
+
         return self.async_create_entry(title="", data=self.options)
