@@ -3,6 +3,8 @@ from asyncio.exceptions import TimeoutError
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from aioautomower import AutomowerSession
+
 from homeassistant.components.application_credentials import (
     ClientCredential,
     async_import_client_credential,
@@ -16,9 +18,11 @@ from .. import async_reload_entry, update_listener
 from ..const import DOMAIN
 from .const import (
     AUTOMER_SM_CONFIG,
+    AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
     AUTOMOWER_CONFIG_DATA_BAD_SCOPE,
     AUTOMOWER_SM_SESSION_DATA,
+    AUTOMOWER_DM_SESSION_DATA,
 )
 
 
@@ -143,6 +147,68 @@ async def test_load_unload_wrong_scope(hass: HomeAssistant):
         issue_registry = async_get(hass)
         issue = issue_registry.async_get_issue(DOMAIN, "wrong_scope")
         assert issue is not None
+
+        assert await config_entry.async_unload(hass)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.NOT_LOADED
+
+
+@pytest.mark.asyncio
+async def test_async_migrate_entry(hass: HomeAssistant):
+    """test automower migration from version 2 to 3"""
+
+    await configure_application_credentials(hass)
+
+    old_options_fmt = {
+        "enable_camera": True,
+        "gps_top_left": [35.5411008, -82.5527418],
+        "gps_bottom_right": [35.539442, -82.5504646],
+        "mower_img_path": "custom_components/husqvarna_automower/resources/mower.png",
+        "map_img_path": "custom_components/husqvarna_automower/tests/resources/biltmore-min.png",
+    }
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=old_options_fmt,
+        entry_id="automower_test",
+        title="Automower Test",
+        version=2,
+    )
+    config_entry.add_to_hass(hass)
+
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            name="AutomowerMockSession",
+            model=AutomowerSession,
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+        ),
+    ) as automower_session_mock:
+        automower_coordinator_mock = MagicMock(
+            name="MockCoordinator", session=automower_session_mock()
+        )
+
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+        assert config_entry.version == 3
+        assert config_entry.options.get("enable_camera") is None
+        assert config_entry.options.get("gps_top_left") is None
+        assert config_entry.options.get("gps_bottom_right") is None
+        assert config_entry.options.get("mower_img_path") is None
+        assert config_entry.options.get("map_img_path") is None
+
+        for mwr, config in config_entry.options.items():
+            for opt_key in old_options_fmt.keys():
+                assert config[opt_key] == old_options_fmt[opt_key]
 
         assert await config_entry.async_unload(hass)
         await hass.async_block_till_done()

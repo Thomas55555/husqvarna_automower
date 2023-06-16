@@ -32,6 +32,7 @@ from .const import (
     ZONE_NAME,
     ZONE_NEW,
     ZONE_SEL,
+    CURRENT_CONFIG_VER,
 )
 from .map_utils import (
     ValidatePointString,
@@ -51,7 +52,7 @@ class HusqvarnaConfigFlowHandler(
     """Handle a config flow."""
 
     DOMAIN = DOMAIN
-    VERSION = 2
+    VERSION = CURRENT_CONFIG_VER
 
     async def async_step_oauth2(self, user_input=None) -> data_entry_flow.FlowResult:
         """Handle the config-flow for Authorization Code Grant."""

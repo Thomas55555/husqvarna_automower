@@ -303,3 +303,6 @@ MWR_RES_REASON_TO_STATUS = {
     "DAILY_LIMIT": "daily_limit",
     "NOT_APPLICABLE": "parked_until_further_notice",
 }
+
+PREV_CONFIG_VER = 2
+CURRENT_CONFIG_VER = 3

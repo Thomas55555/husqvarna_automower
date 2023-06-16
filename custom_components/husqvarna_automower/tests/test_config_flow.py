@@ -514,34 +514,3 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             {"label": "Create Zone", "value": ZONE_NEW},
             {"label": "Save Zone", "value": ZONE_FINISH},
         ]
-
-
-# async def test_ouath_configure(hass: HomeAssistant) -> None:
-#     """Test oauth."""
-#     result = await hass.config_entries.flow.async_init(
-#         DOMAIN, context={"source": config_entries.SOURCE_USER}
-#     )
-#     assert result["type"] == FlowResultType.FORM
-#     assert result["errors"] == {}
-
-# with patch(
-#     "custom_components.husqvarna_automower.config_flow._validate_input",
-#     return_value=MagicMock()
-#     # HubInfo(
-#     #     "omada_id", "OC200", [OmadaSite("Display Name", "SiteId")]
-#     # ),
-# ) as mocked_validate, patch(
-#     "custom_components.husqvarna_automower.async_setup_entry",
-#     return_value=True,
-# ) as mock_setup_entry:
-#     result2 = await hass.config_entries.flow.async_configure(
-#         result["flow_id"],
-#         {},
-#     )
-#     await hass.async_block_till_done()
-
-# assert result2["type"] == FlowResultType.CREATE_ENTRY
-# assert result2["title"] == "OC200 (Display Name)"
-# assert result2["data"] == MOCK_ENTRY_DATA
-# assert len(mock_setup_entry.mock_calls) == 1
-# mocked_validate.assert_called_once_with(hass, {})
