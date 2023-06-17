@@ -22,7 +22,6 @@ from .const import (
     AUTOMOWER_CONFIG_DATA_BAD_SCOPE,
     AUTOMOWER_SM_SESSION_DATA,
     AUTOMOWER_DM_SESSION_DATA,
-    AUTOMOWER_ERROR_SESSION_DATA,
 )
 
 
@@ -114,36 +113,6 @@ async def test_load_unload(hass: HomeAssistant):
         ),
     ):
         # Genric Error
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.SETUP_ERROR
-
-
-@pytest.mark.asyncio
-async def test_load_no_data(hass: HomeAssistant):
-    """test automower initialization, not data returned"""
-
-    await configure_application_credentials(hass)
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=AUTOMER_SM_CONFIG,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-    config_entry.add_to_hass(hass)
-
-    with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            register_token_callback=MagicMock(),
-            connect=AsyncMock(),
-            data=AUTOMOWER_ERROR_SESSION_DATA,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-        ),
-    ):
         await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
         assert config_entry.state == ConfigEntryState.SETUP_ERROR

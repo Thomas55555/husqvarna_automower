@@ -81,10 +81,6 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
             # we need to login using username and password in the config flow again.
             raise ConfigEntryAuthFailed from Exception
 
-        if not self.session.data.get("data"):
-            # No errors raised, but data missing from result
-            raise ConfigEntryAuthFailed(self.session.data.get("errors"))
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
