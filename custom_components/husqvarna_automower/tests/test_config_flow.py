@@ -47,8 +47,8 @@ def get_suggested(schema, key):
     raise Exception
 
 
-async def test_options_le_enable(hass: HomeAssistant) -> None:
-    """Test option flow for le enable"""
+async def test_options_init(hass: HomeAssistant) -> None:
+    """Test option flow init"""
 
     config_entry = MockConfigEntry(
         domain=DOMAIN,
@@ -163,9 +163,7 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
         assert get_suggested(schema, ENABLE_CAMERA) is None
         assert get_suggested(schema, MOWER_IMG_PATH) is None
         assert get_suggested(schema, MAP_IMG_PATH) is None
-        assert schema[ADD_CAMERAS].config["options"] == [
-            {"label": "Test Mower 2", "value": MWR_TWO_ID}
-        ]
+        assert schema[ADD_CAMERAS].options == {MWR_TWO_ID: "Test Mower 2"}
 
         # Disable Camera, nothing else
         result = await hass.config_entries.options.async_configure(
@@ -371,10 +369,10 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "zone_edit"
         schema = result["data_schema"].schema
-        assert schema[ZONE_MOWERS].config["options"] == [
-            {"label": "Test Mower 1", "value": MWR_ONE_ID},
-            {"label": "Test Mower 2", "value": MWR_TWO_ID},
-        ]
+        assert schema[ZONE_MOWERS].options == {
+            MWR_ONE_ID: "Test Mower 1",
+            MWR_TWO_ID: "Test Mower 2",
+        }
 
         # Create Zone, invalid point
         result = await hass.config_entries.options.async_configure(

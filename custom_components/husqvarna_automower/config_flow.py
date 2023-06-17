@@ -9,6 +9,8 @@ from homeassistant.const import CONF_TOKEN
 from homeassistant.core import async_get_hass, callback
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.selector import selector
+import homeassistant.helpers.config_validation as cv
+
 
 from .const import (
     ADD_CAMERAS,
@@ -184,7 +186,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_geofence_init(self, user_input=None):
         """Configure the geofence."""
         if user_input:
-            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_NEW)
+            self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_FINISH)
             if self.sel_zone_id == ZONE_FINISH:
                 return await self._update_config()
 
@@ -278,12 +280,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 return await self.async_step_geofence_init()
 
             sel_zone_name = user_input.get(ZONE_NAME, "")
+            sel_mowers = user_input.get(ZONE_MOWERS, [])
             sel_zone_coordinates = user_input.get(ZONE_COORD, "")
             display_zone = user_input.get(ZONE_DISPLAY, False)
             display_color = user_input.get(ZONE_COLOR, "255, 255, 255")
 
         else:
             sel_zone = self.configured_zones.get(self.sel_zone_id, {})
+            sel_mowers = sel_zone.get(ZONE_MOWERS, [])
 
             current_coordinates = sel_zone.get(ZONE_COORD, "")
 
@@ -300,26 +304,22 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             display_color = sel_zone.get(ZONE_COLOR, [255, 255, 255])
             display_color = ",".join([str(i) for i in display_color])
 
+        mwr_options_dict = {}
+        for mwr in self.mower_idx:
+            mwr_options_dict[mwr["id"]] = mwr["name"]
+
         data_schema = {
             vol.Required(ZONE_NAME, default=sel_zone_name): str,
             vol.Required(ZONE_COORD, default=sel_zone_coordinates): str,
             vol.Required(ZONE_DISPLAY, default=display_zone): bool,
             vol.Required(ZONE_COLOR, default=display_color): str,
             vol.Required(ZONE_DEL, default=False): bool,
+            vol.Optional(
+                ZONE_MOWERS,
+                default=sel_mowers,
+            ): cv.multi_select(mwr_options_dict),
         }
 
-        mwr_options = []
-        for mwr in self.mower_idx:
-            mwr_options.append({"label": mwr["name"], "value": mwr["id"]})
-
-        data_schema[ZONE_MOWERS] = selector(
-            {
-                "select": {
-                    "options": mwr_options,
-                    "multiple": True,
-                }
-            }
-        )
         return self.async_show_form(
             step_id="zone_edit", data_schema=vol.Schema(data_schema), errors=errors
         )
@@ -464,6 +464,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 [str(x) for x in self.options[self.sel_mower_id][HOME_LOCATION]]
             )
 
+        mwr_options_dict = {}
+        for mwr in self.mower_idx:
+            if mwr["id"] != self.sel_mower_id:
+                mwr_options_dict[mwr["id"]] = mwr["name"]
+
         data_schema = {
             vol.Required(
                 ENABLE_CAMERA,
@@ -485,21 +490,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             ): str,
             vol.Required(MAP_PATH_COLOR, default=path_color_str): str,
             vol.Optional(HOME_LOCATION, default=home_location): str,
+            vol.Optional(
+                ADD_CAMERAS,
+                default=self.options[self.sel_mower_id].get(ADD_CAMERAS, []),
+            ): cv.multi_select(mwr_options_dict),
         }
 
-        mwr_options = []
-        for mwr in self.mower_idx:
-            if mwr["id"] != self.sel_mower_id:
-                mwr_options.append({"label": mwr["name"], "value": mwr["id"]})
-
-        data_schema[ADD_CAMERAS] = selector(
-            {
-                "select": {
-                    "options": mwr_options,
-                    "multiple": True,
-                }
-            }
-        )
         return self.async_show_form(
             step_id="camera_config", data_schema=vol.Schema(data_schema), errors=errors
         )
