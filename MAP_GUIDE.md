@@ -1,12 +1,12 @@
-#Building a Camera Map
+# Building a Camera Map
 
-- [Map Camera Setup](#building-a-Camera-Map)
-  - [Aquire and image and configure the base image](#aquire-an-image-and-corner-coordinates)
-  - [Create a zone](#creating-a-zone)
+- [Building a Camera Map](#building-a-camera-map)
+  - [Acquire an image and corner coordinates](#acquire-an-image-and-corner-coordinates)
+  - [Creating a zone](#creating-a-zone)
 
-## Aquire an image and corner coordinates
+## Acquire an image and corner coordinates
 
-1. The easiest way to aquire an image and the corresponding coordinates is via [Google Mymaps](https://mymaps.google.com/).
+1. The easiest way to acquire an image and the corresponding coordinates is via [Google MyMaps](https://mymaps.google.com/).
 2. From Google MyMaps, choose `Create a new map`.
 3. Center your location in the screen, adjust the zoom for the maximum size.
 ![Initial Map Image](/images/map_guide/map_1.png)
@@ -24,11 +24,11 @@
     - Bottom Right: 35.539459,-82.5504486
 10. Now, take a screen shot of the image, and load the new image into your preferred image editing program, in this case I'm using GIMP.
 ![Create Map Image Outline - step 4](/images/map_guide/map_5.png)
-11. Rotate your image until the top of the image is parralel to the line you have created.
+11. Rotate your image until the top of the image is parallel to the line you have created.
 ![Create Map Image Outline - step 5](/images/map_guide/map_6.png)
 12. Make sure you note the amount of rotation, and which direction, positive or negative, you applied. In this case, `-16` degrees.
 ![Create Map Image Outline - step 6](/images/map_guide/map_7.png)
-13. Next, crop the image to the line you drew in step 5. This is the image you will use for your background image, export it and upload to your home assistant. Be sure to place it in a location that is accesible to your instance. I recommend your config folder, so `config/www/images/map.png` would be typical.
+13. Next, crop the image to the line you drew in step 5. This is the image you will use for your background image, export it and upload to your home assistant. Be sure to place it in a location that is accessible to your instance. I recommend your config folder, so `config/www/images/map.png` would be typical.
 ![Create Map Image Outline - step 7](/images/map_guide/map_8.png)
 14. Now, find the Husqvarna Integration in Settings, Integrations, choose the gear icon.
 ![Create Map Image Config - step 1](/images/map_guide/map_config_1.png)
@@ -40,7 +40,7 @@
 ![Create Map Image Config - step 4](/images/map_guide/map_config_4.png)
 18. Paste the Top Left and Bottom Right coordinates from step 9, set the rotation from step 12, and the folder you placed the image in during step 13.
 ![Create Map Image Config - step 5](/images/map_guide/map_config_5.png)
-19. [Optional] add the home location of your mower, this will ensure the mower is always shown at home on the image if it's docked.  This prevents GPS errors, espically noticble if you have a garage causing the mower to appear to wander.
+19. [Optional] add the home location of your mower, this will ensure the mower is always shown at home on the image if it's docked.  This prevents GPS errors, especially noticeable if you have a garage causing the mower to appear to wander.
 20. [Optional] If you have more than one mower, the last option is to choose additional mowers to display on this mowers map camera, choose those now.
 21. Choose Submit, then finish.
 22. Verify your mower is shown on the map camera properly.
@@ -48,10 +48,10 @@
 
 ## Creating a zone
 
-1. Using [Google Mymaps](https://mymaps.google.com/) again, select the map you created in step 2.
+1. Using [Google MyMaps](https://mymaps.google.com/) again, select the map you created in step 2.
 2. Choose draw a line, then draw a line or shape around the zone you want to track, go ahead an name it.
 ![Create Zone - Step 1](/images/map_guide/zone_config_1.png)
-3. Create additional zones and name them, using the same proccess.
+3. Create additional zones and name them, using the same process.
 4. Choose the three dot menu next to the zones you created, then export as csv.
 ![Create Zone - Step 2](/images/map_guide/map_4.png)
 5. Open the csv file and find the polygon you created in column WKT, in this case our `Front Garden` zone is `POLYGON ((-82.552459 35.5408395, -82.5526468 35.5403331, -82.5506861 35.5398879, -82.5505225 35.5403811, -82.552459 35.5408395))`
@@ -70,7 +70,3 @@
 14. You must select Save Zone, then click Submit to save the zones to the config.
 15. Verify the zones are shown on the map camera.
 16. Note: The Zone sensor won't update until you either reload the integration or the next update happens.
-
-
-
-

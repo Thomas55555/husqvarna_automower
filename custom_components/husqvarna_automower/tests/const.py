@@ -193,6 +193,19 @@ MOWER_TWO_SESSION_DATA = {
     "id": MWR_TWO_ID,
 }
 
+AUTOMOWER_ERROR_SESSION_DATA = {
+    "errors": [
+        {
+            "id": MWR_ONE_ID,
+            "status": "403",
+            "code": "invalid.credentials",
+            "title": "Invalid credentials",
+            "detail": "The supplied credentials are invalid.",
+        }
+    ]
+}
+
+
 AUTOMOWER_SM_SESSION_DATA = {
     "data": [MOWER_ONE_SESSION_DATA],
 }

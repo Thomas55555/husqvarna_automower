@@ -72,14 +72,18 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from Husqvarna."""
         try:
             await self.session.connect()
-        except TimeoutError as error:  # Todo: Add test
+        except TimeoutError as error:
             _LOGGER.debug("Asyncio timeout: %s", error)
             raise ConfigEntryNotReady from error
-        except Exception as error:  # Todo: Add test
+        except Exception as error:
             _LOGGER.debug("Exception in async_setup_entry: %s", error)
             # If we haven't used the refresh_token (ie. been offline) for 10 days,
             # we need to login using username and password in the config flow again.
             raise ConfigEntryAuthFailed from Exception
+
+        if not self.session.data.get("data"):
+            # No errors raised, but data missing from result
+            raise ConfigEntryAuthFailed(self.session.data.get("errors"))
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
