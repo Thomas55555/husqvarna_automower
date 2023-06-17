@@ -136,6 +136,8 @@ You can then provide the path to the image you would like to use for the map and
 
 ### Camera Sensor
 
+#### [Detailed Instruction for creating and configuring the map camera](MAP_GUIDE.md)
+
 #### Example of map camera
 ![Example of camera](/images/map_camera.png)
 
