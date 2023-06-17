@@ -268,6 +268,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             if not errors:
                 self.options.update({CONF_ZONES: self.configured_zones})
+                if isinstance(self.options.get(CONF_ZONES), dict):
+                    json_options = self.options.copy()
+                    json_options[CONF_ZONES] = json.dumps(json_options.get(CONF_ZONES))
+
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry, options=json_options
+                )
                 return await self.async_step_geofence_init()
 
             sel_zone_name = user_input.get(ZONE_NAME, "")
