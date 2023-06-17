@@ -19,6 +19,7 @@ from .const import (
     AUTOMOWER_SM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
+    AUTOMOWER_ERROR_SESSION_DATA,
 )
 
 
@@ -78,3 +79,13 @@ async def test_entity_datetime_object(hass: HomeAssistant):
         2023, 6, 5, 19, 0, tzinfo=tz.gettz("US/Pacific")
     )
     assert entity.datetime_object(0) is None
+
+
+@pytest.mark.asyncio
+async def test_load_no_data(hass: HomeAssistant):
+    """test automower initialization, not data returned"""
+    await setup_entity(hass)
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    coordinator.session.data = AUTOMOWER_ERROR_SESSION_DATA
+    with pytest.raises(KeyError):
+        entity = AutomowerEntity(coordinator, MWR_ONE_IDX)
