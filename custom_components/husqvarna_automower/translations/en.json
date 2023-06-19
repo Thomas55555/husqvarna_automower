@@ -59,7 +59,15 @@
 			"rotation_error": "Value is in degrees and must be between -360 and 360",
 			"need_one_mower": "Need at least one mower for a zone."
 		}
-		},
+	},
+    "selector": {
+        "geofence_init": {
+            "options": {
+                "new": "Create a New Zone",
+                "save": "Save and Close"
+            }
+        }
+    },
     "system_health": {
         "info": {
             "can_reach_server": "Reach Husqvarna Token server"

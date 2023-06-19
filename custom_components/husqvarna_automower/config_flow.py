@@ -8,7 +8,7 @@ from homeassistant import config_entries, data_entry_flow
 from homeassistant.const import CONF_TOKEN
 from homeassistant.core import async_get_hass, callback
 from homeassistant.helpers import config_entry_oauth2_flow
-from homeassistant.helpers.selector import selector
+from homeassistant.helpers import selector
 import homeassistant.helpers.config_validation as cv
 
 
@@ -189,29 +189,29 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             self.sel_zone_id = user_input.get(ZONE_SEL, ZONE_FINISH)
             if self.sel_zone_id == ZONE_FINISH:
                 return await self._update_config()
-
             return await self.async_step_zone_edit()
 
-        configured_zone_keys = [
-            {"label": "Create Zone", "value": ZONE_NEW},
-            {"label": "Save Zone", "value": ZONE_FINISH},
-        ]
+        configured_zone_keys = [{"label": ZONE_NEW, "value": ZONE_NEW}]
         for zone_id, zone_values in self.configured_zones.items():
             configured_zone_keys.append(
                 {"label": zone_values["name"], "value": zone_id}
             )
 
+        configured_zone_keys.append({"label": ZONE_FINISH, "value": ZONE_FINISH})
+
         data_schema = {}
-        data_schema[ZONE_SEL] = selector(
+        data_schema = vol.Schema(
             {
-                "select": {
-                    "options": configured_zone_keys,
-                }
+                vol.Optional(ZONE_SEL, default=ZONE_FINISH): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=configured_zone_keys,
+                        translation_key="geofence_init",
+                    )
+                )
             }
         )
-        return self.async_show_form(
-            step_id="geofence_init", data_schema=vol.Schema(data_schema)
-        )
+
+        return self.async_show_form(step_id="geofence_init", data_schema=data_schema)
 
     async def async_step_zone_edit(self, user_input=None):
         """Update the selected zone configuration."""
@@ -337,7 +337,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         configured_camera_keys = [m["name"] for m in self.mower_idx]
 
         data_schema = {}
-        data_schema[SEL_CAMERA] = selector(
+        data_schema[SEL_CAMERA] = selector.selector(
             {
                 "select": {
                     "options": configured_camera_keys,

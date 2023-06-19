@@ -357,8 +357,8 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         assert result["step_id"] == "geofence_init"
 
         assert result["data_schema"].schema[ZONE_SEL].config["options"] == [
-            {"label": "Create Zone", "value": ZONE_NEW},
-            {"label": "Save Zone", "value": ZONE_FINISH},
+            {"label": ZONE_NEW, "value": ZONE_NEW},
+            {"label": ZONE_FINISH, "value": ZONE_FINISH},
         ]
 
         # Add a new zone
@@ -461,9 +461,9 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
 
         # Ensure zone was created
         assert result["data_schema"].schema[ZONE_SEL].config["options"] == [
-            {"label": "Create Zone", "value": ZONE_NEW},
-            {"label": "Save Zone", "value": ZONE_FINISH},
+            {"label": ZONE_NEW, "value": ZONE_NEW},
             {"label": "Front Garden", "value": "front_garden"},
+            {"label": ZONE_FINISH, "value": ZONE_FINISH},
         ]
 
         # Save Zone
@@ -486,9 +486,9 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         assert result["step_id"] == "geofence_init"
 
         assert result["data_schema"].schema[ZONE_SEL].config["options"] == [
-            {"label": "Create Zone", "value": ZONE_NEW},
-            {"label": "Save Zone", "value": ZONE_FINISH},
+            {"label": ZONE_NEW, "value": ZONE_NEW},
             {"label": "Front Garden", "value": "front_garden"},
+            {"label": ZONE_FINISH, "value": ZONE_FINISH},
         ]
 
         # Edit zone
@@ -509,6 +509,6 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
 
         # Ensure zone was deleted
         assert result["data_schema"].schema[ZONE_SEL].config["options"] == [
-            {"label": "Create Zone", "value": ZONE_NEW},
-            {"label": "Save Zone", "value": ZONE_FINISH},
+            {"label": ZONE_NEW, "value": ZONE_NEW},
+            {"label": ZONE_FINISH, "value": ZONE_FINISH},
         ]
