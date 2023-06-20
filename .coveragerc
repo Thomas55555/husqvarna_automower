@@ -1,0 +1,2 @@
+[run]
+omit = custom_components/husqvarna_automower/tests/*

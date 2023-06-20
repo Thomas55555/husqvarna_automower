@@ -1,15 +1,17 @@
 """Platform for Husqvarna Automower basic entity."""
 
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 from homeassistant.util import dt as dt_util
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from .const import DOMAIN, HUSQVARNA_URL
-from . import AutomowerDataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from . import AutomowerDataUpdateCoordinator
+from .const import DOMAIN, HUSQVARNA_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,12 +21,11 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
 
     _attr_has_entity_name = True
 
-    def __init__(self, session, idx) -> None:
+    def __init__(self, coordinator, idx) -> None:
         """Initialize AutomowerEntity."""
-        super().__init__(session)
+        super().__init__(coordinator, context=idx)
         self.idx = idx
-        self.mower = self.coordinator.session.data["data"][self.idx]
-
+        self.mower = coordinator.session.data["data"][self.idx]
         mower_attributes = self.get_mower_attributes()
         self.mower_id = self.mower["id"]
         self.mower_name = mower_attributes["system"]["name"]
@@ -70,6 +71,16 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
             configuration_url=HUSQVARNA_URL,
             suggested_area="Garden",
         )
+
+    @property
+    def _is_home(self):
+        """Return True if the mower is located at the charging station."""
+        if self.get_mower_attributes()["mower"]["activity"] in [
+            "PARKED_IN_CS",
+            "CHARGING",
+        ]:
+            return True
+        return False
 
     @property
     def should_poll(self) -> bool:

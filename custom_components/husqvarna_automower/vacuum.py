@@ -2,9 +2,8 @@
 import json
 import logging
 
-from aiohttp import ClientResponseError
 import voluptuous as vol
-
+from aiohttp import ClientResponseError
 from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 from homeassistant.components.vacuum import (
     ATTR_STATUS,
@@ -20,11 +19,21 @@ from homeassistant.components.vacuum import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConditionErrorMessage, HomeAssistantError
-from homeassistant.helpers import config_validation as cv, entity_platform
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
 
-from .const import DOMAIN, ERRORCODES, WEEKDAYS
+from .const import (
+    DOMAIN,
+    ERROR_ACTIVITIES,
+    ERROR_STATES,
+    ERRORCODES,
+    MWR_ACTIVITY_TO_STATUS,
+    MWR_RES_REASON_TO_STATUS,
+    MWR_STATE_TO_STATUS,
+    WEEKDAYS,
+)
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
@@ -119,11 +128,7 @@ class HusqvarnaAutomowerStateMixin(object):
                 "STOPPED",
                 "OFF",
             ]
-        ) or mower_attributes["mower"]["activity"] in [
-            "STOPPED_IN_GARDEN",
-            "UNKNOWN",
-            "NOT_APPLICABLE",
-        ]:
+        ) or mower_attributes["mower"]["activity"] in ERROR_ACTIVITIES:
             return STATE_ERROR
 
     @property
@@ -175,55 +180,25 @@ class HusqvarnaAutomowerEntity(
                 self, mower_attributes["planner"]["nextStartTimestamp"]
             )
             next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
-        if mower_attributes["mower"]["state"] == "UNKNOWN":
-            return "unknown"
-        if mower_attributes["mower"]["state"] == "NOT_APPLICABLE":
-            return "not_applicable"
-        if mower_attributes["mower"]["state"] == "PAUSED":
-            return "paused"
+        if mower_attributes["mower"]["state"] in MWR_STATE_TO_STATUS:
+            return MWR_STATE_TO_STATUS.get(mower_attributes["mower"]["state"])
         if mower_attributes["mower"]["state"] == "IN_OPERATION":
-            if mower_attributes["mower"]["activity"] == "UNKNOWN":
-                return "unknown"
-            if mower_attributes["mower"]["activity"] == "NOT_APPLICABLE":
-                return "not_applicable"
-            if mower_attributes["mower"]["activity"] == "MOWING":
-                return "cleaning"
-            if mower_attributes["mower"]["activity"] == "GOING_HOME":
-                return "going to charging station"
+            if mower_attributes["mower"]["activity"] in MWR_ACTIVITY_TO_STATUS:
+                return MWR_ACTIVITY_TO_STATUS.get(mower_attributes["mower"]["activity"])
             if mower_attributes["mower"]["activity"] == "CHARGING":
                 return f"Charging{next_start_short}"
-            if mower_attributes["mower"]["activity"] == "LEAVING":
-                return "leaving_charging_station"
-            if mower_attributes["mower"]["activity"] == "PARKED_IN_CS":
-                return "parked"
-            if mower_attributes["mower"]["activity"] == "STOPPED_IN_GARDEN":
-                return "stopped"
-        if mower_attributes["mower"]["state"] == "WAIT_UPDATING":
-            return "updating"
-        if mower_attributes["mower"]["state"] == "WAIT_POWER_UP":
-            return "powering_up"
         if mower_attributes["mower"]["state"] == "RESTRICTED":
+            if (
+                mower_attributes["planner"]["restrictedReason"]
+                in MWR_RES_REASON_TO_STATUS
+            ):
+                return MWR_RES_REASON_TO_STATUS.get(
+                    mower_attributes["planner"]["restrictedReason"]
+                )
             if mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
                 return f"Schedule{next_start_short}"
-            if mower_attributes["planner"]["restrictedReason"] == "PARK_OVERRIDE":
-                return "park_override"
-            if mower_attributes["planner"]["restrictedReason"] == "SENSOR":
-                return "weather_timer"
-            if mower_attributes["planner"]["restrictedReason"] == "DAILY_LIMIT":
-                return "daily_limit"
-            if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
-                return "parked_until_further_notice"
-        if mower_attributes["mower"]["state"] == "OFF":
-            return "off"
-        if mower_attributes["mower"]["state"] == "STOPPED":
-            return "stopped"
-        if mower_attributes["mower"]["state"] in [
-            "ERROR",
-            "FATAL_ERROR",
-            "ERROR_AT_POWER_UP",
-        ]:
-            errorcode = mower_attributes["mower"]["errorCode"]
-            return ERRORCODES.get(errorcode, f"error_{errorcode}")
+        if mower_attributes["mower"]["state"] in ERROR_STATES:
+            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
         return None
 
     @property

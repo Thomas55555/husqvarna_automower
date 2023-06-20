@@ -6,7 +6,15 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.core import HomeAssistant
 
-from .const import CONF_REFRESH_TOKEN, DOMAIN, POSITIONS, GPS_TOP_LEFT, GPS_BOTTOM_RIGHT
+from .const import (
+    CONF_REFRESH_TOKEN,
+    CONF_ZONES,
+    DOMAIN,
+    GPS_BOTTOM_RIGHT,
+    GPS_TOP_LEFT,
+    HOME_LOCATION,
+    POSITIONS,
+)
 
 TO_REDACT = {
     CONF_ACCESS_TOKEN,
@@ -14,6 +22,8 @@ TO_REDACT = {
     POSITIONS,
     GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
+    CONF_ZONES,
+    HOME_LOCATION,
 }
 
 
