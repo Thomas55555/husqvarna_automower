@@ -168,7 +168,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             MOWER_IMG_PATH,
             MAP_IMG_PATH,
         ]:
-            new_options.pop(opt_key)
+            new_options.pop(opt_key, None)
 
         config_entry.version = CURRENT_CONFIG_VER
         hass.config_entries.async_update_entry(config_entry, options=new_options)

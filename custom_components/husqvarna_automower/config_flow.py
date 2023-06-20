@@ -435,7 +435,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ]
                 else:
                     errors[HOME_LOCATION] = pnt_error
-            self.options[self.sel_mower_id][ADD_CAMERAS] = user_input.get(ADD_CAMERAS)
+            self.options[self.sel_mower_id][ADD_CAMERAS] = user_input.get(ADD_CAMERAS, [])
 
             if not errors:
                 return await self._update_config()
