@@ -22,7 +22,6 @@ Custom component to support Automower.
     - [Zone Sensor](#zone-sensor)
   - [Usage](#usage)
     - [Services](#services)
-    - [Automation Example](#automation-example)
   - [Debugging](#debugging)
   - [Troubleshooting](#troubleshooting)
     - [Remove Credentials](#remove-credentials)
@@ -219,33 +218,6 @@ If a Home Zone is set, the sensor will return Home and the camera will display t
     entity_id: vacuum.automower
   ```
   See Husqvarna [API reference](https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger) for additional details.
-
-
-### Automation Example
-Let your mower only mow during daytime to protect wildlife. Schedule is updated daily.
-
-```
-- alias: Automower_set_schedule
-  id: "enklfjf76"
-  description: "Mow from dawn till dusk"
-  trigger:
-    - platform: time
-      at: "23:58"
-  action:
-    service: husqvarna_automower.calendar
-    data:
-      start: '{{ states("sensor.sun_next_rising") | as_timestamp| timestamp_custom("%H:%M") }}'
-      end: '{{ states("sensor.sun_next_setting") | as_timestamp| timestamp_custom("%H:%M") }}'
-      monday: true
-      tuesday: true
-      wednesday: true
-      thursday: true
-      friday: true
-      saturday: true
-      sunday: true
-    target:
-      entity_id: vacuum.haffi
- ```
 
 ## Debugging
 
