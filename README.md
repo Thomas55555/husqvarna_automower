@@ -17,13 +17,11 @@ Custom component to support Automower.
     - [Husqvarna API-Key](#husqvarna-api-key)
     - [Home Assistant](#home-assistant)
     - [Camera Sensor](#camera-sensor)
-    - [Camera Sensor](#camera-sensor-1)
       - [Example of map camera](#example-of-map-camera)
       - [Example of map camera with zones enabled](#example-of-map-camera-with-zones-enabled)
     - [Zone Sensor](#zone-sensor)
   - [Usage](#usage)
     - [Services](#services)
-    - [Automation Example](#automation-example)
   - [Debugging](#debugging)
   - [Troubleshooting](#troubleshooting)
     - [Remove Credentials](#remove-credentials)
@@ -128,14 +126,6 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 
 ### Camera Sensor
 
-The camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
-
-The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example: `40.689209,-74.044661`
-
-You can then provide the path to the image you would like to use for the map and mower.  This has been tested with the PNG format, other formats may work.  The `.../resources/map_image.png` default image is over written when the integration is updated, store the custom image in another location.
-
-### Camera Sensor
-
 #### [Detailed Instruction for creating and configuring the map camera](MAP_GUIDE.md)
 
 #### Example of map camera
@@ -228,33 +218,6 @@ If a Home Zone is set, the sensor will return Home and the camera will display t
     entity_id: vacuum.automower
   ```
   See Husqvarna [API reference](https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API#/swagger) for additional details.
-
-
-### Automation Example
-Let your mower only mow during daytime to protect wildlife. Schedule is updated daily.
-
-```
-- alias: Automower_set_schedule
-  id: "enklfjf76"
-  description: "Mow from dawn till dusk"
-  trigger:
-    - platform: time
-      at: "23:58"
-  action:
-    service: husqvarna_automower.calendar
-    data:
-      start: '{{ states("sensor.sun_next_rising") | as_timestamp| timestamp_custom("%H:%M") }}'
-      end: '{{ states("sensor.sun_next_setting") | as_timestamp| timestamp_custom("%H:%M") }}'
-      monday: true
-      tuesday: true
-      wednesday: true
-      thursday: true
-      friday: true
-      saturday: true
-      sunday: true
-    target:
-      entity_id: vacuum.haffi
- ```
 
 ## Debugging
 
