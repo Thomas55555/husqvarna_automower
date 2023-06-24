@@ -17,7 +17,6 @@ Custom component to support Automower.
     - [Husqvarna API-Key](#husqvarna-api-key)
     - [Home Assistant](#home-assistant)
     - [Camera Sensor](#camera-sensor)
-    - [Camera Sensor](#camera-sensor-1)
       - [Example of map camera](#example-of-map-camera)
       - [Example of map camera with zones enabled](#example-of-map-camera-with-zones-enabled)
     - [Zone Sensor](#zone-sensor)
@@ -125,14 +124,6 @@ The My Home Assistant redirect feature needs to be setup to redirect to your hom
 7. After authorizing the integration the browser will show the my Home Assistant redirect link to link this account.  Click on **Link Account**.
 
 8. Confirm successful connection of mower and assign to an HA area if desired.
-
-### Camera Sensor
-
-The camera entity is disabled by default.  The camera entity will plot the current coordinates and location history of the mower on a user provided image. To configure the entity you need to upload your desired map image and determine the coordinates of the top left corner and the bottom right corner of your selected image.
-
-The camera entity is configured via the configure option on the integration. To enter the coordinates, ensure that they are in Signed Degree format and separated by a comma for example: `40.689209,-74.044661`
-
-You can then provide the path to the image you would like to use for the map and mower.  This has been tested with the PNG format, other formats may work.  The `.../resources/map_image.png` default image is over written when the integration is updated, store the custom image in another location.
 
 ### Camera Sensor
 
