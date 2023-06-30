@@ -19,8 +19,6 @@ _LOGGER = logging.getLogger(__name__)
 class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
     """Defining the Automower Basic Entity."""
 
-    _attr_has_entity_name = True
-
     def __init__(self, coordinator, idx) -> None:
         """Initialize AutomowerEntity."""
         super().__init__(coordinator, context=idx)
