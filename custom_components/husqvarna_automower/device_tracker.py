@@ -33,7 +33,6 @@ async def async_setup_entry(
 class AutomowerTracker(TrackerEntity, AutomowerEntity):
     """Defining the Device Tracker Entity."""
 
-    _attr_has_entity_name = True
     _attr_name: str | None = None
 
     def __init__(self, session, idx):

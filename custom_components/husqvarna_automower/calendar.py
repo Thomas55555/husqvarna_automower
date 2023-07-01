@@ -39,7 +39,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     """Representation of the Automower Calendar element."""
 
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_has_entity_name = True
     _attr_name: str | None = None
     _attr_supported_features = (
         CalendarEntityFeature.CREATE_EVENT
