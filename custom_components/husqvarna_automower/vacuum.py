@@ -147,6 +147,7 @@ class HusqvarnaAutomowerEntity(
     """Defining each mower Entity."""
 
     _attr_icon = "mdi:robot-mower"
+    _attr_name: str | None = None
     _attr_supported_features = SUPPORT_STATE_SERVICES
     _attr_translation_key = "mower"
 
