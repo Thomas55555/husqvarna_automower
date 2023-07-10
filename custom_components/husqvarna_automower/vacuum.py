@@ -151,7 +151,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         ) or mower_attributes["mower"]["activity"] in ERROR_ACTIVITIES:
             return STATE_ERROR
 
-
     @property
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
