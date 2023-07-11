@@ -1,5 +1,7 @@
 """Helpers for testing Husqvarana Automower."""
 
+from ..const import ENABLE_IMAGE
+
 MWR_ONE_ID = "c7233734-b219-4287-a173-08e3643f89f0"
 MWR_ONE_IDX = 0
 MWR_TWO_ID = "1c7aec7b-06ff-462e-b307-7c6ae4469047"
@@ -7,7 +9,7 @@ MWR_TWO_IDX = 1
 
 
 MWR_ONE_CONFIG = {
-    "enable_camera": True,
+    ENABLE_IMAGE: True,
     "gps_top_left": [35.5411008, -82.5527418],
     "gps_bottom_right": [35.539442, -82.5504646],
     "mower_img_path": "custom_components/husqvarna_automower/resources/mower.png",
@@ -19,7 +21,7 @@ MWR_ONE_CONFIG = {
 }
 
 MWR_TWO_CONFIG = {
-    "enable_camera": True,
+    ENABLE_IMAGE: True,
     "gps_top_left": [35.5411008, -82.5527418],
     "gps_bottom_right": [35.539442, -82.5504646],
     "mower_img_path": "custom_components/husqvarna_automower/resources/mower.png",

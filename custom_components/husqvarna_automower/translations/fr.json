@@ -24,7 +24,7 @@
                 }
             }
         },
-        "camera": {
+        "image": {
             "mower": {
                 "state": {
                     "cleaning": "Tonte"

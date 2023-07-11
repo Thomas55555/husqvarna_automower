@@ -1,242 +1,243 @@
 {
-    "config": {
-        "step": {
-            "reauth_confirm": {
-                "description": "The Husqvarna Automower integration needs to re-authenticate with Husqvarna",
-                "title": "Reauthenticate Integration"
-            }
-        },
-        "abort": {
-            "missing_configuration": "The component is not configured. Please follow the documentation.",
-            "reauth_successful": "The reauthentication was successful",
-            "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
-        }
+  "config": {
+    "step": {
+      "reauth_confirm": {
+        "description": "The Husqvarna Automower integration needs to re-authenticate with Husqvarna",
+        "title": "Reauthenticate Integration"
+      }
     },
-    "options": {
-		"step": {
-			"select": {
-				"menu_options": {
-					"camera_select": "Configure Map Camera",
-					"geofence_init": "Configure Zones"
-				},
-				"description": "Select Config Option",
-				"title": "Husqvarna Automower Options"
-			},
-			"zone_edit": {"data": {
-				"name": "Zone Name",
-				"zone_coordinates": "Zone Coordinates lat,long;lat,long...",
-				"display": "Show zone on map camera",
-				"color": "Zone RGB color",
-				"delete": "Delete this zone"
-				},
-				"description": "Configure Zone",
-				"title": "Husqvarna Automower Options"
-			},
-			"camera_config": {
-				"data": {
-					"enable_camera": "Enable Map Camera",
-					"gps_top_left": "GPS Coordinates of the Top Left Image Corner",
-					"gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
-					"mower_img_path": "Path to the mower location image",
-					"map_img_path": "Path to the map image",
-					"map_path_color": "Path RGB color",
-					"map_img_rotation": "Amount, in degrees, image is rotated from true North",
-					"home_location": "GPS Coordinates of the charging station."
-				},
-				"description": "Camera Settings",
-				"title": "Husqvarna Automower Options"
-			}
-		},
-		"error": {
-			"invalid_str": "Lat and Lon required, usa a comma to seperate",
-			"not_wgs84": "Coordinates are not valid, not in WGS84 datum",
-			"cant_parse": "Coordinates are not valid, lat and lon sperated by a comma in signed degree format",
-			"not_file": "Invalid path, not a file",
-			"too_few_points": "Must have atleast 3 points to define a zone",
-			"points_match": "Top Left and Bottom Right coordinates can't be the same",
-			"not_image": "Seleted file is not a valid image",
-			"color_error": "Values are RGB, seperated by a comma, 0-255",
-			"rotation_error": "Value is in degrees and must be between -360 and 360",
-			"need_one_mower": "Need at least one mower for a zone."
-		}
-	},
-    "selector": {
-        "geofence_init": {
-            "options": {
-                "new": "Create a New Zone",
-                "save": "Save and Close"
-            }
-        }
-    },
-    "system_health": {
-        "info": {
-            "can_reach_server": "Reach Husqvarna Token server"
-        }
-    },
-    "application_credentials": {
-        "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
-    },
-    "entity": {
-        "binary_sensor": {
-            "battery_charging": {
-                "name": "Battery charging"
-            },
-            "leaving_dock": {
-                "name": "Leaving dock"
-            },
-            "error": {
-                "name": "Error"
-            }
-        },
-        "number": {
-            "cutting_height": {
-                "name": "Cutting height"
-            },
-            "mow_for": {
-                "name": "Mow for"
-            },
-            "park_for": {
-                "name": "Park for"
-            }
-        },
-        "select": {
-            "headlight_mode": {
-                "name": "Headlight mode",
-                "state": {
-                    "always_on": "Always on",
-                    "always_off": "Always Off",
-                    "evening_only": "Evening only",
-                    "evening_and_night": "Evening and night"
-                }
-            }
-        },
-        "sensor": {
-            "cutting_height": {
-                "name": "Cutting height"
-            },
-            "number_of_charging_cycles": {
-                "name": "Number of charging cycles"
-            },
-            "number_of_collisions": {
-                "name": "Number of collisions"
-            },
-            "cutting_blade_usage_time": {
-                "name": "Cutting blade usage time"
-            },
-            "total_charging_time": {
-                "name": "Total charging time"
-            },
-            "total_cutting_time": {
-                "name": "Total cutting time"
-            },
-            "total_running_time": {
-                "name": "Total running time"
-            },
-            "total_searching_time": {
-                "name": "Total searching time"
-            },
-            "searching_time_percent": {
-                "name": "Searching time percent"
-            },
-            "cutting_time_percent": {
-                "name": "Cutting time percent"
-            },
-            "battery_level": {
-                "name": "Battery level"
-            },
-            "next_start": {
-                "name": "Next start"
-            },
-            "zone": {
-                "name": "Current Zone"
-            },
-            "problem_list": {
-                "name": "Problem sensor",
-                "state": {
-                    "off": "Off",
-                    "unknown": "Unknown",
-                    "stopped": "Stopped",
-                    "stopped_in_garden": "Stopped in garden",
-                    "not_applicable": "Not applicable",
-                    "none": "None",
-                    "week_schedule": "Week schedule",
-                    "park_override": "Park override",
-                    "sensor": "Weather timer",
-                    "daily_limit": "Daily limit",
-                    "fota": "Fota",
-                    "frost": "Frost",
-                    "parked_until_further_notice": "Parked until further notice"
-                }
-            },
-            "mode_list": {
-                "name": "Mode",
-                "state": {
-                    "main_area": "Main area",
-                    "secondary_area": "Secondary area",
-                    "home": "Home",
-                    "demo": "Demo",
-                    "unknown": "Unknown"
-                }
-            }
-        },
-        "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Mowing"
-                },
-                "state_attributes": {
-                    "status": {
-                        "name": "Status",
-                        "state": {
-                            "cleaning": "Mowing",
-                            "off": "Off",
-                            "unknown": "Unknown",
-                            "stopped": "Stopped",
-                            "not_applicable": "Not applicable",
-                            "paused": "Paused",
-                            "going_to_charging_station": "Going to charging station",
-                            "leaving_charging_station": "Leaving charging station",
-                            "parked": "Parked",
-                            "park_override": "Park override",
-                            "daily_limit": "Daily limit",
-                            "fota": "Fota",
-                            "updating": "Updating",
-                            "powering_up": "Powering up",
-                            "weather_timer": "Weather timer",
-                            "parked_until_further_notice": "Parked until further notice"
-                        }
-                    },
-                    "action": {
-                        "name": "Action",
-                        "state": {
-                            "force_mow": "Force mowing",
-                            "not_active": "Not active",
-                            "unknown": "Unknown"
-                        }
-                    }
-                }
-            }
-        },
-        "camera": {
-            "mower_cam": {
-                "name": "Map",
-                "state": {
-                    "cleaning": "Mowing",
-                    "docked": "Docked",
-                    "error": "Error",
-                    "idle": "Idle",
-                    "off": "Off",
-                    "on": "On",
-                    "paused": "Paused",
-                    "returning": "Returning to dock"
-                }
-            }
-        }
-    },
-    "issues": {
-        "wrong_scope": {
-            "title": "The scope of your token is wrong",
-            "description": "To use websocket and instant mower state update change it. For more details go here: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
-        }
+    "abort": {
+      "missing_configuration": "The component is not configured. Please follow the documentation.",
+      "reauth_successful": "The reauthentication was successful",
+      "single_instance_allowed": "Only a single configuration of Husqvarna Automower is allowed."
     }
+  },
+  "options": {
+    "step": {
+      "select": {
+        "menu_options": {
+          "image_select": "Configure Map Image",
+          "geofence_init": "Configure Zones"
+        },
+        "description": "Select Config Option",
+        "title": "Husqvarna Automower Options"
+      },
+      "zone_edit": {
+        "data": {
+          "name": "Zone Name",
+          "zone_coordinates": "Zone Coordinates lat,long;lat,long...",
+          "display": "Show zone on map image",
+          "color": "Zone RGB color",
+          "delete": "Delete this zone"
+        },
+        "description": "Configure Zone",
+        "title": "Husqvarna Automower Options"
+      },
+      "image_config": {
+        "data": {
+          "enable_image": "Enable Map Image",
+          "gps_top_left": "GPS Coordinates of the Top Left Image Corner",
+          "gps_bottom_right": "GPS Coordinates of the Bottom Right Image Corner",
+          "mower_img_path": "Path to the mower location image",
+          "map_img_path": "Path to the map image",
+          "map_path_color": "Path RGB color",
+          "map_img_rotation": "Amount, in degrees, image is rotated from true North",
+          "home_location": "GPS Coordinates of the charging station."
+        },
+        "description": "Image Settings",
+        "title": "Husqvarna Automower Options"
+      }
+    },
+    "error": {
+      "invalid_str": "Lat and Lon required, usa a comma to seperate",
+      "not_wgs84": "Coordinates are not valid, not in WGS84 datum",
+      "cant_parse": "Coordinates are not valid, lat and lon sperated by a comma in signed degree format",
+      "not_file": "Invalid path, not a file",
+      "too_few_points": "Must have atleast 3 points to define a zone",
+      "points_match": "Top Left and Bottom Right coordinates can't be the same",
+      "not_image": "Seleted file is not a valid image",
+      "color_error": "Values are RGB, seperated by a comma, 0-255",
+      "rotation_error": "Value is in degrees and must be between -360 and 360",
+      "need_one_mower": "Need at least one mower for a zone."
+    }
+  },
+  "selector": {
+    "geofence_init": {
+      "options": {
+        "new": "Create a New Zone",
+        "save": "Save and Close"
+      }
+    }
+  },
+  "system_health": {
+    "info": {
+      "can_reach_server": "Reach Husqvarna Token server"
+    }
+  },
+  "application_credentials": {
+    "description": "Create an account on [Husqvarna developers portal]({oauth_creds_url}). Connect The Authentication API and Automower Connect API. As redirect-URI set https://my.home-assistant.io/redirect/oauth. If you haven't set up My HomeAssistant already. Enter this URL for your instance {redirect_uri}"
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery_charging": {
+        "name": "Battery charging"
+      },
+      "leaving_dock": {
+        "name": "Leaving dock"
+      },
+      "error": {
+        "name": "Error"
+      }
+    },
+    "number": {
+      "cutting_height": {
+        "name": "Cutting height"
+      },
+      "mow_for": {
+        "name": "Mow for"
+      },
+      "park_for": {
+        "name": "Park for"
+      }
+    },
+    "select": {
+      "headlight_mode": {
+        "name": "Headlight mode",
+        "state": {
+          "always_on": "Always on",
+          "always_off": "Always Off",
+          "evening_only": "Evening only",
+          "evening_and_night": "Evening and night"
+        }
+      }
+    },
+    "sensor": {
+      "cutting_height": {
+        "name": "Cutting height"
+      },
+      "number_of_charging_cycles": {
+        "name": "Number of charging cycles"
+      },
+      "number_of_collisions": {
+        "name": "Number of collisions"
+      },
+      "cutting_blade_usage_time": {
+        "name": "Cutting blade usage time"
+      },
+      "total_charging_time": {
+        "name": "Total charging time"
+      },
+      "total_cutting_time": {
+        "name": "Total cutting time"
+      },
+      "total_running_time": {
+        "name": "Total running time"
+      },
+      "total_searching_time": {
+        "name": "Total searching time"
+      },
+      "searching_time_percent": {
+        "name": "Searching time percent"
+      },
+      "cutting_time_percent": {
+        "name": "Cutting time percent"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "next_start": {
+        "name": "Next start"
+      },
+      "zone": {
+        "name": "Current Zone"
+      },
+      "problem_list": {
+        "name": "Problem sensor",
+        "state": {
+          "off": "Off",
+          "unknown": "Unknown",
+          "stopped": "Stopped",
+          "stopped_in_garden": "Stopped in garden",
+          "not_applicable": "Not applicable",
+          "none": "None",
+          "week_schedule": "Week schedule",
+          "park_override": "Park override",
+          "sensor": "Weather timer",
+          "daily_limit": "Daily limit",
+          "fota": "Fota",
+          "frost": "Frost",
+          "parked_until_further_notice": "Parked until further notice"
+        }
+      },
+      "mode_list": {
+        "name": "Mode",
+        "state": {
+          "main_area": "Main area",
+          "secondary_area": "Secondary area",
+          "home": "Home",
+          "demo": "Demo",
+          "unknown": "Unknown"
+        }
+      }
+    },
+    "vacuum": {
+      "mower": {
+        "state": {
+          "cleaning": "Mowing"
+        },
+        "state_attributes": {
+          "status": {
+            "name": "Status",
+            "state": {
+              "cleaning": "Mowing",
+              "off": "Off",
+              "unknown": "Unknown",
+              "stopped": "Stopped",
+              "not_applicable": "Not applicable",
+              "paused": "Paused",
+              "going_to_charging_station": "Going to charging station",
+              "leaving_charging_station": "Leaving charging station",
+              "parked": "Parked",
+              "park_override": "Park override",
+              "daily_limit": "Daily limit",
+              "fota": "Fota",
+              "updating": "Updating",
+              "powering_up": "Powering up",
+              "weather_timer": "Weather timer",
+              "parked_until_further_notice": "Parked until further notice"
+            }
+          },
+          "action": {
+            "name": "Action",
+            "state": {
+              "force_mow": "Force mowing",
+              "not_active": "Not active",
+              "unknown": "Unknown"
+            }
+          }
+        }
+      }
+    },
+    "image": {
+      "mower_img": {
+        "name": "Map",
+        "state": {
+          "cleaning": "Mowing",
+          "docked": "Docked",
+          "error": "Error",
+          "idle": "Idle",
+          "off": "Off",
+          "on": "On",
+          "paused": "Paused",
+          "returning": "Returning to dock"
+        }
+      }
+    }
+  },
+  "issues": {
+    "wrong_scope": {
+      "title": "The scope of your token is wrong",
+      "description": "To use websocket and instant mower state update change it. For more details go here: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+    }
+  }
 }

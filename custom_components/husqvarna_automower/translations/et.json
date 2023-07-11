@@ -1,243 +1,243 @@
 {
-    "config": {
-        "step": {
-            "reauth_confirm": {
-                "description": "Husqvarna Automower sidumine vajab uuesti autentimist Husqvarnaga",
-                "title": "Autendi sidumine uuesti"
-            }
-        },
-        "abort": {
-            "missing_configuration": "Komponent ei ole seadistatud. Palun järgi dokumentatsiooni.",
-            "reauth_successful": "Uuesti autentimine õnnestus",
-            "single_instance_allowed": "Ainult üks Husqvarna Automoweri seadistamine on lubatud."
-        }
+  "config": {
+    "step": {
+      "reauth_confirm": {
+        "description": "Husqvarna Automower sidumine vajab uuesti autentimist Husqvarnaga",
+        "title": "Autendi sidumine uuesti"
+      }
     },
-    "options": {
-        "step": {
-            "select": {
-                "menu_options": {
-                    "camera_select": "Seadista kaardikaamera",
-                    "geofence_init": "Seadista tsoonid"
-                },
-                "description": "Vali sidumise suvandid",
-                "title": "Husqvarna Automower suvandid"
-            },
-            "zone_edit": {
-                "data": {
-                    "name": "Tsooni nimi",
-                    "zone_coordinates": "Tsooni koordinaadid lat,long;lat,long...",
-                    "display": "Kuva tsooni kaardikaameral",
-                    "color": "Tsooni RGB värv",
-                    "delete": "Kustuta tsoon"
-                },
-                "description": "Seadista tsoon",
-                "title": "Husqvarna Automower suvandid"
-            },
-            "camera_config": {
-                "data": {
-                    "enable_camera": "Luba kaardikaamera",
-                    "gps_top_left": "Pildi vasakpoolse ülemise nurga GPS koordinaadid",
-                    "gps_bottom_right": "Pildi parempoolse alumise nurga GPS koordinaadid",
-                    "mower_img_path": "Niiduki asukoha kujutise failitee",
-                    "map_img_path": "Kaardikujutise failitee",
-                    "map_path_color": "Teekonna RGB värv",
-                    "map_img_rotation": "Pildi pööramine tõelise põhjasuuna suhtes, kraadides",
-                    "home_location": "Laadimisjaama GPS koordinaadid."
-                },
-                "description": "Kaamera seaded",
-                "title": "Husqvarna Automower suvandid"
-            }
-        },
-        "error": {
-            "invalid_str": "Peavad olema laius ja pikkus, eraldatud komaga",
-            "not_wgs84": "Koordinaadid pole korrektsed, peavad olema WGS84 daatumis",
-            "cant_parse": "Koordinaadid pole korrektsed, peavad olema laius ja pikkus, eraldatud komaga, kümnendkraadides",
-            "not_file": "Vale failitee, ei viita failile",
-            "too_few_points": "Tsooni defineerimiseks on vaja vähemalt 3 punkti",
-            "points_match": "Ülemine vasak ja alumine parem koordinaat ei tohi olla samad",
-            "not_image": "Valitud fail pole pildifail",
-            "color_error": "Peavad olema RGB väärtused vahemikus 0-255, eraldatud komaga",
-            "rotation_error": "Väärtus peab olema kraadides, vahemikus -360 ja 360",
-            "need_one_mower": "Tsoonis peab olema vähemalt üks niiduk"
-        }
-    },
-    "selector": {
-        "geofence_init": {
-            "options": {
-                "new": "Loo uus tsoon",
-                "save": "Salvesta ja sulge"
-            }
-        }
-    },
-    "system_health": {
-        "info": {
-            "can_reach_server": "Husqvarna võtmeserver on kättesaadav"
-        }
-    },
-    "application_credentials": {
-        "description": "Loo konto [Husqvarna developers portal]({oauth_creds_url}). Ühenda Authentication API ja Automower Connect API. Sea ümbersuunamise URI https://my.home-assistant.io/redirect/oauth. Kui sa pole veel seadistanud My HomeAssistant asukohta, sisesta see URL oma asukohaks {redirect_uri}"
-    },
-    "entity": {
-        "binary_sensor": {
-            "battery_charging": {
-                "name": "Aku laadimise olek"
-            },
-            "leaving_dock": {
-                "name": "Lahkub laadimisjaamast"
-            },
-            "error": {
-                "name": "Veaseisund"
-            }
-        },
-        "number": {
-            "cutting_height": {
-                "name": "Lõikekõrgus"
-            },
-            "mow_for": {
-                "name": "Niida"
-            },
-            "park_for": {
-                "name": "Pargi"
-            }
-        },
-        "select": {
-            "headlight_mode": {
-                "name": "Esituled",
-                "state": {
-                    "always_on": "Alati sees",
-                    "always_off": "Alati väljas",
-                    "evening_only": "Ainult õhtul",
-                    "evening_and_night": "Õhtul ja öösel"
-                }
-            }
-        },
-        "sensor": {
-            "cutting_height": {
-                "name": "Lõikekõrgus"
-            },
-            "number_of_charging_cycles": {
-                "name": "Laadimistsüklite arv"
-            },
-            "number_of_collisions": {
-                "name": "Kokkupõrgete arv"
-            },
-            "cutting_blade_usage_time": {
-                "name": "Lõiketerade kasutusaeg"
-            },
-            "total_charging_time": {
-                "name": "Laadimisaeg kokku"
-            },
-            "total_cutting_time": {
-                "name": "Niitmisaeg kokku"
-            },
-            "total_running_time": {
-                "name": "Käitusaeg kokku"
-            },
-            "total_searching_time": {
-                "name": "Otsimisaeg kokku"
-            },
-            "searching_time_percent": {
-                "name": "Otsimisaeg"
-            },
-            "cutting_time_percent": {
-                "name": "Niitmisaeg"
-            },
-            "battery_level": {
-                "name": "Aku laetuse tase"
-            },
-            "next_start": {
-                "name": "Järgmine algus"
-            },
-            "zone": {
-                "name": "Praegune tööala"
-            },
-            "problem_list": {
-                "name": "Katkestamise põhjus",
-                "state": {
-                    "off": "Väljas",
-                    "unknown": "Teadmata",
-                    "stopped": "Peatunud",
-                    "stopped_in_garden": "Peatunud aias",
-                    "not_applicable": "Pole kohalduv",
-                    "none": "Puudub",
-                    "week_schedule": "Nädala ajakava",
-                    "park_override": "Parkimise tühistamine",
-                    "sensor": "Ilmataimer",
-                    "daily_limit": "Päevane limiit",
-                    "fota": "Püsivara uuendamine",
-                    "frost": "Härmatis",
-                    "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
-                }
-            },
-            "mode_list": {
-                "name": "Tööala",
-                "state": {
-                    "main_area": "Peamine niiduala",
-                    "secondary_area": "Teisene niiduala",
-                    "home": "Laadimisjaam",
-                    "demo": "Demo",
-                    "unknown": "Teadmata"
-                }
-            }
-        },
-        "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Niidab"
-                },
-                "state_attributes": {
-                    "status": {
-                        "name": "Olek",
-                        "state": {
-                            "cleaning": "Niidab",
-                            "off": "Väljas",
-                            "unknown": "Teadmata",
-                            "stopped": "Peatunud",
-                            "not_applicable": "Pole kohalduv",
-                            "paused": "Pausil",
-                            "going_to_charging_station": "Läheb laadimisjaama",
-                            "leaving_charging_station": "Lahkub laadimisjaamast",
-                            "parked": "Pargitud",
-                            "park_override": "Parkimise tühistamine",
-                            "daily_limit": "Päevane limiit",
-                            "fota": "Püsivara uuendamine",
-                            "updating": "Uuendab",
-                            "powering_up": "Käivitub",
-                            "weather_timer": "Ilmataimer",
-                            "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
-                        }
-                    },
-                    "action": {
-                        "name": "Tegevus",
-                        "state": {
-                            "force_mow": "Saada niitma",
-                            "not_active": "Pole aktiivne",
-                            "unknown": "Teadmata"
-                        }
-                    }
-                }
-            }
-        },
-        "camera": {
-            "mower_cam": {
-                "name": "Kaart",
-                "state": {
-                    "cleaning": "Niidab",
-                    "docked": "Dokitud",
-                    "error": "Viga",
-                    "idle": "[%key:common::state::idle%]",
-                    "off": "[%key:common::state::off%]",
-                    "on": "[%key:common::state::on%]",
-                    "paused": "[%key:common::state::paused%]",
-                    "returning": "Läheb laadimisjaama"
-                }
-            }
-        }
-    },
-    "issues": {
-        "wrong_scope": {
-            "title": "Sinu juurdepääsutõendi kehtivusala on vale",
-            "description": "Websocket kaudu niiduki oleku viivitusteta uuendamiseks muuda seda. Loe täpsemalt siit: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
-        }
+    "abort": {
+      "missing_configuration": "Komponent ei ole seadistatud. Palun järgi dokumentatsiooni.",
+      "reauth_successful": "Uuesti autentimine õnnestus",
+      "single_instance_allowed": "Ainult üks Husqvarna Automoweri seadistamine on lubatud."
     }
+  },
+  "options": {
+    "step": {
+      "select": {
+        "menu_options": {
+          "image_select": "Seadista kaardikaamera",
+          "geofence_init": "Seadista tsoonid"
+        },
+        "description": "Vali sidumise suvandid",
+        "title": "Husqvarna Automower suvandid"
+      },
+      "zone_edit": {
+        "data": {
+          "name": "Tsooni nimi",
+          "zone_coordinates": "Tsooni koordinaadid lat,long;lat,long...",
+          "display": "Kuva tsooni kaardikaameral",
+          "color": "Tsooni RGB värv",
+          "delete": "Kustuta tsoon"
+        },
+        "description": "Seadista tsoon",
+        "title": "Husqvarna Automower suvandid"
+      },
+      "image_config": {
+        "data": {
+          "enable_image": "Luba kaardikaamera",
+          "gps_top_left": "Pildi vasakpoolse ülemise nurga GPS koordinaadid",
+          "gps_bottom_right": "Pildi parempoolse alumise nurga GPS koordinaadid",
+          "mower_img_path": "Niiduki asukoha kujutise failitee",
+          "map_img_path": "Kaardikujutise failitee",
+          "map_path_color": "Teekonna RGB värv",
+          "map_img_rotation": "Pildi pööramine tõelise põhjasuuna suhtes, kraadides",
+          "home_location": "Laadimisjaama GPS koordinaadid."
+        },
+        "description": "Kaamera seaded",
+        "title": "Husqvarna Automower suvandid"
+      }
+    },
+    "error": {
+      "invalid_str": "Peavad olema laius ja pikkus, eraldatud komaga",
+      "not_wgs84": "Koordinaadid pole korrektsed, peavad olema WGS84 daatumis",
+      "cant_parse": "Koordinaadid pole korrektsed, peavad olema laius ja pikkus, eraldatud komaga, kümnendkraadides",
+      "not_file": "Vale failitee, ei viita failile",
+      "too_few_points": "Tsooni defineerimiseks on vaja vähemalt 3 punkti",
+      "points_match": "Ülemine vasak ja alumine parem koordinaat ei tohi olla samad",
+      "not_image": "Valitud fail pole pildifail",
+      "color_error": "Peavad olema RGB väärtused vahemikus 0-255, eraldatud komaga",
+      "rotation_error": "Väärtus peab olema kraadides, vahemikus -360 ja 360",
+      "need_one_mower": "Tsoonis peab olema vähemalt üks niiduk"
+    }
+  },
+  "selector": {
+    "geofence_init": {
+      "options": {
+        "new": "Loo uus tsoon",
+        "save": "Salvesta ja sulge"
+      }
+    }
+  },
+  "system_health": {
+    "info": {
+      "can_reach_server": "Husqvarna võtmeserver on kättesaadav"
+    }
+  },
+  "application_credentials": {
+    "description": "Loo konto [Husqvarna developers portal]({oauth_creds_url}). Ühenda Authentication API ja Automower Connect API. Sea ümbersuunamise URI https://my.home-assistant.io/redirect/oauth. Kui sa pole veel seadistanud My HomeAssistant asukohta, sisesta see URL oma asukohaks {redirect_uri}"
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery_charging": {
+        "name": "Aku laadimise olek"
+      },
+      "leaving_dock": {
+        "name": "Lahkub laadimisjaamast"
+      },
+      "error": {
+        "name": "Veaseisund"
+      }
+    },
+    "number": {
+      "cutting_height": {
+        "name": "Lõikekõrgus"
+      },
+      "mow_for": {
+        "name": "Niida"
+      },
+      "park_for": {
+        "name": "Pargi"
+      }
+    },
+    "select": {
+      "headlight_mode": {
+        "name": "Esituled",
+        "state": {
+          "always_on": "Alati sees",
+          "always_off": "Alati väljas",
+          "evening_only": "Ainult õhtul",
+          "evening_and_night": "Õhtul ja öösel"
+        }
+      }
+    },
+    "sensor": {
+      "cutting_height": {
+        "name": "Lõikekõrgus"
+      },
+      "number_of_charging_cycles": {
+        "name": "Laadimistsüklite arv"
+      },
+      "number_of_collisions": {
+        "name": "Kokkupõrgete arv"
+      },
+      "cutting_blade_usage_time": {
+        "name": "Lõiketerade kasutusaeg"
+      },
+      "total_charging_time": {
+        "name": "Laadimisaeg kokku"
+      },
+      "total_cutting_time": {
+        "name": "Niitmisaeg kokku"
+      },
+      "total_running_time": {
+        "name": "Käitusaeg kokku"
+      },
+      "total_searching_time": {
+        "name": "Otsimisaeg kokku"
+      },
+      "searching_time_percent": {
+        "name": "Otsimisaeg"
+      },
+      "cutting_time_percent": {
+        "name": "Niitmisaeg"
+      },
+      "battery_level": {
+        "name": "Aku laetuse tase"
+      },
+      "next_start": {
+        "name": "Järgmine algus"
+      },
+      "zone": {
+        "name": "Praegune tööala"
+      },
+      "problem_list": {
+        "name": "Katkestamise põhjus",
+        "state": {
+          "off": "Väljas",
+          "unknown": "Teadmata",
+          "stopped": "Peatunud",
+          "stopped_in_garden": "Peatunud aias",
+          "not_applicable": "Pole kohalduv",
+          "none": "Puudub",
+          "week_schedule": "Nädala ajakava",
+          "park_override": "Parkimise tühistamine",
+          "sensor": "Ilmataimer",
+          "daily_limit": "Päevane limiit",
+          "fota": "Püsivara uuendamine",
+          "frost": "Härmatis",
+          "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
+        }
+      },
+      "mode_list": {
+        "name": "Tööala",
+        "state": {
+          "main_area": "Peamine niiduala",
+          "secondary_area": "Teisene niiduala",
+          "home": "Laadimisjaam",
+          "demo": "Demo",
+          "unknown": "Teadmata"
+        }
+      }
+    },
+    "vacuum": {
+      "mower": {
+        "state": {
+          "cleaning": "Niidab"
+        },
+        "state_attributes": {
+          "status": {
+            "name": "Olek",
+            "state": {
+              "cleaning": "Niidab",
+              "off": "Väljas",
+              "unknown": "Teadmata",
+              "stopped": "Peatunud",
+              "not_applicable": "Pole kohalduv",
+              "paused": "Pausil",
+              "going_to_charging_station": "Läheb laadimisjaama",
+              "leaving_charging_station": "Lahkub laadimisjaamast",
+              "parked": "Pargitud",
+              "park_override": "Parkimise tühistamine",
+              "daily_limit": "Päevane limiit",
+              "fota": "Püsivara uuendamine",
+              "updating": "Uuendab",
+              "powering_up": "Käivitub",
+              "weather_timer": "Ilmataimer",
+              "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
+            }
+          },
+          "action": {
+            "name": "Tegevus",
+            "state": {
+              "force_mow": "Saada niitma",
+              "not_active": "Pole aktiivne",
+              "unknown": "Teadmata"
+            }
+          }
+        }
+      }
+    },
+    "image": {
+      "mower_img": {
+        "name": "Kaart",
+        "state": {
+          "cleaning": "Niidab",
+          "docked": "Dokitud",
+          "error": "Viga",
+          "idle": "[%key:common::state::idle%]",
+          "off": "[%key:common::state::off%]",
+          "on": "[%key:common::state::on%]",
+          "paused": "[%key:common::state::paused%]",
+          "returning": "Läheb laadimisjaama"
+        }
+      }
+    }
+  },
+  "issues": {
+    "wrong_scope": {
+      "title": "Sinu juurdepääsutõendi kehtivusala on vale",
+      "description": "Websocket kaudu niiduki oleku viivitusteta uuendamiseks muuda seda. Loe täpsemalt siit: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+    }
+  }
 }

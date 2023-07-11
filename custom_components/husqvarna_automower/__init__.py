@@ -21,7 +21,7 @@ from .const import (
     STARTUP_MESSAGE,
     PREV_CONFIG_VER,
     CURRENT_CONFIG_VER,
-    ENABLE_CAMERA,
+    ENABLE_IMAGE,
     GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
     MOWER_IMG_PATH,
@@ -121,10 +121,10 @@ async def update_listener(
 ) -> None:  # Todo: Add test
     """Handle options update."""
     unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, [Platform.CAMERA]
+        entry, [Platform.IMAGE]
     )
     if unload_ok:
-        await hass.config_entries.async_forward_entry_setups(entry, [Platform.CAMERA])
+        await hass.config_entries.async_forward_entry_setups(entry, [Platform.IMAGE])
         entry.async_on_unload(entry.add_update_listener(update_listener))
 
 
@@ -147,7 +147,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
         for mower_id in mower_idx:
             new_options[mower_id] = {
-                ENABLE_CAMERA: new_options.get(ENABLE_CAMERA, False),
+                ENABLE_IMAGE: new_options.get(ENABLE_IMAGE, False),
                 GPS_TOP_LEFT: new_options.get(GPS_TOP_LEFT, ""),
                 GPS_BOTTOM_RIGHT: new_options.get(GPS_BOTTOM_RIGHT, ""),
                 MOWER_IMG_PATH: new_options.get(
@@ -162,7 +162,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             }
 
         for opt_key in [
-            ENABLE_CAMERA,
+            ENABLE_IMAGE,
             GPS_TOP_LEFT,
             GPS_BOTTOM_RIGHT,
             MOWER_IMG_PATH,

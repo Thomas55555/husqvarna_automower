@@ -1,4 +1,4 @@
-"""Platform for Husqvarna Automower camera integration."""
+"""Platform for Husqvarna Automower map image integration."""
 
 import io
 import json
@@ -9,7 +9,7 @@ from typing import Optional
 
 import numpy as np
 from geopy.distance import distance, geodesic
-from homeassistant.components.camera import Camera, CameraEntityFeature
+from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -18,10 +18,10 @@ from homeassistant.helpers.entity_registry import async_get
 from PIL import Image, ImageDraw
 
 from .const import (
-    ADD_CAMERAS,
+    ADD_IMAGES,
     CONF_ZONES,
     DOMAIN,
-    ENABLE_CAMERA,
+    ENABLE_IMAGE,
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
     HOME_LOCATION,
@@ -51,35 +51,31 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
     for idx, ent in enumerate(coordinator.session.data["data"]):
-        if entry.options.get(ent["id"], {}).get(ENABLE_CAMERA):
-            entity_list.append(AutomowerCamera(coordinator, idx, entry))
+        if entry.options.get(ent["id"], {}).get(ENABLE_IMAGE):
+            entity_list.append(AutomowerImage(coordinator, idx, entry, hass))
 
     async_add_entities(entity_list)
 
 
-class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
-    """Representation of the AutomowerCamera element."""
+class AutomowerImage(HusqvarnaAutomowerStateMixin, ImageEntity, AutomowerEntity):
+    """Representation of the AutomowerImage element."""
 
-    _attr_frame_interval: float = 300
-    _attr_translation_key = "mower_cam"
+    _attr_translation_key = "mower_img"
 
-    def __init__(self, session, idx, entry) -> None:
-        """Initialize AutomowerCamera."""
-        Camera.__init__(self)
+    def __init__(self, session, idx, entry, hass: HomeAssistant) -> None:
+        """Initialize AutomowerImage."""
+        ImageEntity.__init__(self, hass)
         AutomowerEntity.__init__(self, session, idx)
 
         self.entry = entry
         self._position_history = {}
-        self._attr_unique_id = f"{self.mower_id}_camera"
+        self._attr_unique_id = f"{self.mower_id}_image"
         self.options = self.entry.options.get(self.mower_id, {})
         self.home_location = self.options.get(HOME_LOCATION, None)
         self._image = Image.new(mode="RGB", size=(200, 200))
         self._map_image = None
         self._overlay_image = None
         self._path_color = self.options.get(MAP_PATH_COLOR, [255, 0, 0])
-        self._last_update = None
-        self._update_frequency = 0
-        self._avg_update_frequency = 0
         self._px_meter = 1
         self._c_img_wgs84 = (0, 0)
         self._c_img_px = (0, 0)
@@ -88,9 +84,9 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         for idx, ent in enumerate(session.session.data["data"]):
             self._mwr_id_to_idx[session.session.data["data"][idx]["id"]] = idx
 
-        self._additional_cameras = self.options.get(ADD_CAMERAS, [])
+        self._additional_images = self.options.get(ADD_IMAGES, [])
 
-        if self.options.get(ENABLE_CAMERA, False):
+        if self.options.get(ENABLE_IMAGE, False):
             self._top_left_coord = self.options.get(GPS_TOP_LEFT)
             self._bottom_right_coord = self.options.get(GPS_BOTTOM_RIGHT)
             self._map_rotation = self.options.get(MAP_IMG_ROTATION, 0)
@@ -122,16 +118,9 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             self._bottom_right_coord = (bottom_right_lat, bottom_right_lon)
             self._map_rotation = 0
 
-    @property
-    def model(self) -> str:
-        """Return the mower model."""
-        return self.model_name
-
-    async def async_camera_image(
-        self, width: Optional[int] = None, height: Optional[int] = None
-    ) -> Optional[bytes]:
-        """Return the camera image."""
-        return await self._image_to_bytes(width, height)
+    async def async_image(self) -> bytes | None:
+        """Return bytes of image."""
+        return await self._image_to_bytes()
 
     def _load_map_image(self):
         """Load the map image."""
@@ -194,23 +183,6 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         map_image.save(img_byte_arr, format="PNG")
         return img_byte_arr.getvalue()
 
-    def turn_on(self):
-        """Turn the camera on."""
-        self.coordinator.session.register_data_callback(
-            lambda data: self._generate_image(data), schedule_immediately=True
-        )
-
-    def turn_off(self):
-        """Turn the camera off."""
-        self.coordinator.session.unregister_data_callback(
-            lambda data: self._generate_image(data)
-        )
-
-    @property
-    def supported_features(self) -> int:
-        """Show supported features."""
-        return CameraEntityFeature.ON_OFF
-
     def _find_image_scale(self):
         """Find the scale ration in m/px and center of image."""
         h_w = (
@@ -245,18 +217,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
             h_w,
         )
 
-    def _calculate_update_frequency(self) -> None:
-        """Calculate the camera update frequecy."""
-        if self._last_update is not None:
-            update_frequency = (datetime.now() - self._last_update).seconds
-            if update_frequency > 0:
-                self._update_frequency = update_frequency
-                self._avg_update_frequency = (
-                    self._avg_update_frequency + self._update_frequency
-                ) / 2
-        self._last_update = datetime.now()
-
-    def _generate_image_cam(
+    def _generate_image_img(
         self,
         is_home: bool,
         home_location: GpsPoint,
@@ -316,31 +277,31 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
 
     def _generate_image(self, data: dict) -> None:
         """Generate the image."""
-        self._calculate_update_frequency()
+        # self._calculate_update_frequency()
 
         map_image = self._map_image.copy()
 
-        if self._additional_cameras:
-            for add_cam in self._additional_cameras:
-                extra_cam = AutomowerEntity(
-                    self.coordinator, self._mwr_id_to_idx[add_cam]
+        if self._additional_images:
+            for add_img in self._additional_images:
+                extra_img = AutomowerEntity(
+                    self.coordinator, self._mwr_id_to_idx[add_img]
                 )
-                options = self.entry.options.get(add_cam, {})
+                options = self.entry.options.get(add_img, {})
                 home_location = options.get(HOME_LOCATION, None)
                 path_color = options.get(MAP_PATH_COLOR, [255, 0, 0])
-                cam_position_history = extra_cam.get_mower_attributes()["positions"]
-                map_image = self._generate_image_cam(
-                    extra_cam._is_home,
+                img_position_history = extra_img.get_mower_attributes()["positions"]
+                map_image = self._generate_image_img(
+                    extra_img._is_home,
                     home_location,
-                    cam_position_history,
-                    extra_cam.mower_id,
+                    img_position_history,
+                    extra_img.mower_id,
                     path_color,
                     map_image,
                 )
 
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
 
-        map_image = self._generate_image_cam(
+        map_image = self._generate_image_img(
             self._is_home,
             self.home_location,
             position_history,
@@ -350,6 +311,7 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         )
 
         self._image = map_image
+        self._attr_image_last_updated = datetime.now()
 
     def _find_points_on_line(
         self, point_1: ImgPoint, point_2: ImgPoint
@@ -370,14 +332,14 @@ class AutomowerCamera(HusqvarnaAutomowerStateMixin, Camera, AutomowerEntity):
         return points
 
     def _get_point_on_vector(
-        self, initial_pt: ImgPoint, terminal_pt: ImgPoint, distance: int
+        self, initial_pt: ImgPoint, terminal_pt: ImgPoint, dist: int
     ) -> ImgPoint:
         """Find a point on a vector."""
         v = np.array(initial_pt, dtype=float)
         u = np.array(terminal_pt, dtype=float)
         n = v - u
         n /= np.linalg.norm(n, 2)
-        point = v - distance * n
+        point = v - dist * n
 
         return tuple(point)
 
