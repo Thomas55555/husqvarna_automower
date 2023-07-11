@@ -66,7 +66,9 @@ async def setup_image(
             name="MockCoordinator", session=automower_session_mock()
         )
 
-        mwr_img = AutomowerImage(automower_coordinator_mock, mwr_idx, config_entry, hass)
+        mwr_img = AutomowerImage(
+            automower_coordinator_mock, mwr_idx, config_entry, hass
+        )
     return mwr_img, automower_coordinator_mock
 
 
