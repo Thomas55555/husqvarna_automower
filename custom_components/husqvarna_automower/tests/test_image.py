@@ -75,6 +75,21 @@ async def setup_image(
 @pytest.mark.asyncio
 async def test_load_image_enabled(hass: HomeAssistant):
     """test automower initialization"""
+
+    image_one, automower_coordinator_mock = await setup_image(
+        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_image=False
+    )
+    image_two, automower_coordinator_mock = await setup_image(
+        hass, MWR_TWO_ID, MWR_TWO_IDX, enable_image=False
+    )
+
+    assert image_one.options.get(ENABLE_IMAGE) is False
+
+    assert image_two.options.get(ENABLE_IMAGE) is False
+
+    # Disabled image call register_data_callback
+    automower_coordinator_mock.session.register_data_callback.assert_not_called()
+
     image_one, automower_coordinator_mock = await setup_image(
         hass, MWR_ONE_ID, MWR_ONE_IDX
     )
@@ -106,6 +121,12 @@ async def test_load_image_enabled(hass: HomeAssistant):
     image_bytes = await image_two.async_image()
     image = Image.open(io.BytesIO(image_bytes))
     image.save(output_path.joinpath("mower_two_out.png").as_posix())
+
+    # Ensure image to bytes could resize bytes if width/height was passed
+    image_bytes = await image_one._image_to_bytes(400, 600)
+    image = Image.open(io.BytesIO(image_bytes))
+    assert image.width == 400
+    assert image.height == 195  # Resize maintains aspect ratio
 
     # Mower at home
     automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
