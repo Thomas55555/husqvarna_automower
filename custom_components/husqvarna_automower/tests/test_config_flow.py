@@ -112,6 +112,46 @@ async def test_options_image_config_existing_options(hass: HomeAssistant) -> Non
         )
 
 
+async def test_options_image_config_existing_options_bad_zone(
+    hass: HomeAssistant,
+) -> None:
+    """Test Image Config option flow where the configured zones is not a dict."""
+    options = AUTOMER_DM_CONFIG.copy()
+    options["configured_zones"] = "[]"
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=options,
+        entry_id="automower_test",
+        title="Automower Test",
+    )
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
+    ):
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+        result = await hass.config_entries.options.async_init(config_entry.entry_id)
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"next_step_id": "image_select"}
+        )
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"selected_image": "Test Mower 1"}
+        )
+
+
 async def test_options_image_config(hass: HomeAssistant) -> None:
     """Test Image Config option flow."""
     config_entry = MockConfigEntry(
