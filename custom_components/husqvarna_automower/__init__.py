@@ -19,8 +19,6 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
-    PREV_CONFIG_VER,
-    CURRENT_CONFIG_VER,
     ENABLE_IMAGE,
     GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
@@ -131,7 +129,7 @@ async def update_listener(
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)
-    if config_entry.version == PREV_CONFIG_VER:
+    if config_entry.version == 2:
         new_options = {**config_entry.options}
         base_path = os.path.dirname(__file__)
 
@@ -147,7 +145,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
         for mower_id in mower_idx:
             new_options[mower_id] = {
-                ENABLE_IMAGE: new_options.get(ENABLE_IMAGE, False),
+                "enable_camera": new_options.get("enable_camera", False),
                 GPS_TOP_LEFT: new_options.get(GPS_TOP_LEFT, ""),
                 GPS_BOTTOM_RIGHT: new_options.get(GPS_BOTTOM_RIGHT, ""),
                 MOWER_IMG_PATH: new_options.get(
@@ -162,7 +160,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             }
 
         for opt_key in [
-            ENABLE_IMAGE,
+            "enable_camera",
             GPS_TOP_LEFT,
             GPS_BOTTOM_RIGHT,
             MOWER_IMG_PATH,
@@ -170,8 +168,23 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         ]:
             new_options.pop(opt_key, None)
 
-        config_entry.version = CURRENT_CONFIG_VER
+        config_entry.version = 3
         hass.config_entries.async_update_entry(config_entry, options=new_options)
+
+    if config_entry.version == 3:
+        new_options = {**config_entry.options}
+        for mwr_id in new_options.keys():
+            try:
+                enable_img = new_options[mwr_id].pop('enable_camera', None)
+                if enable_img:
+                    new_options[mwr_id]['enable_image'] = enable_img
+            except AttributeError:
+                pass
+
+        config_entry.version = 4
+        hass.config_entries.async_update_entry(config_entry, options=new_options)
+
+
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
 

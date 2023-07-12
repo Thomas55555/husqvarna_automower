@@ -36,8 +36,7 @@ HOME_LOCATION = "home_location"
 
 # Image configuration
 SEL_IMAGE = "selected_image"
-ENABLE_IMAGE = "enable_camera"
-# TODO: Migrate config to "enable_image", don't think it's worth it for a single key
+ENABLE_IMAGE = "enable_image"
 GPS_TOP_LEFT = "gps_top_left"
 GPS_BOTTOM_RIGHT = "gps_bottom_right"
 MOWER_IMG_PATH = "mower_img_path"
@@ -305,5 +304,4 @@ MWR_RES_REASON_TO_STATUS = {
     "NOT_APPLICABLE": "parked_until_further_notice",
 }
 
-PREV_CONFIG_VER = 2
-CURRENT_CONFIG_VER = 3
+CURRENT_CONFIG_VER = 4

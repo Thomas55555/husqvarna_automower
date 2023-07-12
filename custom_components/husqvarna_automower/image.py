@@ -57,7 +57,7 @@ async def async_setup_entry(
     async_add_entities(entity_list)
 
 
-class AutomowerImage(HusqvarnaAutomowerStateMixin, ImageEntity, AutomowerEntity):
+class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity):
     """Representation of the AutomowerImage element."""
 
     _attr_translation_key = "mower_img"
