@@ -1,7 +1,7 @@
 """The Husqvarna Automower integration."""
 import logging
 import os
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncioTimeoutError
 
 import aioautomower
 from homeassistant.components.application_credentials import DATA_STORAGE
@@ -70,7 +70,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from Husqvarna."""
         try:
             await self.session.connect()
-        except TimeoutError as error:
+        except AsyncioTimeoutError as error:
             _LOGGER.debug("Asyncio timeout: %s", error)
             raise ConfigEntryNotReady from error
         except Exception as error:
@@ -140,7 +140,9 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             entry=config_entry,
         )
         await coordinator.async_config_entry_first_refresh()
-        for idx, ent in enumerate(coordinator.session.data["data"]):
+        for idx, ent in enumerate(
+            coordinator.session.data["data"]
+        ):  # pylint: disable=unused-variable
             mower_idx.append(ent["id"])
 
         for mower_id in mower_idx:

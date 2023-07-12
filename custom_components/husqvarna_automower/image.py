@@ -11,10 +11,8 @@ import numpy as np
 from geopy.distance import distance, geodesic
 from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.entity_registry import async_get
 from PIL import Image, ImageDraw
 
 from .const import (
@@ -81,7 +79,9 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         self._c_img_px = (0, 0)
         self._mwr_id_to_idx = {}
 
-        for idx, ent in enumerate(session.session.data["data"]):
+        for idx, ent in enumerate(  # pylint: disable=unused-variable
+            session.session.data["data"]
+        ):
             self._mwr_id_to_idx[session.session.data["data"][idx]["id"]] = idx
 
         self._additional_images = self.options.get(ADD_IMAGES, [])
@@ -95,24 +95,23 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
             self._load_mower_image()
             self._overlay_zones()
             self.coordinator.session.register_data_callback(
-                lambda data: self._generate_image(data), schedule_immediately=True
+                lambda data: self._generate_image(data), schedule_immediately=True # pylint: disable=unnecessary-lambda
             )
         else:
             self._attr_entity_registry_enabled_default = True
             r_earth = 6378000  # meters
             offset = 100  # meters
-            pi = 3.14
             lat = AutomowerEntity.get_mower_attributes(self)["positions"][0]["latitude"]
             lon = AutomowerEntity.get_mower_attributes(self)["positions"][0][
                 "longitude"
             ]
-            top_left_lat = lat - (offset / r_earth) * (180 / pi)
-            top_left_lon = lon - (offset / r_earth) * (180 / pi) / math.cos(
-                lat * pi / 180
+            top_left_lat = lat - (offset / r_earth) * (180 / math.pi)
+            top_left_lon = lon - (offset / r_earth) * (180 / math.pi) / math.cos(
+                lat * math.pi / 180
             )
-            bottom_right_lat = lat + (offset / r_earth) * (180 / pi)
-            bottom_right_lon = lon + (offset / r_earth) * (180 / pi) / math.cos(
-                lat * pi / 180
+            bottom_right_lat = lat + (offset / r_earth) * (180 / math.pi)
+            bottom_right_lon = lon + (offset / r_earth) * (180 / math.pi) / math.cos(
+                lat * math.pi / 180
             )
             self._top_left_coord = (top_left_lat, top_left_lon)
             self._bottom_right_coord = (bottom_right_lat, bottom_right_lon)
@@ -135,7 +134,7 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         mower_wpercent = mower_img_w / float(self._overlay_image.size[0])
         hsize = int((float(self._overlay_image.size[1]) * float(mower_wpercent)))
         self._overlay_image = self._overlay_image.resize(
-            (mower_img_w, hsize), Image.LANCZOS
+            (mower_img_w, hsize), Image.Resampling.LANCZOS
         )
 
     def _overlay_zones(self) -> None:
@@ -145,7 +144,7 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         if not isinstance(zones, dict):
             return
 
-        for zone_id, zone in zones.items():
+        for zone_id, zone in zones.items():  # pylint: disable=unused-variable
             if self.mower_id in zone.get(ZONE_MOWERS, []) and zone.get(
                 ZONE_DISPLAY, False
             ):
@@ -242,7 +241,9 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         else:
             self._position_history[mower_id] = position_history
 
-        x1, y1 = self._scale_to_img(location, (map_image.size[0], map_image.size[1]))
+        x1, y1 = self._scale_to_img(  # pylint: disable=invalid-name
+            location, (map_image.size[0], map_image.size[1])
+        )
         img_draw = ImageDraw.Draw(map_image)
 
         for i in range(len(position_history) - 1, 0, -1):
@@ -261,9 +262,9 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
                 point_2, (map_image.size[0], map_image.size[1])
             )
             plot_points = self._find_points_on_line(scaled_loc_1, scaled_loc_2)
-            for p in range(0, len(plot_points) - 1, 2):
+            for point in range(0, len(plot_points) - 1, 2):
                 img_draw.line(
-                    (plot_points[p], plot_points[p + 1]),
+                    (plot_points[point], plot_points[point + 1]),
                     fill=tuple(path_color + [255]),
                     width=2,
                 )
@@ -275,7 +276,7 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         )
         return map_image
 
-    def _generate_image(self, data: dict) -> None:
+    def _generate_image(self, data: dict) -> None:  # pylint: disable=unused-argument
         """Generate the image."""
         # self._calculate_update_frequency()
 
@@ -291,7 +292,7 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
                 path_color = options.get(MAP_PATH_COLOR, [255, 0, 0])
                 img_position_history = extra_img.get_mower_attributes()["positions"]
                 map_image = self._generate_image_img(
-                    extra_img._is_home,
+                    extra_img._is_home,  # pylint: disable=protected-access
                     home_location,
                     img_position_history,
                     extra_img.mower_id,
@@ -324,7 +325,7 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
 
         points = []
         points.append(point_1)
-        for i in range(dashes):
+        for i in range(dashes):  # pylint: disable=unused-variable
             points.append(self._get_point_on_vector(points[-1], point_2, dash_length))
 
         points.append(point_2)
@@ -335,15 +336,17 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
         self, initial_pt: ImgPoint, terminal_pt: ImgPoint, dist: int
     ) -> ImgPoint:
         """Find a point on a vector."""
-        v = np.array(initial_pt, dtype=float)
-        u = np.array(terminal_pt, dtype=float)
-        n = v - u
-        n /= np.linalg.norm(n, 2)
+        v = np.array(initial_pt, dtype=float)  # pylint: disable=invalid-name
+        u = np.array(terminal_pt, dtype=float)  # pylint: disable=invalid-name
+        n = v - u  # pylint: disable=invalid-name
+        n /= np.linalg.norm(n, 2)  # pylint: disable=invalid-name
         point = v - dist * n
 
         return tuple(point)
 
-    def _scale_to_img(self, lat_lon: GpsPoint, h_w: ImgDimensions) -> ImgPoint:
+    def _scale_to_img(
+        self, lat_lon: GpsPoint, h_w: ImgDimensions  # pylint: disable=unused-argument
+    ) -> ImgPoint:
         """Convert from latitude and longitude to the image pixels."""
         bearing_res = distance(self._c_img_wgs84, lat_lon).geod.Inverse(
             self._c_img_wgs84[0], self._c_img_wgs84[1], lat_lon[0], lat_lon[1]

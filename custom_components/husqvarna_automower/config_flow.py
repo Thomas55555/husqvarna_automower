@@ -83,7 +83,9 @@ class HusqvarnaConfigFlowHandler(
             data=data,
         )
 
-    async def async_step_reauth(self, user_input=None) -> data_entry_flow.FlowResult:
+    async def async_step_reauth(
+        self, user_input=None
+    ) -> data_entry_flow.FlowResult:  # pylint: disable=unused-argument
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 
@@ -124,7 +126,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.hass = async_get_hass()
         self.mower_idx = []
         for entity in self.hass.data[DOMAIN].keys():
-            for idx, ent in enumerate(
+            for idx, ent in enumerate(  # pylint: disable=unused-variable
                 self.hass.data[DOMAIN][entity].session.data["data"]
             ):
                 self.mower_idx.append(
@@ -173,11 +175,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.sel_zone_id = None
         self.sel_mower_id = self.mower_idx[0]["id"]
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage option flow."""
         return await self.async_step_select()
 
-    async def async_step_select(self, user_input=None):
+    async def async_step_select(
+        self, user_input=None
+    ):  # pylint: disable=unused-argument
         """Select Configuration Item."""
         return self.async_show_menu(
             step_id="select", menu_options=["image_select", "geofence_init"]
@@ -440,7 +444,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             if not errors:
                 return await self._update_config()
             else:
-                _LOGGER.debug("Errors: %s" % errors)
+                _LOGGER.debug("Errors: %s", errors)
 
         path_color_str = ",".join(
             [str(i) for i in self.options[self.sel_mower_id].get(MAP_PATH_COLOR)]

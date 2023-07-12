@@ -20,9 +20,9 @@ def validate_rotation(rotation: float) -> float:
 def validate_image(img_path: str) -> bool:
     """Ensure image is valid."""
     try:
-        im = Image.open(img_path)
-        im.verify()
-        im.close()
+        sel_img = Image.open(img_path)
+        sel_img.verify()
+        sel_img.close()
     except (FileNotFoundError, UnidentifiedImageError):
         return False
     return True
@@ -40,14 +40,13 @@ class ValidateRGB:
         if len(self.rgb_val) != 3:
             return False
         else:
-            for c in range(3):
+            for color_index in range(3):
                 try:
-                    color_val = int(self.rgb_val[c])
+                    color_val = int(self.rgb_val[color_index])
                     if color_val < 0 or color_val > 255:
                         return False
-                        break
                     else:
-                        self.rgb_val[c] = color_val
+                        self.rgb_val[color_index] = color_val
                 except ValueError:
                     return False
         return True
