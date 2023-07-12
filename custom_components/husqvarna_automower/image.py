@@ -95,7 +95,8 @@ class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity)
             self._load_mower_image()
             self._overlay_zones()
             self.coordinator.session.register_data_callback(
-                lambda data: self._generate_image(data), schedule_immediately=True # pylint: disable=unnecessary-lambda
+                lambda data: self._generate_image(data),
+                schedule_immediately=True,  # pylint: disable=unnecessary-lambda
             )
         else:
             self._attr_entity_registry_enabled_default = True
