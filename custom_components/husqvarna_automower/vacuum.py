@@ -254,7 +254,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         friday,
         saturday,
         sunday,
-        **kwargs,
+        **kwargs,  # pylint: disable=unused-argument
     ) -> None:
         """Send a custom calendar command to the mower."""
         start_in_minutes = start.hour * 60 + start.minute
@@ -295,7 +295,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     async def async_schedule_selector(
         self,
         schedule_selector,
-        **kwargs,
+        **kwargs,  # pylint: disable=unused-argument
     ) -> None:
         """Send a schedule created by the schedule helper to the mower."""
         schedule_list = schedule_selector.split(".")
@@ -351,6 +351,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
                     )
                     raise HomeAssistantError("Command not allowed.") from exception
 
+    # pylint: disable=unused-argument
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""
         try:

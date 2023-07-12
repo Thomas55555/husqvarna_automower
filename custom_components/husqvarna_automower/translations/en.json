@@ -220,17 +220,7 @@
     },
     "image": {
       "mower_img": {
-        "name": "Map",
-        "state": {
-          "cleaning": "Mowing",
-          "docked": "Docked",
-          "error": "Error",
-          "idle": "Idle",
-          "off": "Off",
-          "on": "On",
-          "paused": "Paused",
-          "returning": "Returning to dock"
-        }
+        "name": "Map"
       }
     }
   },

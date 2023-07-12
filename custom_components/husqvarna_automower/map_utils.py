@@ -10,7 +10,7 @@ def validate_rotation(rotation: float) -> float:
     """Ensure rotation is in degrees."""
     try:
         rotation = float(rotation)
-        if rotation < 360 and rotation > -360:
+        if -360 < rotation < 360:
             return True
         return False
     except ValueError:
@@ -39,16 +39,14 @@ class ValidateRGB:
         """Return True if a valid RGB value."""
         if len(self.rgb_val) != 3:
             return False
-        else:
-            for color_index in range(3):
-                try:
-                    color_val = int(self.rgb_val[color_index])
-                    if color_val < 0 or color_val > 255:
-                        return False
-                    else:
-                        self.rgb_val[color_index] = color_val
-                except ValueError:
+        for color_index in range(3):
+            try:
+                color_val = int(self.rgb_val[color_index])
+                if color_val < 0 or color_val > 255:
                     return False
+                self.rgb_val[color_index] = color_val
+            except ValueError:
+                return False
         return True
 
 

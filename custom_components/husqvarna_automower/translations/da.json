@@ -76,13 +76,6 @@
                     "cleaning": "Slår græs"
                 }
             }
-        },
-        "image": {
-            "mower": {
-                "state": {
-                    "cleaning": "Slår græs"
-                }
-            }
         }
     },
     "issues": {

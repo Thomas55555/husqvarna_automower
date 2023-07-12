@@ -19,7 +19,6 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
-    ENABLE_IMAGE,
     GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
     MOWER_IMG_PATH,
@@ -140,9 +139,8 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             entry=config_entry,
         )
         await coordinator.async_config_entry_first_refresh()
-        for idx, ent in enumerate(
-            coordinator.session.data["data"]
-        ):  # pylint: disable=unused-variable
+        # pylint: disable=unused-variable
+        for idx, ent in enumerate(coordinator.session.data["data"]):
             mower_idx.append(ent["id"])
 
         for mower_id in mower_idx:

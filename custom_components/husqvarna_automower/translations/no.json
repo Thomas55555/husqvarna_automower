@@ -48,13 +48,6 @@
                     "cleaning": "Klipper"
                 }
             }
-        },
-        "image": {
-            "mower": {
-                "state": {
-                    "cleaning": "Klipper"
-                }
-            }
         }
     }
 }

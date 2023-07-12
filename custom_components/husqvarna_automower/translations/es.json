@@ -75,13 +75,6 @@
                     "cleaning": "Segando"
                 }
             }
-        },
-        "image": {
-            "mower": {
-                "state": {
-                    "cleaning": "Segando"
-                }
-            }
         }
     }
 }

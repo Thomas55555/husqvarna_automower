@@ -84,8 +84,8 @@ class HusqvarnaConfigFlowHandler(
         )
 
     async def async_step_reauth(
-        self, user_input=None
-    ) -> data_entry_flow.FlowResult:  # pylint: disable=unused-argument
+        self, user_input=None  # pylint: disable=unused-argument
+    ) -> data_entry_flow.FlowResult:
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 
@@ -126,7 +126,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.hass = async_get_hass()
         self.mower_idx = []
         for entity in self.hass.data[DOMAIN].keys():
-            for idx, ent in enumerate(  # pylint: disable=unused-variable
+            # pylint: disable=unused-variable
+            for idx, ent in enumerate(
                 self.hass.data[DOMAIN][entity].session.data["data"]
             ):
                 self.mower_idx.append(
@@ -443,8 +444,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             if not errors:
                 return await self._update_config()
-            else:
-                _LOGGER.debug("Errors: %s", errors)
+            _LOGGER.debug("Errors: %s", errors)
 
         path_color_str = ",".join(
             [str(i) for i in self.options[self.sel_mower_id].get(MAP_PATH_COLOR)]

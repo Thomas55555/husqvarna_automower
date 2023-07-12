@@ -61,6 +61,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         available = self.get_mower_attributes()["metadata"]["connected"]
         return available
 
+    # pylint: disable=unused-argument
     async def async_get_events_data(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime
     ) -> list[CalendarEvent]:
@@ -74,12 +75,16 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                 self.geolocator.reverse, position
             )
             try:
-                self.loc = f"{result.raw['address']['road']} {result.raw['address']['house_number']}, {result.raw['address']['town']}"
-            except Exception:
+                self.loc = (
+                    f"{result.raw['address']['road']} "
+                    f"{result.raw['address']['house_number']}, "
+                    f"{result.raw['address']['town']}"
+                )
+            except Exception:  # TODO: What exception are we trying to catch here?
                 self.loc = None
         except IndexError:
             self.loc = None
-
+        # pylint: disable=unused-variable
         even_list, next_event = self.get_next_event()
         return even_list
 
@@ -93,6 +98,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             location="",
         )
         event_list = []
+        # pylint: disable=unused-variable
         for task, tasks in enumerate(mower_attributes["calendar"]["tasks"]):
             calendar = mower_attributes["calendar"]["tasks"][task]
             start_of_day = dt_util.start_of_local_day()
@@ -143,6 +149,7 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     @property
     def event(self) -> CalendarEvent:
         """Return the next upcoming event."""
+        # pylint: disable=unused-variable
         event_list, next_event = self.get_next_event()
         return next_event
 

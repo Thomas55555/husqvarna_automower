@@ -23,13 +23,6 @@
                     "cleaning": "Tonte"
                 }
             }
-        },
-        "image": {
-            "mower": {
-                "state": {
-                    "cleaning": "Tonte"
-                }
-            }
         }
     }
 }

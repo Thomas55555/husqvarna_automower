@@ -181,17 +181,7 @@
     },
     "image": {
       "mower_img": {
-        "name": "Karta",
-        "state": {
-          "cleaning": "Klipper",
-          "docked": "Dockad",
-          "error": "Fel",
-          "idle": "Inaktiv",
-          "off": "Från",
-          "on": "Till",
-          "paused": "Pausad",
-          "returning": "Återvänder till dockan"
-        }
+        "name": "Karta"
       }
     }
   },

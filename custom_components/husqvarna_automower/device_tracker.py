@@ -18,9 +18,8 @@ async def async_setup_entry(
     """Set up device_tracker platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
-    for idx, ent in enumerate(
-        coordinator.session.data["data"]
-    ):  # pylint: disable=unused-variable
+    # pylint: disable=unused-variable
+    for idx, ent in enumerate(coordinator.session.data["data"]):
         try:
             assert (
                 coordinator.session.data["data"][idx]["attributes"]["positions"][0][

@@ -78,9 +78,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         self._c_img_px = (0, 0)
         self._mwr_id_to_idx = {}
 
-        for idx, ent in enumerate(  # pylint: disable=unused-variable
-            session.session.data["data"]
-        ):
+        # pylint: disable=unused-variable
+        for idx, ent in enumerate(session.session.data["data"]):
             self._mwr_id_to_idx[session.session.data["data"][idx]["id"]] = idx
 
         self._additional_images = self.options.get(ADD_IMAGES, [])
@@ -93,9 +92,11 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
             self._find_image_scale()
             self._load_mower_image()
             self._overlay_zones()
+
+            # pylint: disable=unnecessary-lambda
             self.coordinator.session.register_data_callback(
                 lambda data: self._generate_image(data),
-                schedule_immediately=True,  # pylint: disable=unnecessary-lambda
+                schedule_immediately=True,
             )
         else:
             self._attr_entity_registry_enabled_default = True
@@ -144,7 +145,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         if not isinstance(zones, dict):
             return
 
-        for zone_id, zone in zones.items():  # pylint: disable=unused-variable
+        # pylint: disable=unused-variable
+        for zone_id, zone in zones.items():
             if self.mower_id in zone.get(ZONE_MOWERS, []) and zone.get(
                 ZONE_DISPLAY, False
             ):
@@ -241,9 +243,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         else:
             self._position_history[mower_id] = position_history
 
-        x1, y1 = self._scale_to_img(  # pylint: disable=invalid-name
-            location, (map_image.size[0], map_image.size[1])
-        )
+        # pylint: disable=invalid-name
+        x1, y1 = self._scale_to_img(location, (map_image.size[0], map_image.size[1]))
         img_draw = ImageDraw.Draw(map_image)
 
         for i in range(len(position_history) - 1, 0, -1):
@@ -325,7 +326,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
 
         points = []
         points.append(point_1)
-        for i in range(dashes):  # pylint: disable=unused-variable
+        # pylint: disable=unused-variable
+        for i in range(dashes):
             points.append(self._get_point_on_vector(points[-1], point_2, dash_length))
 
         points.append(point_2)
