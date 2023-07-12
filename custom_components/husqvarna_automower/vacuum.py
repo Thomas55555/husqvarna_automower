@@ -124,15 +124,6 @@ class HusqvarnaAutomowerStateMixin(object):
         ) or mower_attributes["mower"]["activity"] in ERROR_ACTIVITIES:
             return STATE_ERROR
 
-    @property
-    def error(self) -> str:
-        """Define an error message if the vacuum is in STATE_ERROR."""
-        if self.state == STATE_ERROR:
-            mower_attributes = AutomowerEntity.get_mower_attributes(self)
-            errorcode = mower_attributes["mower"]["errorCode"]
-            return ERRORCODES.get(errorcode, f"error_{errorcode}")
-        return None
-
 
 class HusqvarnaAutomowerEntity(
     HusqvarnaAutomowerStateMixin, StateVacuumEntity, AutomowerEntity
