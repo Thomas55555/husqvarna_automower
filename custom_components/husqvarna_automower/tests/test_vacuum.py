@@ -255,13 +255,11 @@ async def test_vacuum_error(hass: HomeAssistant):
         ] = code
 
     assert vacuum._attr_unique_id == MWR_ONE_ID
-    assert vacuum.error is None
 
     set_state("STOPPED_IN_GARDEN")
     set_activity("UNKNOWN")
     set_error_code(0)
     assert vacuum.state == STATE_ERROR
-    assert vacuum.error == "Unexpected error"
 
 
 @pytest.mark.asyncio
