@@ -33,7 +33,6 @@ from .const import (
     ZONE_MOWERS,
 )
 from .entity import AutomowerEntity
-from .vacuum import HusqvarnaAutomowerStateMixin
 
 GpsPoint = tuple[float, float]
 ImgPoint = tuple[int, int]
@@ -55,7 +54,7 @@ async def async_setup_entry(
     async_add_entities(entity_list)
 
 
-class AutomowerImage(ImageEntity, HusqvarnaAutomowerStateMixin, AutomowerEntity):
+class AutomowerImage(ImageEntity, AutomowerEntity):
     """Representation of the AutomowerImage element."""
 
     _attr_translation_key = "mower_img"
