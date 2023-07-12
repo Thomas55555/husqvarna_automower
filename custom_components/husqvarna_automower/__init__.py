@@ -175,16 +175,14 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         new_options = {**config_entry.options}
         for mwr_id in new_options.keys():
             try:
-                enable_img = new_options[mwr_id].pop('enable_camera', None)
+                enable_img = new_options[mwr_id].pop("enable_camera", None)
                 if enable_img:
-                    new_options[mwr_id]['enable_image'] = enable_img
+                    new_options[mwr_id]["enable_image"] = enable_img
             except AttributeError:
                 pass
 
         config_entry.version = 4
         hass.config_entries.async_update_entry(config_entry, options=new_options)
-
-
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
 

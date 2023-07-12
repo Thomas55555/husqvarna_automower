@@ -209,9 +209,9 @@ async def test_async_migrate_entry_2_to_4(hass: HomeAssistant):
 
         for mwr, config in config_entry.options.items():
             for opt_key in old_options_fmt:
-                if opt_key != 'enable_camera':
+                if opt_key != "enable_camera":
                     assert config[opt_key] == old_options_fmt[opt_key]
-                if opt_key == 'enable_camera':
+                if opt_key == "enable_camera":
                     assert config["enable_image"] == old_options_fmt["enable_camera"]
 
             assert config[MAP_IMG_ROTATION] == 0
