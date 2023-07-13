@@ -7,6 +7,7 @@ from homeassistant.components.system_health import (
 from homeassistant.core import HomeAssistant, callback
 
 
+# pylint: disable=unused-argument
 @callback
 def async_register(hass: HomeAssistant, register: SystemHealthRegistration) -> None:
     """Register system health callbacks."""

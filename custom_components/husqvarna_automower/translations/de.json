@@ -63,13 +63,6 @@
                     "cleaning": "Mähen"
                 }
             }
-        },
-        "camera": {
-            "mower": {
-                "state": {
-                    "cleaning": "Mähen"
-                }
-            }
         }
     }
 }

@@ -3,11 +3,8 @@
 import logging
 from datetime import datetime
 
-from homeassistant.helpers.entity import DeviceInfo, Entity
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from . import AutomowerDataUpdateCoordinator
@@ -73,7 +70,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         )
 
     @property
-    def _is_home(self):
+    def is_home(self):
         """Return True if the mower is located at the charging station."""
         if self.get_mower_attributes()["mower"]["activity"] in [
             "PARKED_IN_CS",

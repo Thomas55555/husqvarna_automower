@@ -16,7 +16,7 @@ OAUTH2_TOKEN = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token"
 PLATFORMS = [
     Platform.BINARY_SENSOR,
     Platform.CALENDAR,
-    Platform.CAMERA,
+    Platform.IMAGE,
     Platform.DEVICE_TRACKER,
     Platform.NUMBER,
     Platform.SELECT,
@@ -34,16 +34,16 @@ ACCESS_TOKEN_RAW = "access_token_raw"
 POSITIONS = "positions"
 HOME_LOCATION = "home_location"
 
-# Camera configuration
-SEL_CAMERA = "selected_camera"
-ENABLE_CAMERA = "enable_camera"
+# Image configuration
+SEL_IMAGE = "selected_image"
+ENABLE_IMAGE = "enable_image"
 GPS_TOP_LEFT = "gps_top_left"
 GPS_BOTTOM_RIGHT = "gps_bottom_right"
 MOWER_IMG_PATH = "mower_img_path"
 MAP_IMG_PATH = "map_img_path"
 MAP_IMG_ROTATION = "map_img_rotation"
 MAP_PATH_COLOR = "map_path_color"
-ADD_CAMERAS = "additional_mowers"
+ADD_IMAGES = "additional_mowers"
 
 
 # Zone configuration
@@ -304,5 +304,4 @@ MWR_RES_REASON_TO_STATUS = {
     "NOT_APPLICABLE": "parked_until_further_notice",
 }
 
-PREV_CONFIG_VER = 2
-CURRENT_CONFIG_VER = 3
+CURRENT_CONFIG_VER = 4

@@ -16,7 +16,7 @@
         "step": {
             "init": {
                 "data": {
-                    "enable_camera": "Activar la cámara de mapa"
+                    "enable_image": "Activar la cámara de mapa"
                 },
                 "description": "Activar la cámara de mapa",
                 "title": "Opciones de Husqvarna Automower"
@@ -70,13 +70,6 @@
             }
         },
         "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Segando"
-                }
-            }
-        },
-        "camera": {
             "mower": {
                 "state": {
                     "cleaning": "Segando"

@@ -1,204 +1,194 @@
 {
-    "config": {
-        "step": {
-            "reauth_confirm": {
-                "description": "Husqvarna Automower-integrationen måste autentiseras på nytt med Husqvarna",
-                "title": "Återautentisera integration"
-            }
-        },
-        "abort": {
-            "missing_configuration": "Komponenten är inte konfigurerad. Vänligen följ dokumentationen.",
-            "reauth_successful": "Återautentiseringen lyckades",
-            "single_instance_allowed": "Endast en konfiguration av Husqvarna Automower är tillåten."
-        }
+  "config": {
+    "step": {
+      "reauth_confirm": {
+        "description": "Husqvarna Automower-integrationen måste autentiseras på nytt med Husqvarna",
+        "title": "Återautentisera integration"
+      }
     },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "enable_camera": "Aktivera kartkamera"
-                },
-                "description": "Aktivera kartkamera",
-                "title": "Husqvarna Automower-inställningar"
-            },
-            "config": {
-                "data": {
-                    "gps_top_left": "GPS-koordinater för det övre vänstra bildhörnet",
-                    "gps_bottom_right": "GPS-koordinater för det nedre högra bildhörnet",
-                    "mower_img_path": "Sökväg till bild på gräsklipparen",
-                    "map_img_path": "Sökväg till kartbilden"
-                },
-                "description": "Kamerainställningar",
-                "title": "Husqvarna Automower-inställningar"
-            }
-        }
-    },
-    "system_health": {
-        "info": {
-            "can_reach_server": "Husqvarna Token-server kan nås"
-        }
-    },
-    "application_credentials": {
-        "description": "Skapa ett konto på [Husqvarna developers portal]({oauth_creds_url}). Anslut Authentication API and Automower Connect API. Som redirect-URI anges https://my.home-assistant.io/redirect/oauth. Om du inte har konfigurerat My HomeAssistant, ange istället denna URL: {redirect_uri}"
-    },
-    "entity": {
-        "binary_sensor": {
-            "battery_charging": {
-                "name": "Batteriladdning"
-            },
-            "leaving_dock": {
-                "name": "Lämnar laddningsstationen"
-            },
-            "error": {
-                "name": "Fel"
-            }
-        },
-        "number": {
-            "cutting_height": {
-                "name": "Klipphöjd"
-            },
-            "mow_for": {
-                "name": "Klipp i"
-            },
-            "park_for": {
-                "name": "Parkera i"
-            }
-        },
-        "select": {
-            "headlight_mode": {
-                "name": "Strålkastare",
-                "state": {
-                    "always_on": "Alltid på",
-                    "always_off": "Alltid av",
-                    "evening_only": "Endast kväll",
-                    "evening_and_night": "Kväll och natt"
-                }
-            }
-        },
-        "sensor": {
-            "cutting_height": {
-                "name": "Klipphöjd"
-            },
-            "number_of_charging_cycles": {
-                "name": "Antal laddningscykler"
-            },
-            "number_of_collisions": {
-                "name": "Antal kollisioner"
-            },
-            "cutting_blade_usage_time": {
-                "name": "Knivblad använda"
-            },
-            "total_charging_time": {
-                "name": "Total laddningstid"
-            },
-            "total_cutting_time": {
-                "name": "Total klipptid"
-            },
-            "total_running_time": {
-                "name": "Total drifttid"
-            },
-            "total_searching_time": {
-                "name": "Total söktid"
-            },
-            "searching_time_percent": {
-                "name": "Söktid andel"
-            },
-            "cutting_time_percent": {
-                "name": "Klipptid andel"
-            },
-            "battery_level": {
-                "name": "Batterinivå"
-            },
-            "next_start": {
-                "name": "Nästa start"
-            },
-            "problem_list": {
-                "name": "Problem",
-                "state": {
-                    "off": "Från",
-                    "unknown": "Okänt",
-                    "stopped": "Stoppad",
-                    "stopped_in_garden": "Stoppad i trädgårdenn",
-                    "not_applicable": "Ej tillämpligt",
-                    "none": "Inget",
-                    "week_schedule": "Veckoschema",
-                    "park_override": "Parkering åsidosatt",
-                    "sensor": "Vädertimer",
-                    "daily_limit": "Daglig begränsning",
-                    "fota": "Fota",
-                    "frost": "Frost",
-                    "parked_until_further_notice": "Parkerad tills vidare"
-                }
-            },
-            "mode_list": {
-                "name": "Driftläge",
-                "state": {
-                    "main_area": "Huvudyta",
-                    "secondary_area": "Sekundär yta",
-                    "home": "Hem",
-                    "demo": "Demo",
-                    "unknown": "Okänt"
-                }
-            }
-        },
-        "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Klipper"
-                },
-                "state_attributes": {
-                    "status": {
-                        "name": "Status",
-                        "state": {
-                            "cleaning": "Klipper",
-                            "off": "Från",
-                            "unknown": "Okänd",
-                            "stopped": "Stoppad",
-                            "not_applicable": "Ej tillämpligt",
-                            "paused": "Pausad",
-                            "going_to_charging_station": "På väg till laddningsstation",
-                            "leaving_charging_station": "Lämnar laddningsstation",
-                            "parked": "Parkerad",
-                            "park_override": "Parkering åsidosatt",
-                            "daily_limit": "Daglig begränsning",
-                            "fota": "Fota",
-                            "updating": "Updaterar",
-                            "powering_up": "Startar",
-                            "weather_timer": "Vädertimer",
-                            "parked_until_further_notice": "Parkerad tills vidare"
-                        }
-                    },
-                    "action": {
-                        "name": "Aktion",
-                        "state": {
-                            "force_mow": "Forcera klippning",
-                            "not_active": "Inaktiv",
-                            "unknown": "Okänd"
-                        }
-                    }
-                }
-            }
-        },
-        "camera": {
-            "mower_cam": {
-                "name": "Karta",
-                "state": {
-                    "cleaning": "Klipper",
-                    "docked": "Dockad",
-                    "error": "Fel",
-                    "idle": "Inaktiv",
-                    "off": "Från",
-                    "on": "Till",
-                    "paused": "Pausad",
-                    "returning": "Återvänder till dockan"
-                }
-            }
-        }
-    },
-    "issues": {
-        "wrong_scope": {
-            "title": "Felaktigt scope för token",
-            "description": "Ändra scope för att kunna använda websocket och omedelbara uppdateringar av status för klipparen. Läs mer här: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
-        }
+    "abort": {
+      "missing_configuration": "Komponenten är inte konfigurerad. Vänligen följ dokumentationen.",
+      "reauth_successful": "Återautentiseringen lyckades",
+      "single_instance_allowed": "Endast en konfiguration av Husqvarna Automower är tillåten."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "enable_image": "Aktivera kartkamera"
+        },
+        "description": "Aktivera kartkamera",
+        "title": "Husqvarna Automower-inställningar"
+      },
+      "config": {
+        "data": {
+          "gps_top_left": "GPS-koordinater för det övre vänstra bildhörnet",
+          "gps_bottom_right": "GPS-koordinater för det nedre högra bildhörnet",
+          "mower_img_path": "Sökväg till bild på gräsklipparen",
+          "map_img_path": "Sökväg till kartbilden"
+        },
+        "description": "Kamerainställningar",
+        "title": "Husqvarna Automower-inställningar"
+      }
+    }
+  },
+  "system_health": {
+    "info": {
+      "can_reach_server": "Husqvarna Token-server kan nås"
+    }
+  },
+  "application_credentials": {
+    "description": "Skapa ett konto på [Husqvarna developers portal]({oauth_creds_url}). Anslut Authentication API and Automower Connect API. Som redirect-URI anges https://my.home-assistant.io/redirect/oauth. Om du inte har konfigurerat My HomeAssistant, ange istället denna URL: {redirect_uri}"
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery_charging": {
+        "name": "Batteriladdning"
+      },
+      "leaving_dock": {
+        "name": "Lämnar laddningsstationen"
+      },
+      "error": {
+        "name": "Fel"
+      }
+    },
+    "number": {
+      "cutting_height": {
+        "name": "Klipphöjd"
+      },
+      "mow_for": {
+        "name": "Klipp i"
+      },
+      "park_for": {
+        "name": "Parkera i"
+      }
+    },
+    "select": {
+      "headlight_mode": {
+        "name": "Strålkastare",
+        "state": {
+          "always_on": "Alltid på",
+          "always_off": "Alltid av",
+          "evening_only": "Endast kväll",
+          "evening_and_night": "Kväll och natt"
+        }
+      }
+    },
+    "sensor": {
+      "cutting_height": {
+        "name": "Klipphöjd"
+      },
+      "number_of_charging_cycles": {
+        "name": "Antal laddningscykler"
+      },
+      "number_of_collisions": {
+        "name": "Antal kollisioner"
+      },
+      "cutting_blade_usage_time": {
+        "name": "Knivblad använda"
+      },
+      "total_charging_time": {
+        "name": "Total laddningstid"
+      },
+      "total_cutting_time": {
+        "name": "Total klipptid"
+      },
+      "total_running_time": {
+        "name": "Total drifttid"
+      },
+      "total_searching_time": {
+        "name": "Total söktid"
+      },
+      "searching_time_percent": {
+        "name": "Söktid andel"
+      },
+      "cutting_time_percent": {
+        "name": "Klipptid andel"
+      },
+      "battery_level": {
+        "name": "Batterinivå"
+      },
+      "next_start": {
+        "name": "Nästa start"
+      },
+      "problem_list": {
+        "name": "Problem",
+        "state": {
+          "off": "Från",
+          "unknown": "Okänt",
+          "stopped": "Stoppad",
+          "stopped_in_garden": "Stoppad i trädgårdenn",
+          "not_applicable": "Ej tillämpligt",
+          "none": "Inget",
+          "week_schedule": "Veckoschema",
+          "park_override": "Parkering åsidosatt",
+          "sensor": "Vädertimer",
+          "daily_limit": "Daglig begränsning",
+          "fota": "Fota",
+          "frost": "Frost",
+          "parked_until_further_notice": "Parkerad tills vidare"
+        }
+      },
+      "mode_list": {
+        "name": "Driftläge",
+        "state": {
+          "main_area": "Huvudyta",
+          "secondary_area": "Sekundär yta",
+          "home": "Hem",
+          "demo": "Demo",
+          "unknown": "Okänt"
+        }
+      }
+    },
+    "vacuum": {
+      "mower": {
+        "state": {
+          "cleaning": "Klipper"
+        },
+        "state_attributes": {
+          "status": {
+            "name": "Status",
+            "state": {
+              "cleaning": "Klipper",
+              "off": "Från",
+              "unknown": "Okänd",
+              "stopped": "Stoppad",
+              "not_applicable": "Ej tillämpligt",
+              "paused": "Pausad",
+              "going_to_charging_station": "På väg till laddningsstation",
+              "leaving_charging_station": "Lämnar laddningsstation",
+              "parked": "Parkerad",
+              "park_override": "Parkering åsidosatt",
+              "daily_limit": "Daglig begränsning",
+              "fota": "Fota",
+              "updating": "Updaterar",
+              "powering_up": "Startar",
+              "weather_timer": "Vädertimer",
+              "parked_until_further_notice": "Parkerad tills vidare"
+            }
+          },
+          "action": {
+            "name": "Aktion",
+            "state": {
+              "force_mow": "Forcera klippning",
+              "not_active": "Inaktiv",
+              "unknown": "Okänd"
+            }
+          }
+        }
+      }
+    },
+    "image": {
+      "mower_img": {
+        "name": "Karta"
+      }
+    }
+  },
+  "issues": {
+    "wrong_scope": {
+      "title": "Felaktigt scope för token",
+      "description": "Ändra scope för att kunna använda websocket och omedelbara uppdateringar av status för klipparen. Läs mer här: https://developer.husqvarnagroup.cloud/apis/automower-connect-api#websocket"
+    }
+  }
 }

@@ -1,7 +1,7 @@
 """The Husqvarna Automower integration."""
 import logging
 import os
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncioTimeoutError
 
 import aioautomower
 from homeassistant.components.application_credentials import DATA_STORAGE
@@ -19,9 +19,6 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
-    PREV_CONFIG_VER,
-    CURRENT_CONFIG_VER,
-    ENABLE_CAMERA,
     GPS_TOP_LEFT,
     GPS_BOTTOM_RIGHT,
     MOWER_IMG_PATH,
@@ -72,7 +69,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from Husqvarna."""
         try:
             await self.session.connect()
-        except TimeoutError as error:
+        except AsyncioTimeoutError as error:
             _LOGGER.debug("Asyncio timeout: %s", error)
             raise ConfigEntryNotReady from error
         except Exception as error:
@@ -121,17 +118,17 @@ async def update_listener(
 ) -> None:  # Todo: Add test
     """Handle options update."""
     unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, [Platform.CAMERA]
+        entry, [Platform.IMAGE]
     )
     if unload_ok:
-        await hass.config_entries.async_forward_entry_setups(entry, [Platform.CAMERA])
+        await hass.config_entries.async_forward_entry_setups(entry, [Platform.IMAGE])
         entry.async_on_unload(entry.add_update_listener(update_listener))
 
 
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)
-    if config_entry.version == PREV_CONFIG_VER:
+    if config_entry.version == 2:
         new_options = {**config_entry.options}
         base_path = os.path.dirname(__file__)
 
@@ -142,12 +139,13 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             entry=config_entry,
         )
         await coordinator.async_config_entry_first_refresh()
+        # pylint: disable=unused-variable
         for idx, ent in enumerate(coordinator.session.data["data"]):
             mower_idx.append(ent["id"])
 
         for mower_id in mower_idx:
             new_options[mower_id] = {
-                ENABLE_CAMERA: new_options.get(ENABLE_CAMERA, False),
+                "enable_camera": new_options.get("enable_camera", False),
                 GPS_TOP_LEFT: new_options.get(GPS_TOP_LEFT, ""),
                 GPS_BOTTOM_RIGHT: new_options.get(GPS_BOTTOM_RIGHT, ""),
                 MOWER_IMG_PATH: new_options.get(
@@ -162,7 +160,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             }
 
         for opt_key in [
-            ENABLE_CAMERA,
+            "enable_camera",
             GPS_TOP_LEFT,
             GPS_BOTTOM_RIGHT,
             MOWER_IMG_PATH,
@@ -170,7 +168,20 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         ]:
             new_options.pop(opt_key, None)
 
-        config_entry.version = CURRENT_CONFIG_VER
+        config_entry.version = 3
+        hass.config_entries.async_update_entry(config_entry, options=new_options)
+
+    if config_entry.version == 3:
+        new_options = {**config_entry.options}
+        for mwr_id in new_options.keys():
+            try:
+                enable_img = new_options[mwr_id].pop("enable_camera", None)
+                if enable_img:
+                    new_options[mwr_id]["enable_image"] = enable_img
+            except AttributeError:
+                pass
+
+        config_entry.version = 4
         hass.config_entries.async_update_entry(config_entry, options=new_options)
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)

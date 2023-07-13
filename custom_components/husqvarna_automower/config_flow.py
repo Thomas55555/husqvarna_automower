@@ -13,10 +13,10 @@ import homeassistant.helpers.config_validation as cv
 
 
 from .const import (
-    ADD_CAMERAS,
+    ADD_IMAGES,
     CONF_ZONES,
     DOMAIN,
-    ENABLE_CAMERA,
+    ENABLE_IMAGE,
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
     HOME_LOCATION,
@@ -24,7 +24,7 @@ from .const import (
     MAP_IMG_ROTATION,
     MAP_PATH_COLOR,
     MOWER_IMG_PATH,
-    SEL_CAMERA,
+    SEL_IMAGE,
     ZONE_COLOR,
     ZONE_COORD,
     ZONE_DEL,
@@ -83,7 +83,9 @@ class HusqvarnaConfigFlowHandler(
             data=data,
         )
 
-    async def async_step_reauth(self, user_input=None) -> data_entry_flow.FlowResult:
+    async def async_step_reauth(
+        self, user_input=None  # pylint: disable=unused-argument
+    ) -> data_entry_flow.FlowResult:
         """Perform reauth upon an API authentication error."""
         return await self.async_step_reauth_confirm()
 
@@ -124,6 +126,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.hass = async_get_hass()
         self.mower_idx = []
         for entity in self.hass.data[DOMAIN].keys():
+            # pylint: disable=unused-variable
             for idx, ent in enumerate(
                 self.hass.data[DOMAIN][entity].session.data["data"]
             ):
@@ -142,8 +145,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             mower_configurations[mwr_id] = {}
             cfg_options = self.options.get(mwr_id, {})
 
-            mower_configurations[mwr_id][ENABLE_CAMERA] = cfg_options.get(
-                ENABLE_CAMERA, False
+            mower_configurations[mwr_id][ENABLE_IMAGE] = cfg_options.get(
+                ENABLE_IMAGE, False
             )
             mower_configurations[mwr_id][GPS_TOP_LEFT] = cfg_options.get(
                 GPS_TOP_LEFT, ""
@@ -166,21 +169,23 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             mower_configurations[mwr_id][HOME_LOCATION] = cfg_options.get(
                 HOME_LOCATION, ""
             )
-            mower_configurations[mwr_id][ADD_CAMERAS] = cfg_options.get(ADD_CAMERAS, [])
+            mower_configurations[mwr_id][ADD_IMAGES] = cfg_options.get(ADD_IMAGES, [])
 
             self.options.update(mower_configurations)
 
         self.sel_zone_id = None
         self.sel_mower_id = self.mower_idx[0]["id"]
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage option flow."""
         return await self.async_step_select()
 
-    async def async_step_select(self, user_input=None):
+    async def async_step_select(
+        self, user_input=None
+    ):  # pylint: disable=unused-argument
         """Select Configuration Item."""
         return self.async_show_menu(
-            step_id="select", menu_options=["camera_select", "geofence_init"]
+            step_id="select", menu_options=["image_select", "geofence_init"]
         )
 
     async def async_step_geofence_init(self, user_input=None):
@@ -324,39 +329,39 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="zone_edit", data_schema=vol.Schema(data_schema), errors=errors
         )
 
-    async def async_step_camera_select(self, user_input=None):
-        """Select camera to configure."""
+    async def async_step_image_select(self, user_input=None):
+        """Select image to configure."""
         if user_input:
-            sel_mower_name = user_input.get(SEL_CAMERA)
+            sel_mower_name = user_input.get(SEL_IMAGE)
             self.sel_mower_id = next(
                 (mwr["id"] for mwr in self.mower_idx if mwr["name"] == sel_mower_name),
                 None,
             )
-            return await self.async_step_camera_config()
+            return await self.async_step_image_config()
 
-        configured_camera_keys = [m["name"] for m in self.mower_idx]
+        configured_image_keys = [m["name"] for m in self.mower_idx]
 
         data_schema = {}
-        data_schema[SEL_CAMERA] = selector.selector(
+        data_schema[SEL_IMAGE] = selector.selector(
             {
                 "select": {
-                    "options": configured_camera_keys,
+                    "options": configured_image_keys,
                 }
             }
         )
         return self.async_show_form(
-            step_id="camera_select", data_schema=vol.Schema(data_schema)
+            step_id="image_select", data_schema=vol.Schema(data_schema)
         )
 
-    async def async_step_camera_config(self, user_input=None):
-        """Update the camera configuration."""
+    async def async_step_image_config(self, user_input=None):
+        """Update the image configuration."""
         errors = {}
 
         if user_input:
-            if user_input.get(ENABLE_CAMERA):
-                self.options[self.sel_mower_id][ENABLE_CAMERA] = True
+            if user_input.get(ENABLE_IMAGE):
+                self.options[self.sel_mower_id][ENABLE_IMAGE] = True
             else:
-                self.options[self.sel_mower_id][ENABLE_CAMERA] = False
+                self.options[self.sel_mower_id][ENABLE_IMAGE] = False
                 return await self._update_config()
 
             if user_input.get(GPS_TOP_LEFT):
@@ -435,14 +440,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ]
                 else:
                     errors[HOME_LOCATION] = pnt_error
-            self.options[self.sel_mower_id][ADD_CAMERAS] = user_input.get(
-                ADD_CAMERAS, []
-            )
+            self.options[self.sel_mower_id][ADD_IMAGES] = user_input.get(ADD_IMAGES, [])
 
             if not errors:
                 return await self._update_config()
-            else:
-                _LOGGER.debug("Errors: %s" % errors)
+            _LOGGER.debug("Errors: %s", errors)
 
         path_color_str = ",".join(
             [str(i) for i in self.options[self.sel_mower_id].get(MAP_PATH_COLOR)]
@@ -473,8 +475,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         data_schema = {
             vol.Required(
-                ENABLE_CAMERA,
-                default=self.options[self.sel_mower_id].get(ENABLE_CAMERA),
+                ENABLE_IMAGE,
+                default=self.options[self.sel_mower_id].get(ENABLE_IMAGE),
             ): bool,
             vol.Required(GPS_TOP_LEFT, default=gps_top_left): str,
             vol.Required(GPS_BOTTOM_RIGHT, default=gps_bottom_right): str,
@@ -493,13 +495,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required(MAP_PATH_COLOR, default=path_color_str): str,
             vol.Optional(HOME_LOCATION, default=home_location): str,
             vol.Optional(
-                ADD_CAMERAS,
-                default=self.options[self.sel_mower_id].get(ADD_CAMERAS, []),
+                ADD_IMAGES,
+                default=self.options[self.sel_mower_id].get(ADD_IMAGES, []),
             ): cv.multi_select(mwr_options_dict),
         }
 
         return self.async_show_form(
-            step_id="camera_config", data_schema=vol.Schema(data_schema), errors=errors
+            step_id="image_config", data_schema=vol.Schema(data_schema), errors=errors
         )
 
     async def _update_config(self):

@@ -261,6 +261,8 @@ async def async_setup_entry(
     """Set up select platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
+
+    # pylint: disable=unused-variable
     for idx, ent in enumerate(coordinator.session.data["data"]):
         if entry.options.get(CONF_ZONES):
             entity_list.append(AutomowerZoneSensor(coordinator, idx, entry))
@@ -325,7 +327,7 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
 
     def _find_current_zone(self):
         """Find current zone."""
-        if self._is_home and self.home_location:
+        if self.is_home and self.home_location:
             self.zone = {ZONE_NAME: "Home"}
             self.zone_id = "home"
             return

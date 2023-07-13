@@ -95,8 +95,35 @@ async def async_setup_entry(
     )
 
 
-class HusqvarnaAutomowerStateMixin(object):
-    """Don't know, what this is."""
+class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
+    """Defining each mower Entity."""
+
+    _attr_icon = "mdi:robot-mower"
+    _attr_name: str | None = None
+    _attr_supported_features = SUPPORT_STATE_SERVICES
+    _attr_translation_key = "mower"
+
+    def __init__(self, session, idx):
+        """Set up HusqvarnaAutomowerEntity."""
+        super().__init__(session, idx)
+        self._attr_unique_id = self.coordinator.session.data["data"][self.idx]["id"]
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        available = self.get_mower_attributes()["metadata"]["connected"]
+        return available
+
+    @property
+    def battery_level(self) -> int:
+        """Return the current battery level of the mower."""
+        return max(
+            0,
+            min(
+                100,
+                AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"],
+            ),
+        )
 
     @property
     def state(self) -> str:
@@ -139,39 +166,6 @@ class HusqvarnaAutomowerStateMixin(object):
             errorcode = mower_attributes["mower"]["errorCode"]
             return ERRORCODES.get(errorcode, f"error_{errorcode}")
         return None
-
-
-class HusqvarnaAutomowerEntity(
-    HusqvarnaAutomowerStateMixin, StateVacuumEntity, AutomowerEntity
-):
-    """Defining each mower Entity."""
-
-    _attr_icon = "mdi:robot-mower"
-    _attr_name: str | None = None
-    _attr_supported_features = SUPPORT_STATE_SERVICES
-    _attr_translation_key = "mower"
-
-    def __init__(self, session, idx):
-        """Set up HusqvarnaAutomowerEntity."""
-        super().__init__(session, idx)
-        self._attr_unique_id = self.coordinator.session.data["data"][self.idx]["id"]
-
-    @property
-    def available(self) -> bool:
-        """Return True if the device is available."""
-        available = self.get_mower_attributes()["metadata"]["connected"]
-        return available
-
-    @property
-    def battery_level(self) -> int:
-        """Return the current battery level of the mower."""
-        return max(
-            0,
-            min(
-                100,
-                AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"],
-            ),
-        )
 
     def __get_status(self) -> str:
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
@@ -260,7 +254,7 @@ class HusqvarnaAutomowerEntity(
         friday,
         saturday,
         sunday,
-        **kwargs,
+        **kwargs,  # pylint: disable=unused-argument
     ) -> None:
         """Send a custom calendar command to the mower."""
         start_in_minutes = start.hour * 60 + start.minute
@@ -301,7 +295,7 @@ class HusqvarnaAutomowerEntity(
     async def async_schedule_selector(
         self,
         schedule_selector,
-        **kwargs,
+        **kwargs,  # pylint: disable=unused-argument
     ) -> None:
         """Send a schedule created by the schedule helper to the mower."""
         schedule_list = schedule_selector.split(".")
@@ -357,6 +351,7 @@ class HusqvarnaAutomowerEntity(
                     )
                     raise HomeAssistantError("Command not allowed.") from exception
 
+    # pylint: disable=unused-argument
     async def async_custom_command(self, command_type, json_string, **kwargs) -> None:
         """Send a custom command to the mower."""
         try:
