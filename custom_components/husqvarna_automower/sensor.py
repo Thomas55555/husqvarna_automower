@@ -327,7 +327,7 @@ class AutomowerZoneSensor(SensorEntity, AutomowerEntity):
 
     def _find_current_zone(self):
         """Find current zone."""
-        if self._is_home and self.home_location:
+        if self.is_home and self.home_location:
             self.zone = {ZONE_NAME: "Home"}
             self.zone_id = "home"
             return

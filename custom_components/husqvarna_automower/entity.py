@@ -70,7 +70,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         )
 
     @property
-    def _is_home(self):
+    def is_home(self):
         """Return True if the mower is located at the charging station."""
         if self.get_mower_attributes()["mower"]["activity"] in [
             "PARKED_IN_CS",

@@ -132,14 +132,14 @@ async def test_load_image_enabled(hass: HomeAssistant):
     automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "CHARGING"
-    assert image_one._is_home is True
+    assert image_one.is_home is True
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Mower not at home
     automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "MOWING"
-    assert image_one._is_home is False
+    assert image_one.is_home is False
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Mower, no home location

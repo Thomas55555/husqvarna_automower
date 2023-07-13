@@ -293,7 +293,7 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
                 path_color = options.get(MAP_PATH_COLOR, [255, 0, 0])
                 img_position_history = extra_img.get_mower_attributes()["positions"]
                 map_image = self._generate_image_img(
-                    extra_img._is_home,  # pylint: disable=protected-access
+                    extra_img.is_home,
                     home_location,
                     img_position_history,
                     extra_img.mower_id,
@@ -304,7 +304,7 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
 
         map_image = self._generate_image_img(
-            self._is_home,
+            self.is_home,
             self.home_location,
             position_history,
             self.mower_id,
