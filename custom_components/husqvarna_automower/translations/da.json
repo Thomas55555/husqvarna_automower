@@ -16,7 +16,7 @@
         "step": {
             "init": {
                 "data": {
-                    "enable_camera": "Aktiver kort-kamera"
+                    "enable_image": "Aktiver kort-kamera"
                 },
                 "description": "Vælg indstillinger for integrationen",
                 "title": "Husqvarna Automower indstillinger"
@@ -71,13 +71,6 @@
             }
         },
         "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Slår græs"
-                }
-            }
-        },
-        "camera": {
             "mower": {
                 "state": {
                     "cleaning": "Slår græs"

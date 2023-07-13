@@ -1,6 +1,6 @@
-# Building a Camera Map
+# Building a Map Image
 
-- [Building a Camera Map](#building-a-camera-map)
+- [Building a Map Image](#building-a-map-image)
   - [Acquire an image and corner coordinates](#acquire-an-image-and-corner-coordinates)
   - [Creating a zone](#creating-a-zone)
 
@@ -34,16 +34,16 @@
 ![Create Map Image Config - step 1](/images/map_guide/map_config_1.png)
 15. Choose configure.
 ![Create Map Image Config - step 2](/images/map_guide/map_config_2.png)
-16. Choose Configure Map Camera.
+16. Choose Configure Map Image.
 ![Create Map Image Config - step 3](/images/map_guide/map_config_3.png)
-17. Choose the mower you to configure the camera for.
+17. Choose the mower you to configure the image for.
 ![Create Map Image Config - step 4](/images/map_guide/map_config_4.png)
 18. Paste the Top Left and Bottom Right coordinates from step 9, set the rotation from step 12, and the folder you placed the image in during step 13.
 ![Create Map Image Config - step 5](/images/map_guide/map_config_5.png)
 19. [Optional] add the home location of your mower, this will ensure the mower is always shown at home on the image if it's docked.  This prevents GPS errors, especially noticeable if you have a garage causing the mower to appear to wander.
-20. [Optional] If you have more than one mower, the last option is to choose additional mowers to display on this mowers map camera, choose those now.
+20. [Optional] If you have more than one mower, the last option is to choose additional mowers to display on this mowers map image, choose those now.
 21. Choose Submit, then finish.
-22. Verify your mower is shown on the map camera properly.
+22. Verify your mower is shown on the map image properly.
 ![Create Map Image Config - step 6](/images/map_guide/mower_two_out.png)
 
 ## Creating a zone
@@ -68,5 +68,5 @@
 13. Now you will see your new zone, plus Create Zone and Save Zone.
 ![Create Zone - Step 5](/images/map_guide/zone_config_4.png)
 14. You must select Save Zone, then click Submit to save the zones to the config.
-15. Verify the zones are shown on the map camera.
+15. Verify the zones are shown on the map image.
 16. Note: The Zone sensor won't update until you either reload the integration or the next update happens.

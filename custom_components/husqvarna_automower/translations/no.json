@@ -16,7 +16,7 @@
         "step": {
             "init": {
                 "data": {
-                    "enable_camera": "Aktiver kart-kamera"
+                    "enable_image": "Aktiver kart-kamera"
                 },
                 "description": "Aktiver kart-kamera",
                 "title": "Husqvarna Automower innstillinger"
@@ -43,13 +43,6 @@
     },
     "entity": {
         "vacuum": {
-            "mower": {
-                "state": {
-                    "cleaning": "Klipper"
-                }
-            }
-        },
-        "camera": {
             "mower": {
                 "state": {
                     "cleaning": "Klipper"

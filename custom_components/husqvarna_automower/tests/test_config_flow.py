@@ -7,9 +7,9 @@ from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import (
-    ADD_CAMERAS,
+    ADD_IMAGES,
     DOMAIN,
-    ENABLE_CAMERA,
+    ENABLE_IMAGE,
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
     HOME_LOCATION,
@@ -76,8 +76,8 @@ async def test_options_init(hass: HomeAssistant) -> None:
         assert result["step_id"] == "select"
 
 
-async def test_options_camera_config_existing_options(hass: HomeAssistant) -> None:
-    """Test Camera Config option flow."""
+async def test_options_image_config_existing_options(hass: HomeAssistant) -> None:
+    """Test Image Config option flow."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data=AUTOMOWER_CONFIG_DATA,
@@ -104,16 +104,56 @@ async def test_options_camera_config_existing_options(hass: HomeAssistant) -> No
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
 
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"next_step_id": "camera_select"}
+            result["flow_id"], {"next_step_id": "image_select"}
         )
 
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"selected_camera": "Test Mower 1"}
+            result["flow_id"], {"selected_image": "Test Mower 1"}
         )
 
 
-async def test_options_camera_config(hass: HomeAssistant) -> None:
-    """Test Camera Config option flow."""
+async def test_options_image_config_existing_options_bad_zone(
+    hass: HomeAssistant,
+) -> None:
+    """Test Image Config option flow where the configured zones is not a dict."""
+    options = AUTOMER_DM_CONFIG.copy()
+    options["configured_zones"] = "[]"
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=options,
+        entry_id="automower_test",
+        title="Automower Test",
+    )
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
+    ):
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+        result = await hass.config_entries.options.async_init(config_entry.entry_id)
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"next_step_id": "image_select"}
+        )
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"selected_image": "Test Mower 1"}
+        )
+
+
+async def test_options_image_config(hass: HomeAssistant) -> None:
+    """Test Image Config option flow."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data=AUTOMOWER_CONFIG_DATA,
@@ -142,32 +182,32 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
         assert result["step_id"] == "select"
 
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"next_step_id": "camera_select"}
+            result["flow_id"], {"next_step_id": "image_select"}
         )
         assert result["type"] == FlowResultType.FORM
-        assert result["step_id"] == "camera_select"
+        assert result["step_id"] == "image_select"
 
-        assert result["data_schema"].schema["selected_camera"].config["options"] == [
+        assert result["data_schema"].schema["selected_image"].config["options"] == [
             "Test Mower 1",
             "Test Mower 2",
         ]
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"selected_camera": "Test Mower 1"}
+            result["flow_id"], {"selected_image": "Test Mower 1"}
         )
         assert result["type"] == FlowResultType.FORM
-        assert result["step_id"] == "camera_config"
+        assert result["step_id"] == "image_config"
 
         # Get Mower One
         schema = result["data_schema"].schema
         assert get_suggested(schema, MAP_IMG_ROTATION) is None
-        assert get_suggested(schema, ENABLE_CAMERA) is None
+        assert get_suggested(schema, ENABLE_IMAGE) is None
         assert get_suggested(schema, MOWER_IMG_PATH) is None
         assert get_suggested(schema, MAP_IMG_PATH) is None
-        assert schema[ADD_CAMERAS].options == {MWR_TWO_ID: "Test Mower 2"}
+        assert schema[ADD_IMAGES].options == {MWR_TWO_ID: "Test Mower 2"}
 
-        # Disable Camera, nothing else
+        # Disable Image, nothing else
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {ENABLE_CAMERA: False}
+            result["flow_id"], {ENABLE_IMAGE: False}
         )
 
         assert result["type"] == FlowResultType.CREATE_ENTRY
@@ -178,27 +218,27 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
         assert result["step_id"] == "select"
 
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"next_step_id": "camera_select"}
+            result["flow_id"], {"next_step_id": "image_select"}
         )
 
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {"selected_camera": "Test Mower 1"}
+            result["flow_id"], {"selected_image": "Test Mower 1"}
         )
 
-        # Enable Camera, nothing else
+        # Enable Image, nothing else
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], {ENABLE_CAMERA: True}
+            result["flow_id"], {ENABLE_IMAGE: True}
         )
 
         assert result["type"] == FlowResultType.FORM
-        assert result["step_id"] == "camera_config"
+        assert result["step_id"] == "image_config"
         assert result["errors"][GPS_BOTTOM_RIGHT] == "points_match"
 
-        # Enable Camera, provide invalid top left point
+        # Enable Image, provide invalid top left point
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "235.5411008,-82.5527418",
             },
@@ -206,11 +246,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {GPS_TOP_LEFT: "not_wgs84"}
 
-        # Enable Camera, provide invalid bottom right point
+        # Enable Image, provide invalid bottom right point
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "235.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
             },
@@ -218,11 +258,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {GPS_BOTTOM_RIGHT: "not_wgs84"}
 
-        # Enable Camera, provide valid points, bad path for mower
+        # Enable Image, provide valid points, bad path for mower
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
@@ -231,11 +271,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MOWER_IMG_PATH: "not_file"}
 
-        # Enable Camera, provide valid points, bad image for mower
+        # Enable Image, provide valid points, bad image for mower
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
@@ -244,11 +284,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MOWER_IMG_PATH: "not_image"}
 
-        # Enable Camera, provide valid points, bad path for map
+        # Enable Image, provide valid points, bad path for map
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
@@ -257,11 +297,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MAP_IMG_PATH: "not_file"}
 
-        # Enable Camera, provide valid points, bad image for map
+        # Enable Image, provide valid points, bad image for map
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
@@ -270,11 +310,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MAP_IMG_PATH: "not_image"}
 
-        # Enable Camera, provide valid points, bad color
+        # Enable Image, provide valid points, bad color
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MAP_PATH_COLOR: "-100, 0, 0",
@@ -283,11 +323,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MAP_PATH_COLOR: "color_error"}
 
-        # Enable Camera, provide valid points, bad rotation
+        # Enable Image, provide valid points, bad rotation
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 MAP_IMG_ROTATION: -500,
@@ -296,11 +336,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {MAP_IMG_ROTATION: "rotation_error"}
 
-        # Enable Camera, provide valid corner points, bad home point
+        # Enable Image, provide valid corner points, bad home point
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 HOME_LOCATION: "35.54028774,-282.5526962",
@@ -309,11 +349,11 @@ async def test_options_camera_config(hass: HomeAssistant) -> None:
 
         assert result["errors"] == {HOME_LOCATION: "not_wgs84"}
 
-        # Enable Camera, provide valid points
+        # Enable Image, provide valid points
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ENABLE_CAMERA: True,
+                ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
                 HOME_LOCATION: "35.54028774,-82.5526962",

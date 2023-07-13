@@ -18,13 +18,17 @@ async def async_setup_entry(
     """Set up device_tracker platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
+    # pylint: disable=unused-variable
     for idx, ent in enumerate(coordinator.session.data["data"]):
         try:
-            coordinator.session.data["data"][idx]["attributes"]["positions"][0][
-                "latitude"
-            ]
+            assert (
+                coordinator.session.data["data"][idx]["attributes"]["positions"][0][
+                    "latitude"
+                ]
+                is not None
+            )
             entity_list.append(AutomowerTracker(coordinator, idx))
-        except IndexError:
+        except (IndexError, AssertionError):
             pass
 
     async_add_entities(entity_list)

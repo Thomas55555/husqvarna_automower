@@ -10,7 +10,7 @@ def validate_rotation(rotation: float) -> float:
     """Ensure rotation is in degrees."""
     try:
         rotation = float(rotation)
-        if rotation < 360 and rotation > -360:
+        if -360 < rotation < 360:
             return True
         return False
     except ValueError:
@@ -20,9 +20,9 @@ def validate_rotation(rotation: float) -> float:
 def validate_image(img_path: str) -> bool:
     """Ensure image is valid."""
     try:
-        im = Image.open(img_path)
-        im.verify()
-        im.close()
+        sel_img = Image.open(img_path)
+        sel_img.verify()
+        sel_img.close()
     except (FileNotFoundError, UnidentifiedImageError):
         return False
     return True
@@ -39,17 +39,14 @@ class ValidateRGB:
         """Return True if a valid RGB value."""
         if len(self.rgb_val) != 3:
             return False
-        else:
-            for c in range(3):
-                try:
-                    color_val = int(self.rgb_val[c])
-                    if color_val < 0 or color_val > 255:
-                        return False
-                        break
-                    else:
-                        self.rgb_val[c] = color_val
-                except ValueError:
+        for color_index in range(3):
+            try:
+                color_val = int(self.rgb_val[color_index])
+                if color_val < 0 or color_val > 255:
                     return False
+                self.rgb_val[color_index] = color_val
+            except ValueError:
+                return False
         return True
 
 
