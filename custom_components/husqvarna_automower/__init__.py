@@ -2,6 +2,7 @@
 import logging
 import os
 from asyncio.exceptions import TimeoutError as AsyncioTimeoutError
+from datetime import timedelta
 
 import aioautomower
 from homeassistant.components.application_credentials import DATA_STORAGE
@@ -40,14 +41,15 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=DOMAIN,
+            update_interval=timedelta(seconds=300),
         )
-        api_key = None
+        self.api_key = None
         ap_storage = hass.data.get("application_credentials")[DATA_STORAGE]
         ap_storage_data = ap_storage.__dict__["data"]
         for k in ap_storage_data:
-            api_key = ap_storage_data[k]["client_id"]
-        access_token = entry.data.get(CONF_TOKEN)
-        if not "amc:api" in access_token["scope"]:
+            self.api_key = ap_storage_data[k]["client_id"]
+        self.access_token = entry.data.get(CONF_TOKEN)
+        if not "amc:api" in self.access_token["scope"]:
             async_create_issue(
                 hass,
                 DOMAIN,
@@ -57,7 +59,9 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
                 translation_key="wrong_scope",
             )
         low_energy = False
-        self.session = aioautomower.AutomowerSession(api_key, access_token, low_energy)
+        self.session = aioautomower.AutomowerSession(
+            self.api_key, self.access_token, low_energy
+        )
         self.session.register_token_callback(
             lambda token: hass.config_entries.async_update_entry(
                 entry,
@@ -67,16 +71,17 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> None:
         """Fetch data from Husqvarna."""
+
+        provider = self.access_token["provider"]
+        token_type = self.access_token["token_type"]
+        access_token = self.access_token["access_token"]
+        rest = aioautomower.GetMowerData(
+            self.api_key, access_token, provider, token_type
+        )
         try:
-            await self.session.connect()
-        except AsyncioTimeoutError as error:
-            _LOGGER.debug("Asyncio timeout: %s", error)
-            raise ConfigEntryNotReady from error
+            return await rest.async_mower_state()
         except Exception as error:
-            _LOGGER.debug("Exception in async_setup_entry: %s", error)
-            # If we haven't used the refresh_token (ie. been offline) for 10 days,
-            # we need to login using username and password in the config flow again.
-            raise ConfigEntryAuthFailed from Exception
+            _LOGGER.debug("Exception in updating Rest data: %s", error)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -88,6 +93,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass,
         entry=entry,
     )
+
+    try:
+        coordinator.async_set_updated_data(
+            await coordinator.session.ws_and_token_session()
+        )
+    except AsyncioTimeoutError as error:
+        _LOGGER.debug("Asyncio timeout: %s", error)
+        raise ConfigEntryNotReady from error
+    except Exception as error:
+        _LOGGER.debug("Exception in async_setup_entry: %s", error)
+        # If we haven't used the refresh_token (ie. been offline) for 10 days,
+        # we need to login using username and password in the config flow again.
+        raise ConfigEntryAuthFailed from Exception
+
     await coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})
