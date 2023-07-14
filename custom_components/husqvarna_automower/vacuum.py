@@ -108,17 +108,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         return available
 
     @property
-    def battery_level(self) -> int:
-        """Return the current battery level of the mower."""
-        return max(
-            0,
-            min(
-                100,
-                AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"],
-            ),
-        )
-
-    @property
     def state(self) -> str:
         """Return the state of the mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)

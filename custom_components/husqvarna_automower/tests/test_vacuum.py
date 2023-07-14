@@ -82,66 +82,14 @@ async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
 
-    def set_state(state: str):
-        """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "state"
-        ] = state
-
-    def set_activity(activity: str):
-        """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "activity"
-        ] = activity
-
-    def set_restricted_reason(reason: str):
-        """Set new restricted reason"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["planner"][
-            "restrictedReason"
-        ] = reason
-
     assert vacuum._attr_unique_id == MWR_ONE_ID
+    assert vacuum.extra_state_attributes == {"action": None}
 
-    set_activity("GOING_HOME")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["planner"] = {
+        "override": {"action": "Test_Action"}
     }
 
-    set_activity("CHARGING")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_activity("LEAVING")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_state("RESTRICTED")
-    set_restricted_reason("WEEK_SCHEDULE")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_restricted_reason("NOT_APPLICABLE")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_state("ERROR")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_state("FATAL_ERROR")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
-
-    set_state("ERROR_AT_POWER_UP")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-    }
+    assert vacuum.extra_state_attributes == {"action": "test_action"}
 
 
 @pytest.mark.asyncio
