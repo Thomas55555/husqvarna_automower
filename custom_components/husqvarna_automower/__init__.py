@@ -41,7 +41,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=300),
+            update_interval=timedelta(seconds=30),
         )
         self.api_key = None
         ap_storage = hass.data.get("application_credentials")[DATA_STORAGE]
@@ -80,8 +80,9 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
         )
         try:
             return await rest.async_mower_state()
-        except Exception as error:
+        except aioautomower.MowerApiConnectionsError as error:
             _LOGGER.debug("Exception in updating Rest data: %s", error)
+            raise ConfigEntryAuthFailed from Exception
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
