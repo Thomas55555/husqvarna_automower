@@ -71,7 +71,6 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> None:
         """Fetch data from Husqvarna."""
-
         provider = self.access_token["provider"]
         token_type = self.access_token["token_type"]
         access_token = self.access_token["access_token"]
