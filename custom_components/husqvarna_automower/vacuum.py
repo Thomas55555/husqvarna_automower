@@ -23,12 +23,7 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
 
-from .const import (
-    DOMAIN,
-    ERROR_ACTIVITIES,
-    ERRORCODES,
-    WEEKDAYS,
-)
+from .const import DOMAIN, ERROR_ACTIVITIES, WEEKDAYS
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
