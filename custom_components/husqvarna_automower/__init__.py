@@ -41,7 +41,7 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=30),
+            update_interval=timedelta(seconds=300),
         )
         self.api_key = None
         ap_storage = hass.data.get("application_credentials")[DATA_STORAGE]
