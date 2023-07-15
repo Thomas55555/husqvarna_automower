@@ -21,6 +21,8 @@ from .const import (
     MWR_ONE_IDX,
 )
 
+from .test_common import setup_entity
+
 
 @pytest.mark.asyncio
 async def setup_binary_sensor(hass: HomeAssistant, sensor_class):
@@ -59,14 +61,16 @@ async def setup_binary_sensor(hass: HomeAssistant, sensor_class):
 @pytest.mark.asyncio
 async def test_battery_charging_sensor(hass: HomeAssistant):
     """test AutomowerBatteryChargingBinarySensor"""
-    battery_sensor, automower_coordinator_mock = await setup_binary_sensor(
-        hass, AutomowerBatteryChargingBinarySensor
-    )
+
+    config_entry = await setup_entity(hass)
+    coordinator = hass.data[DOMAIN]["automower_test"]
+
+    battery_sensor = AutomowerBatteryChargingBinarySensor(coordinator, MWR_ONE_IDX)
 
     assert battery_sensor._attr_unique_id == f"{MWR_ONE_ID}_battery_charging"
 
     assert battery_sensor.is_on is False
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "CHARGING"
 
@@ -76,14 +80,15 @@ async def test_battery_charging_sensor(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_leaving_dock_sensor(hass: HomeAssistant):
     """test AutomowerLeavingDockBinarySensor"""
-    leaving_sensor, automower_coordinator_mock = await setup_binary_sensor(
-        hass, AutomowerLeavingDockBinarySensor
-    )
+    config_entry = await setup_entity(hass)
+    coordinator = hass.data[DOMAIN]["automower_test"]
+
+    leaving_sensor = AutomowerLeavingDockBinarySensor(coordinator, MWR_ONE_IDX)
 
     assert leaving_sensor._attr_unique_id == f"{MWR_ONE_ID}_leaving_dock"
 
     assert leaving_sensor.is_on is False
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "LEAVING"
 
@@ -93,9 +98,11 @@ async def test_leaving_dock_sensor(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_error_sensor(hass: HomeAssistant):
     """test AutomowerErrorBinarySensor"""
-    error_sensor, automower_coordinator_mock = await setup_binary_sensor(
-        hass, AutomowerErrorBinarySensor
-    )
+
+    config_entry = await setup_entity(hass)
+    coordinator = hass.data[DOMAIN]["automower_test"]
+
+    error_sensor = AutomowerErrorBinarySensor(coordinator, MWR_ONE_IDX)
 
     assert error_sensor._attr_unique_id == f"{MWR_ONE_ID}_error"
 
@@ -105,7 +112,7 @@ async def test_error_sensor(hass: HomeAssistant):
         "description": "No Error",
     }
 
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "errorCode"
     ] = 0
 
@@ -115,9 +122,9 @@ async def test_error_sensor(hass: HomeAssistant):
     }
 
     for e_state in ERROR_STATES:
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "mower"
-        ]["state"] = e_state
+        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+            "state"
+        ] = e_state
 
         assert error_sensor.is_on is True
         assert error_sensor.extra_state_attributes == {

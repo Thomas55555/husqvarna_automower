@@ -16,48 +16,7 @@ from ..application_credentials import (
 from ..const import DOMAIN, HUSQVARNA_URL
 from .const import AUTOMER_DM_CONFIG, AUTOMOWER_CONFIG_DATA, AUTOMOWER_SM_SESSION_DATA
 
-
-@pytest.mark.asyncio
-async def setup_entity(hass: HomeAssistant):
-    """Set up entity and config entry"""
-
-    options = deepcopy(AUTOMER_DM_CONFIG)
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=options,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-
-    config_entry.add_to_hass(hass)
-
-    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
-
-    with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            name="AutomowerMockSession",
-            model=AutomowerSession,
-            data=session,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-            register_token_callback=MagicMock(),
-            connect=AsyncMock(),
-            action=AsyncMock(),
-        ),
-    ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
-
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
-
-    return config_entry
+from .test_common import setup_entity
 
 
 @pytest.mark.asyncio

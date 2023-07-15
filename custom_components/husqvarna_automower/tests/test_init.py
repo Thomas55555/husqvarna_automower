@@ -1,9 +1,9 @@
 """Tests for init module."""
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncioTimeoutError
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from aioautomower import AutomowerSession
+from aioautomower import AutomowerSession, GetMowerData, MowerApiConnectionsError
 
 from homeassistant.components.application_credentials import (
     ClientCredential,
@@ -74,28 +74,32 @@ async def test_load_unload(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
         ),
     ):
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.LOADED
+            assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
-        # Reload entry - No real test, just calling the function
-        await async_reload_entry(hass, config_entry)
-        assert config_entry.state == ConfigEntryState.LOADED
+            # Reload entry - No real test, just calling the function
+            await async_reload_entry(hass, config_entry)
+            assert config_entry.state == ConfigEntryState.LOADED
 
-        # Update Listner - No real test, just calling the function
-        await update_listener(hass, config_entry)
-        assert config_entry.state == ConfigEntryState.LOADED
+            # Update Listner - No real test, just calling the function
+            await update_listener(hass, config_entry)
+            assert config_entry.state == ConfigEntryState.LOADED
 
-        assert await config_entry.async_unload(hass)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.NOT_LOADED
+            assert await config_entry.async_unload(hass)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.NOT_LOADED
 
     with patch(
         "aioautomower.AutomowerSession",
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
-            connect=AsyncMock(side_effect=TimeoutError),
+            ws_and_token_session=AsyncMock(side_effect=AsyncioTimeoutError),
         ),
     ):
         # Timeout Error
@@ -111,13 +115,40 @@ async def test_load_unload(hass: HomeAssistant):
         "aioautomower.AutomowerSession",
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
-            connect=AsyncMock(side_effect=Exception("Test Exception")),
+            ws_and_token_session=AsyncMock(side_effect=Exception("Test Exception")),
         ),
     ):
-        # Genric Error
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.SETUP_ERROR
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            # Genric Error
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.SETUP_ERROR
+
+            assert await config_entry.async_unload(hass)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.NOT_LOADED
+
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            ws_and_token_session=AsyncMock(),
+        ),
+    ):
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(
+                name="GetMowerMock",
+                model=GetMowerData,
+                async_mower_state=AsyncMock(side_effect=MowerApiConnectionsError("test")),
+            ),
+        ) as mower_data_mock:
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.SETUP_ERROR
 
 
 @pytest.mark.asyncio
@@ -137,21 +168,34 @@ async def test_load_unload_wrong_scope(hass: HomeAssistant):
 
     with patch(
         "aioautomower.AutomowerSession",
-        return_value=AsyncMock(register_token_callback=MagicMock()),
-    ):
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        return_value=AsyncMock(
+            name="AutomowerMockSession",
+            model=AutomowerSession,
+            # data=session,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            action=AsyncMock(),
+        ),
+    ) as automower_session_mock:
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
 
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+            assert config_entry.state == ConfigEntryState.LOADED
+            assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
-        issue_registry = async_get(hass)
-        issue = issue_registry.async_get_issue(DOMAIN, "wrong_scope")
-        assert issue is not None
+            issue_registry = async_get(hass)
+            issue = issue_registry.async_get_issue(DOMAIN, "wrong_scope")
+            assert issue is not None
 
-        assert await config_entry.async_unload(hass)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.NOT_LOADED
+            assert await config_entry.async_unload(hass)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.NOT_LOADED
 
 
 @pytest.mark.asyncio
@@ -190,37 +234,43 @@ async def test_async_migrate_entry_2_to_4(hass: HomeAssistant):
             connect=AsyncMock(),
         ),
     ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            automower_coordinator_mock = MagicMock(
+                name="MockCoordinator", session=automower_session_mock()
+            )
 
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
 
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+            assert config_entry.state == ConfigEntryState.LOADED
+            assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
-        assert config_entry.version == 4
-        assert config_entry.options.get("enable_camera") is None
-        assert config_entry.options.get("gps_top_left") is None
-        assert config_entry.options.get("gps_bottom_right") is None
-        assert config_entry.options.get("mower_img_path") is None
-        assert config_entry.options.get("map_img_path") is None
+            assert config_entry.version == 4
+            assert config_entry.options.get("enable_camera") is None
+            assert config_entry.options.get("gps_top_left") is None
+            assert config_entry.options.get("gps_bottom_right") is None
+            assert config_entry.options.get("mower_img_path") is None
+            assert config_entry.options.get("map_img_path") is None
 
-        for mwr, config in config_entry.options.items():
-            for opt_key in old_options_fmt:
-                if opt_key != "enable_camera":
-                    assert config[opt_key] == old_options_fmt[opt_key]
-                if opt_key == "enable_camera":
-                    assert config["enable_image"] == old_options_fmt["enable_camera"]
+            for mwr, config in config_entry.options.items():
+                for opt_key in old_options_fmt:
+                    if opt_key != "enable_camera":
+                        assert config[opt_key] == old_options_fmt[opt_key]
+                    if opt_key == "enable_camera":
+                        assert (
+                            config["enable_image"] == old_options_fmt["enable_camera"]
+                        )
 
-            assert config[MAP_IMG_ROTATION] == 0
-            assert config[MAP_PATH_COLOR] == [255, 0, 0]
-            assert config[HOME_LOCATION] == ""
+                assert config[MAP_IMG_ROTATION] == 0
+                assert config[MAP_PATH_COLOR] == [255, 0, 0]
+                assert config[HOME_LOCATION] == ""
 
-        assert await config_entry.async_unload(hass)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.NOT_LOADED
+            assert await config_entry.async_unload(hass)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.NOT_LOADED
 
 
 @pytest.mark.asyncio
@@ -277,23 +327,27 @@ async def test_async_migrate_entry_3_to_4(hass: HomeAssistant):
             connect=AsyncMock(),
         ),
     ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            automower_coordinator_mock = MagicMock(
+                name="MockCoordinator", session=automower_session_mock()
+            )
 
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+            await hass.config_entries.async_setup(config_entry.entry_id)
+            await hass.async_block_till_done()
 
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+            assert config_entry.state == ConfigEntryState.LOADED
+            assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
-        assert config_entry.version == 4
+            assert config_entry.version == 4
 
-        for mwr, config in config_entry.options.items():
-            if mwr in [MWR_ONE_ID, MWR_TWO_ID]:
-                assert "enable_camera" not in config
-                assert "enable_image" in config
+            for mwr, config in config_entry.options.items():
+                if mwr in [MWR_ONE_ID, MWR_TWO_ID]:
+                    assert "enable_camera" not in config
+                    assert "enable_image" in config
 
-        assert await config_entry.async_unload(hass)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.NOT_LOADED
+            assert await config_entry.async_unload(hass)
+            await hass.async_block_till_done()
+            assert config_entry.state == ConfigEntryState.NOT_LOADED

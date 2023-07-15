@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import PIL.Image as Image
 import pytest
-from aioautomower import AutomowerSession
+from aioautomower import AutomowerSession, GetMowerData
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -62,13 +62,17 @@ async def setup_image(
             unregister_data_callback=MagicMock(),
         ),
     ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
+        with patch(
+            "aioautomower.GetMowerData",
+            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+        ) as mower_data_mock:
+            automower_coordinator_mock = MagicMock(
+                name="MockCoordinator", session=automower_session_mock()
+            )
 
-        mwr_img = AutomowerImage(
-            automower_coordinator_mock, mwr_idx, config_entry, hass
-        )
+            mwr_img = AutomowerImage(
+                automower_coordinator_mock, mwr_idx, config_entry, hass
+            )
     return mwr_img, automower_coordinator_mock
 
 

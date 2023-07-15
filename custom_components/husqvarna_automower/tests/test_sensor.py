@@ -20,63 +20,13 @@ from .const import (
     MWR_ONE_IDX,
     NO_ZONE_PNT,
 )
-
-
-@pytest.mark.asyncio
-async def setup_zone_sensor(
-    hass: HomeAssistant, zone_overide: str = None, enable_cut: bool = True
-):
-    """Set up sensor and config entry"""
-
-    options = deepcopy(AUTOMER_DM_CONFIG)
-
-    if zone_overide:
-        options["configured_zones"] = zone_overide
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=options,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-
-    config_entry.add_to_hass(hass)
-
-    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
-
-    if not enable_cut:
-        session["data"][MWR_ONE_IDX]["attributes"]["system"][
-            "model"
-        ] = NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT[0]
-    with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            name="AutomowerMockSession",
-            model=AutomowerSession,
-            data=session,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-            register_token_callback=MagicMock(),
-            connect=AsyncMock(),
-        ),
-    ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
-
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
-
-    return config_entry
+from .test_common import setup_entity
 
 
 @pytest.mark.asyncio
 async def test_zone_sensor(hass: HomeAssistant):
     """test zone."""
-    config_entry = await setup_zone_sensor(hass)
+    config_entry = await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
 
@@ -124,19 +74,34 @@ async def test_zone_sensor(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_zone_sensor_bad_json(hass: HomeAssistant):
     """test zone sensor if zones aren't a dict"""
-    config_entry = await setup_zone_sensor(hass, zone_overide="[]")
-    coordinator = hass.data[DOMAIN]["automower_test"]
-    zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
+    options = deepcopy(AUTOMER_DM_CONFIG)
+    options["configured_zones"] = "[]"
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass)
+        coordinator = hass.data[DOMAIN]["automower_test"]
+        zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
 
-    # Zone JSON isn't a dict
-    zone_sensor._load_zones()
-    assert zone_sensor.zones == {}
+        # Zone JSON isn't a dict
+        zone_sensor._load_zones()
+        assert zone_sensor.zones == {}
 
 
 @pytest.mark.asyncio
 async def test_sensors_no_cut(hass: HomeAssistant):
     """test sensors if cutting height is missing."""
-    config_entry = await setup_zone_sensor(hass, enable_cut=False)
+    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
+    session["data"][MWR_ONE_IDX]["attributes"]["system"][
+        "model"
+    ] = NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT[0]
+
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMOWER_SM_SESSION_DATA",
+        session,
+    ):
+        await setup_entity(hass)
 
 
 @pytest.mark.asyncio
@@ -148,7 +113,7 @@ async def test_statistics_sensors(hass: HomeAssistant):
     with patch(
         "custom_components.husqvarna_automower.sensor.SENSOR_TYPES", TEST_SENSOR_TYPES
     ):
-        config_entry = await setup_zone_sensor(hass)
+        await setup_entity(hass)
 
 
 @pytest.mark.asyncio
