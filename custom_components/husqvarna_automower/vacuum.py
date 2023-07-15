@@ -6,7 +6,6 @@ import voluptuous as vol
 from aiohttp import ClientResponseError
 from homeassistant.components.schedule import DOMAIN as SCHEDULE_DOMAIN
 from homeassistant.components.vacuum import (
-    ATTR_STATUS,
     STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
@@ -24,26 +23,15 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.storage import Store
 
-from .const import (
-    DOMAIN,
-    ERROR_ACTIVITIES,
-    ERROR_STATES,
-    ERRORCODES,
-    MWR_ACTIVITY_TO_STATUS,
-    MWR_RES_REASON_TO_STATUS,
-    MWR_STATE_TO_STATUS,
-    WEEKDAYS,
-)
+from .const import DOMAIN, ERROR_ACTIVITIES, WEEKDAYS
 from .entity import AutomowerEntity
 
 SUPPORT_STATE_SERVICES = (
     VacuumEntityFeature.STATE
-    | VacuumEntityFeature.BATTERY
     | VacuumEntityFeature.PAUSE
     | VacuumEntityFeature.RETURN_HOME
     | VacuumEntityFeature.SEND_COMMAND
     | VacuumEntityFeature.START
-    | VacuumEntityFeature.STATUS
     | VacuumEntityFeature.STOP
 )
 
@@ -115,17 +103,6 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
         return available
 
     @property
-    def battery_level(self) -> int:
-        """Return the current battery level of the mower."""
-        return max(
-            0,
-            min(
-                100,
-                AutomowerEntity.get_mower_attributes(self)["battery"]["batteryPercent"],
-            ),
-        )
-
-    @property
     def state(self) -> str:
         """Return the state of the mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
@@ -159,51 +136,12 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
             return STATE_ERROR
 
     @property
-    def error(self) -> str:
-        """Define an error message if the vacuum is in STATE_ERROR."""
-        if self.state == STATE_ERROR:
-            mower_attributes = AutomowerEntity.get_mower_attributes(self)
-            errorcode = mower_attributes["mower"]["errorCode"]
-            return ERRORCODES.get(errorcode, f"error_{errorcode}")
-        return None
-
-    def __get_status(self) -> str:
-        mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        next_start_short = ""
-        if mower_attributes["planner"]["nextStartTimestamp"] != 0:
-            next_start_dt_obj = AutomowerEntity.datetime_object(
-                self, mower_attributes["planner"]["nextStartTimestamp"]
-            )
-            next_start_short = next_start_dt_obj.strftime(", next start: %a %H:%M")
-        if mower_attributes["mower"]["state"] in MWR_STATE_TO_STATUS:
-            return MWR_STATE_TO_STATUS.get(mower_attributes["mower"]["state"])
-        if mower_attributes["mower"]["state"] == "IN_OPERATION":
-            if mower_attributes["mower"]["activity"] in MWR_ACTIVITY_TO_STATUS:
-                return MWR_ACTIVITY_TO_STATUS.get(mower_attributes["mower"]["activity"])
-            if mower_attributes["mower"]["activity"] == "CHARGING":
-                return f"Charging{next_start_short}"
-        if mower_attributes["mower"]["state"] == "RESTRICTED":
-            if (
-                mower_attributes["planner"]["restrictedReason"]
-                in MWR_RES_REASON_TO_STATUS
-            ):
-                return MWR_RES_REASON_TO_STATUS.get(
-                    mower_attributes["planner"]["restrictedReason"]
-                )
-            if mower_attributes["planner"]["restrictedReason"] == "WEEK_SCHEDULE":
-                return f"Schedule{next_start_short}"
-        if mower_attributes["mower"]["state"] in ERROR_STATES:
-            return ERRORCODES.get(mower_attributes["mower"]["errorCode"])
-        return None
-
-    @property
     def extra_state_attributes(self) -> dict:
         """Return the specific state attributes of this mower."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
         action = mower_attributes["planner"]["override"]["action"]
         action = action.lower() if action is not None else action
         return {
-            ATTR_STATUS: self.__get_status(),
             "action": action,
         }
 

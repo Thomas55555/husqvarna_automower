@@ -277,31 +277,4 @@ CHANGING_CUTTING_HEIGHT_SUPPORT = list(
     set(ELECTRONIC_CUTTING_HEIGHT_SUPPORT) - set(NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT)
 )
 
-MWR_STATE_TO_STATUS = {
-    "UNKNOWN": "unknown",
-    "NOT_APPLICABLE": "not_applicable",
-    "PAUSED": "paused",
-    "WAIT_UPDATING": "updating",
-    "WAIT_POWER_UP": "powering_up",
-    "OFF": "off",
-    "STOPPED": "stopped",
-}
-
-MWR_ACTIVITY_TO_STATUS = {
-    "UNKNOWN": "unknown",
-    "NOT_APPLICABLE": "not_applicable",
-    "MOWING": "mowing",
-    "GOING_HOME": "going_to_charging_station",
-    "LEAVING": "leaving_charging_station",
-    "PARKED_IN_CS": "parked",
-    "STOPPED_IN_GARDEN": "stopped",
-}
-
-MWR_RES_REASON_TO_STATUS = {
-    "PARK_OVERRIDE": "park_override",
-    "SENSOR": "weather_timer",
-    "DAILY_LIMIT": "daily_limit",
-    "NOT_APPLICABLE": "parked_until_further_notice",
-}
-
 CURRENT_CONFIG_VER = 4

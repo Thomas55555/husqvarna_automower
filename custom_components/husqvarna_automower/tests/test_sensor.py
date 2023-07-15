@@ -187,6 +187,10 @@ async def test_get_problem(hass: HomeAssistant):
     mower_attributes["mower"]["activity"] = "STOPPED_IN_GARDEN"
     assert get_problem(mower_attributes) == "STOPPED_IN_GARDEN"
 
+    # Charging
+    mower_attributes["mower"]["activity"] = "CHARGING"
+    assert get_problem(mower_attributes) == "charging"
+
     # None
     mower_attributes["mower"]["activity"] = "MISSING"
-    assert get_problem(mower_attributes) == None
+    assert get_problem(mower_attributes) is None

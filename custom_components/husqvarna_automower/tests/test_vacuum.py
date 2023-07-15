@@ -8,7 +8,6 @@ from aioautomower import AutomowerSession
 from aiohttp import ClientResponseError
 from dateutil import tz
 from homeassistant.components.vacuum import (
-    ATTR_STATUS,
     STATE_CLEANING,
     STATE_DOCKED,
     STATE_ERROR,
@@ -83,123 +82,14 @@ async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
 
-    def set_state(state: str):
-        """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "state"
-        ] = state
-
-    def set_activity(activity: str):
-        """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "activity"
-        ] = activity
-
-    def set_restricted_reason(reason: str):
-        """Set new restricted reason"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["planner"][
-            "restrictedReason"
-        ] = reason
-
     assert vacuum._attr_unique_id == MWR_ONE_ID
+    assert vacuum.extra_state_attributes == {"action": None}
 
-    set_state("UNKNOWN")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "unknown"}
-
-    set_state("NOT_APPLICABLE")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "not_applicable"}
-
-    set_state("PAUSED")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "paused"}
-
-    set_state("IN_OPERATION")
-    set_activity("UNKNOWN")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "unknown"}
-
-    set_activity("NOT_APPLICABLE")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "not_applicable"}
-
-    set_activity("MOWING")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "mowing"}
-
-    set_activity("GOING_HOME")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "going_to_charging_station",
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["planner"] = {
+        "override": {"action": "Test_Action"}
     }
 
-    set_activity("CHARGING")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "Charging, next start: Mon 19:00",
-    }
-
-    set_activity("LEAVING")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "leaving_charging_station",
-    }
-
-    set_activity("PARKED_IN_CS")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "parked"}
-
-    set_activity("STOPPED_IN_GARDEN")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "stopped"}
-
-    set_state("WAIT_UPDATING")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "updating"}
-
-    set_state("WAIT_POWER_UP")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "powering_up"}
-
-    set_state("RESTRICTED")
-    set_restricted_reason("WEEK_SCHEDULE")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "Schedule, next start: Mon 19:00",
-    }
-
-    set_restricted_reason("PARK_OVERRIDE")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "park_override"}
-
-    set_restricted_reason("SENSOR")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "weather_timer"}
-
-    set_restricted_reason("DAILY_LIMIT")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "daily_limit"}
-
-    set_restricted_reason("NOT_APPLICABLE")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "parked_until_further_notice",
-    }
-
-    set_state("OFF")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "off"}
-
-    set_state("STOPPED")
-    assert vacuum.extra_state_attributes == {"action": None, "status": "stopped"}
-
-    set_state("ERROR")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "Unexpected error",
-    }
-
-    set_state("FATAL_ERROR")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "Unexpected error",
-    }
-
-    set_state("ERROR_AT_POWER_UP")
-    assert vacuum.extra_state_attributes == {
-        "action": None,
-        "status": "Unexpected error",
-    }
-
-    set_state("BAD_ERROR")
-    assert vacuum.extra_state_attributes == {"action": None, "status": None}
+    assert vacuum.extra_state_attributes == {"action": "test_action"}
 
 
 @pytest.mark.asyncio
@@ -313,13 +203,11 @@ async def test_vacuum_error(hass: HomeAssistant):
         ] = code
 
     assert vacuum._attr_unique_id == MWR_ONE_ID
-    assert vacuum.error is None
 
     set_state("STOPPED_IN_GARDEN")
     set_activity("UNKNOWN")
     set_error_code(0)
     assert vacuum.state == STATE_ERROR
-    assert vacuum.error == "Unexpected error"
 
 
 @pytest.mark.asyncio

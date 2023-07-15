@@ -166,7 +166,8 @@
           "daily_limit": "Daily limit",
           "fota": "Fota",
           "frost": "Frost",
-          "parked_until_further_notice": "Parked until further notice"
+          "parked_until_further_notice": "Parked until further notice",
+          "charging": "Charging"
         }
       },
       "mode_list": {
