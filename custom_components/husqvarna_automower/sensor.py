@@ -52,6 +52,8 @@ class AutomowerSensorEntityDescription(
 
 def get_problem(mower_attributes) -> dict:
     """Get the mower attributes of the current mower."""
+    if mower_attributes["mower"]["activity"] == "CHARGING":
+        return "charging"
     if mower_attributes["mower"]["state"] == "RESTRICTED":
         if mower_attributes["planner"]["restrictedReason"] == "NOT_APPLICABLE":
             return "parked_until_further_notice"
@@ -87,6 +89,7 @@ def problem_list() -> list:
         "fota",
         "frost",
         "parked_until_further_notice",
+        "charging",
     ]
     return error_list_low + other_reasons
 
