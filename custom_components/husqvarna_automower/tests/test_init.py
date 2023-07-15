@@ -143,7 +143,9 @@ async def test_load_unload(hass: HomeAssistant):
             return_value=AsyncMock(
                 name="GetMowerMock",
                 model=GetMowerData,
-                async_mower_state=AsyncMock(side_effect=MowerApiConnectionsError("test")),
+                async_mower_state=AsyncMock(
+                    side_effect=MowerApiConnectionsError("test")
+                ),
             ),
         ) as mower_data_mock:
             await hass.config_entries.async_setup(config_entry.entry_id)
