@@ -238,7 +238,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     AutomowerSensorEntityDescription(
         key="problem_sensor",
         translation_key="problem_list",
-        entity_registry_enabled_default=False,
+        entity_registry_enabled_default=True,
         device_class=SensorDeviceClass.ENUM,
         options=problem_list(),
         value_fn=lambda data: None
