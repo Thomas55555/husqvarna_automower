@@ -1,20 +1,15 @@
 """Tests for application credentials module."""
-from copy import deepcopy
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from aioautomower import AutomowerSession
 from homeassistant.components.application_credentials import AuthorizationServer
-from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..application_credentials import (
     async_get_authorization_server,
     async_get_description_placeholders,
 )
-from ..const import DOMAIN, HUSQVARNA_URL
-from .const import AUTOMER_DM_CONFIG, AUTOMOWER_CONFIG_DATA, AUTOMOWER_SM_SESSION_DATA
+from ..const import HUSQVARNA_URL
 
 from .test_common import setup_entity
 

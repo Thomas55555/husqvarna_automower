@@ -1,11 +1,6 @@
 """Tests for binary sensor module."""
-from copy import deepcopy
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import pytest
-from aioautomower import AutomowerSession
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..binary_sensor import (
     AutomowerBatteryChargingBinarySensor,
@@ -14,9 +9,6 @@ from ..binary_sensor import (
 )
 from ..const import DOMAIN, ERROR_STATES
 from .const import (
-    AUTOMER_SM_CONFIG,
-    AUTOMOWER_CONFIG_DATA,
-    AUTOMOWER_SM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
 )
@@ -25,48 +17,15 @@ from .test_common import setup_entity
 
 
 @pytest.mark.asyncio
-async def setup_binary_sensor(hass: HomeAssistant, sensor_class):
-    """Set up binary sensor and config entry"""
-
-    options = deepcopy(AUTOMER_SM_CONFIG)
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=options,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-
-    config_entry.add_to_hass(hass)
-
-    with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            name="AutomowerMockSession",
-            model=AutomowerSession,
-            data=AUTOMOWER_SM_SESSION_DATA,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-        ),
-    ) as automower_session_mock:
-        automower_coordinator_mock = MagicMock(
-            name="MockCoordinator", session=automower_session_mock()
-        )
-
-        binary_sensor = sensor_class(automower_coordinator_mock, MWR_ONE_IDX)
-        return binary_sensor, automower_coordinator_mock
-
-
-@pytest.mark.asyncio
 async def test_battery_charging_sensor(hass: HomeAssistant):
     """test AutomowerBatteryChargingBinarySensor"""
 
-    config_entry = await setup_entity(hass)
+    await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
 
     battery_sensor = AutomowerBatteryChargingBinarySensor(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert battery_sensor._attr_unique_id == f"{MWR_ONE_ID}_battery_charging"
 
     assert battery_sensor.is_on is False
@@ -80,11 +39,13 @@ async def test_battery_charging_sensor(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_leaving_dock_sensor(hass: HomeAssistant):
     """test AutomowerLeavingDockBinarySensor"""
-    config_entry = await setup_entity(hass)
+
+    await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
 
     leaving_sensor = AutomowerLeavingDockBinarySensor(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert leaving_sensor._attr_unique_id == f"{MWR_ONE_ID}_leaving_dock"
 
     assert leaving_sensor.is_on is False
@@ -99,11 +60,12 @@ async def test_leaving_dock_sensor(hass: HomeAssistant):
 async def test_error_sensor(hass: HomeAssistant):
     """test AutomowerErrorBinarySensor"""
 
-    config_entry = await setup_entity(hass)
+    await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
 
     error_sensor = AutomowerErrorBinarySensor(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert error_sensor._attr_unique_id == f"{MWR_ONE_ID}_error"
 
     assert error_sensor.is_on is False

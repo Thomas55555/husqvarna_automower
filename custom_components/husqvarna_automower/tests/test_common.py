@@ -10,17 +10,22 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN
 from .const import (
+    AUTOMER_SM_CONFIG,
     AUTOMER_DM_CONFIG,
     AUTOMOWER_CONFIG_DATA,
     AUTOMOWER_SM_SESSION_DATA,
+    AUTOMOWER_DM_SESSION_DATA,
 )
 
 
 @pytest.mark.asyncio
-async def setup_entity(hass: HomeAssistant):
+async def setup_entity(hass: HomeAssistant, dual_mower: bool = False):
     """Set up entity and config entry"""
 
-    options = deepcopy(AUTOMER_DM_CONFIG)
+    if dual_mower:
+        options = deepcopy(AUTOMER_DM_CONFIG)
+    else:
+        options = deepcopy(AUTOMER_SM_CONFIG)
 
     config_entry = MockConfigEntry(
         domain=DOMAIN,
@@ -32,7 +37,10 @@ async def setup_entity(hass: HomeAssistant):
 
     config_entry.add_to_hass(hass)
 
-    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
+    if dual_mower:
+        session = deepcopy(AUTOMOWER_DM_SESSION_DATA)
+    else:
+        session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
 
     with patch(
         "aioautomower.AutomowerSession",
@@ -46,15 +54,11 @@ async def setup_entity(hass: HomeAssistant):
             connect=AsyncMock(),
             action=AsyncMock(),
         ),
-    ) as automower_session_mock:
+    ):
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
-            automower_coordinator_mock = MagicMock(
-                name="MockCoordinator", session=automower_session_mock()
-            )
-
+        ):
             await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
             assert config_entry.state == ConfigEntryState.LOADED

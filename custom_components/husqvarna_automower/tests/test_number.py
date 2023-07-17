@@ -1,15 +1,10 @@
 """Tests for number module."""
-from copy import deepcopy
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
-from aioautomower import AutomowerSession
 from aiohttp import ClientResponseError
-from dateutil import tz
-from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN
 from ..number import (
@@ -18,9 +13,6 @@ from ..number import (
     AutomowerParkStartNumberEntity,
 )
 from .const import (
-    AUTOMER_DM_CONFIG,
-    AUTOMOWER_CONFIG_DATA,
-    AUTOMOWER_SM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
 )

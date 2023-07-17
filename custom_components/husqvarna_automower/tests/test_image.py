@@ -1,22 +1,18 @@
 """Tests for image module."""
 import asyncio
 import io
-from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import PIL.Image as Image
 import pytest
-from aioautomower import AutomowerSession, GetMowerData
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..image import AutomowerImage
 from ..const import CONF_ZONES, DOMAIN, ENABLE_IMAGE
 from .const import (
+    AUTOMER_SM_CONFIG,
     AUTOMER_DM_CONFIG,
-    AUTOMOWER_CONFIG_DATA,
-    AUTOMOWER_DM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
     MWR_TWO_ID,
@@ -24,92 +20,75 @@ from .const import (
     ENABLE_IMAGE,
 )
 
+from .test_common import setup_entity
+
 
 @pytest.mark.asyncio
-async def setup_image(
-    hass: HomeAssistant,
-    mwr_id: int,
-    mwr_idx: str,
-    enable_image: bool = True,
-    replacement_conf_zones: str = "",
-):
-    """Set up image and config entry"""
+async def test_load_image_disabled(hass: HomeAssistant):
+    """test automower initialization"""
 
     options = AUTOMER_DM_CONFIG.copy()
-
-    if replacement_conf_zones != "":
-        options[CONF_ZONES] = replacement_conf_zones
-
-    options[mwr_id][ENABLE_IMAGE] = enable_image
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=options,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-
-    config_entry.add_to_hass(hass)
+    options[MWR_ONE_ID][ENABLE_IMAGE] = False
+    options[MWR_TWO_ID][ENABLE_IMAGE] = False
 
     with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            name="AutomowerMockSession",
-            model=AutomowerSession,
-            data=AUTOMOWER_DM_SESSION_DATA,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-        ),
-    ) as automower_session_mock:
-        with patch(
-            "aioautomower.GetMowerData",
-            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
-            automower_coordinator_mock = MagicMock(
-                name="MockCoordinator", session=automower_session_mock()
-            )
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass, dual_mower=True)
 
-            mwr_img = AutomowerImage(
-                automower_coordinator_mock, mwr_idx, config_entry, hass
-            )
-    return mwr_img, automower_coordinator_mock
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    register_data_call_count = coordinator.session.register_data_callback.call_count
+
+    image_one = AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)
+    image_two = AutomowerImage(coordinator, MWR_TWO_IDX, config_entry, hass)
+
+    assert image_one.options.get(ENABLE_IMAGE) is False
+    assert image_two.options.get(ENABLE_IMAGE) is False
+
+    # Disabled image call register_data_callback
+    assert (
+        coordinator.session.register_data_callback.call_count
+        == register_data_call_count
+    )
+
+    assert await config_entry.async_unload(hass)
+    await hass.async_block_till_done()
 
 
 @pytest.mark.asyncio
 async def test_load_image_enabled(hass: HomeAssistant):
     """test automower initialization"""
 
-    image_one, automower_coordinator_mock = await setup_image(
-        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_image=False
-    )
-    image_two, automower_coordinator_mock = await setup_image(
-        hass, MWR_TWO_ID, MWR_TWO_IDX, enable_image=False
-    )
+    options = AUTOMER_DM_CONFIG.copy()
+    options[MWR_ONE_ID][ENABLE_IMAGE] = True
+    options[MWR_TWO_ID][ENABLE_IMAGE] = True
 
-    assert image_one.options.get(ENABLE_IMAGE) is False
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass, dual_mower=True)
 
-    assert image_two.options.get(ENABLE_IMAGE) is False
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    register_data_call_count = coordinator.session.register_data_callback.call_count
 
-    # Disabled image call register_data_callback
-    automower_coordinator_mock.session.register_data_callback.assert_not_called()
-
-    image_one, automower_coordinator_mock = await setup_image(
-        hass, MWR_ONE_ID, MWR_ONE_IDX
-    )
-    image_two, automower_coordinator_mock = await setup_image(
-        hass, MWR_TWO_ID, MWR_TWO_IDX
-    )
+    image_one = AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)
+    image_two = AutomowerImage(coordinator, MWR_TWO_IDX, config_entry, hass)
 
     assert image_one.options.get(ENABLE_IMAGE) is True
-
     assert image_two.options.get(ENABLE_IMAGE) is True
 
-    # Enabled image call register_data_callback
-    automower_coordinator_mock.session.register_data_callback.assert_called_once()
+    # Enable image call register_data_callback
+    assert (
+        coordinator.session.register_data_callback.call_count
+        == register_data_call_count + 2
+    )
 
     # Generate Image
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_two._generate_image, {})
 
     # Ensure output directory is present
@@ -133,51 +112,47 @@ async def test_load_image_enabled(hass: HomeAssistant):
     assert image.height == 195  # Resize maintains aspect ratio
 
     # Mower at home
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "CHARGING"
     assert image_one.is_home is True
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Mower not at home
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "MOWING"
     assert image_one.is_home is False
+    # pylint: disable=protected-access
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Mower, no home location
     image_one.home_location = None
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Single position history
     exp_result = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
-    ] + automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
+        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
+    ] + coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"]
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = [
+        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
     ]
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
-    ] = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
-    ]
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
     assert image_one._position_history[MWR_ONE_ID] == exp_result
 
     # Single position history, but it's the first position update
     exp_result = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
+        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
     ]
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
+    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"][
         "positions"
     ] = exp_result
     image_one._position_history = {}
+    # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
     assert image_one._position_history[MWR_ONE_ID] == exp_result
 
@@ -185,40 +160,74 @@ async def test_load_image_enabled(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_load_image_enabled_bad_zone(hass: HomeAssistant):
     """test automower initialization bad zone, not a dict"""
-    image, automower_coordinator_mock = await setup_image(
-        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_image=True, replacement_conf_zones="[]"
-    )
+    options = AUTOMER_SM_CONFIG.copy()
+    options[MWR_ONE_ID][ENABLE_IMAGE] = True
+    options[CONF_ZONES] = "[]"
+
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_SM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass)
+
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)
 
 
 @pytest.mark.asyncio
 async def test_load_image_enabled_empty_zone(hass: HomeAssistant):
     """test automower initialization empty zone dict"""
-    image, automower_coordinator_mock = await setup_image(
-        hass, MWR_ONE_ID, MWR_ONE_IDX, enable_image=True, replacement_conf_zones="{}"
-    )
+    options = AUTOMER_SM_CONFIG.copy()
+    options[MWR_ONE_ID][ENABLE_IMAGE] = True
+    options[CONF_ZONES] = "{}"
+
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_SM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass)
+
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)
 
 
 @pytest.mark.asyncio
 async def test_load_image_enabled_zone_without_mower(hass: HomeAssistant):
     """test automower initialization with a zone, but no mower selected"""
-    replacement_zones = '{"front_garden": {"zone_coordinates": [[35.5408367, -82.5524521], [35.5403893, -82.552613], [35.5399462, -82.5506738]], "sel_mowers": [], "color": [255, 0, 0], "name": "Front Garden", "display": true}}'
-    image, automower_coordinator_mock = await setup_image(
-        hass,
-        MWR_ONE_ID,
-        MWR_ONE_IDX,
-        enable_image=True,
-        replacement_conf_zones=replacement_zones,
+    options = AUTOMER_SM_CONFIG.copy()
+    options[MWR_ONE_ID][ENABLE_IMAGE] = True
+    options[CONF_ZONES] = (
+        '{"front_garden": {"zone_coordinates": [[35.5408367, -82.5524521],'
+        ' [35.5403893, -82.552613], [35.5399462, -82.5506738]], "sel_mowers": [],'
+        ' "color": [255, 0, 0], "name": "Front Garden", "display": true}}'
     )
+
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_SM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass)
+
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)
 
 
 @pytest.mark.asyncio
 async def test_load_image_enabled_zone_no_coordinates(hass: HomeAssistant):
     """test automower initialization with a zone, but no coordinates in zone"""
-    replacement_zones = '{"front_garden": {"zone_coordinates": [], "sel_mowers": ["c7233734-b219-4287-a173-08e3643f89f0"], "color": [255, 0, 0], "name": "Front Garden", "display": true}}'
-    image, automower_coordinator_mock = await setup_image(
-        hass,
-        MWR_ONE_ID,
-        MWR_ONE_IDX,
-        enable_image=True,
-        replacement_conf_zones=replacement_zones,
+    options = AUTOMER_SM_CONFIG.copy()
+    options[MWR_ONE_ID][ENABLE_IMAGE] = True
+    options[CONF_ZONES] = (
+        '{"front_garden": {"zone_coordinates": [], "sel_mowers": '
+        '["c7233734-b219-4287-a173-08e3643f89f0"], "color": [255, 0, 0],'
+        ' "name": "Front Garden", "display": true}}'
     )
+
+    with patch(
+        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_SM_CONFIG",
+        options,
+    ):
+        config_entry = await setup_entity(hass)
+
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    AutomowerImage(coordinator, MWR_ONE_IDX, config_entry, hass)

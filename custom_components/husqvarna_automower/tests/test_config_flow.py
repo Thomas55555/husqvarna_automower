@@ -47,7 +47,7 @@ def get_suggested(schema, key):
                 return None
             return k.description["suggested_value"]
     # Wanted key absent from schema
-    raise Exception
+    raise KeyError
 
 
 async def test_options_init(hass: HomeAssistant) -> None:
@@ -75,7 +75,7 @@ async def test_options_init(hass: HomeAssistant) -> None:
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
+        ):
             config_entry.add_to_hass(hass)
             assert await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
@@ -109,7 +109,7 @@ async def test_options_image_config_existing_options(hass: HomeAssistant) -> Non
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
+        ):
             config_entry.add_to_hass(hass)
             assert await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
@@ -155,7 +155,7 @@ async def test_options_image_config_existing_options_bad_zone(
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
+        ):
             config_entry.add_to_hass(hass)
             assert await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
@@ -197,7 +197,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
+        ):
             config_entry.add_to_hass(hass)
             assert await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
@@ -297,7 +297,8 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                     ENABLE_IMAGE: True,
                     GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                     GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                    MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
+                    MOWER_IMG_PATH: "custom_components/husqvarna_automower"
+                    "/tests/resources/missing.png",
                 },
             )
             await hass.async_block_till_done()
@@ -310,7 +311,8 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                     ENABLE_IMAGE: True,
                     GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                     GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                    MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
+                    MOWER_IMG_PATH: "custom_components/husqvarna_automower"
+                    "/tests/resources/bad_image.png",
                 },
             )
             await hass.async_block_till_done()
@@ -323,7 +325,8 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                     ENABLE_IMAGE: True,
                     GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                     GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                    MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
+                    MAP_IMG_PATH: "custom_components/husqvarna_automower"
+                    "/tests/resources/missing.png",
                 },
             )
             await hass.async_block_till_done()
@@ -336,7 +339,8 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                     ENABLE_IMAGE: True,
                     GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                     GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                    MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
+                    MAP_IMG_PATH: "custom_components/husqvarna_automower/"
+                    "tests/resources/bad_image.png",
                 },
             )
             await hass.async_block_till_done()
@@ -419,7 +423,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         with patch(
             "aioautomower.GetMowerData",
             return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
-        ) as mower_data_mock:
+        ):
             config_entry.add_to_hass(hass)
             assert await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
@@ -456,7 +460,8 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             result = await hass.config_entries.options.async_configure(
                 result["flow_id"],
                 {
-                    ZONE_COORD: "35.5408367,-82.5524521 35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                    ZONE_COORD: "35.5408367,-82.5524521 35.5403893,-82.552613;35.5399462,"
+                    "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                     ZONE_NAME: "Front Garden",
                     ZONE_COLOR: "255,0,0",
                     ZONE_DISPLAY: True,
@@ -490,7 +495,8 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             result = await hass.config_entries.options.async_configure(
                 result["flow_id"],
                 {
-                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,"
+                    "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                     ZONE_NAME: "Front Garden",
                     ZONE_COLOR: "500,0,0",
                     ZONE_DISPLAY: True,
@@ -507,7 +513,9 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             result = await hass.config_entries.options.async_configure(
                 result["flow_id"],
                 {
-                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,"
+                    "-82.552613;35.5399462,-82.5506738;35.5403827,"
+                    "-82.5505236;35.5408367,-82.5524521",
                     ZONE_NAME: "Front Garden",
                     ZONE_COLOR: "255,0,0",
                     ZONE_DISPLAY: True,
@@ -524,7 +532,8 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             result = await hass.config_entries.options.async_configure(
                 result["flow_id"],
                 {
-                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                    ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,"
+                    "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                     ZONE_NAME: "Front Garden",
                     ZONE_COLOR: "255,0,0",
                     ZONE_DISPLAY: True,
@@ -532,7 +541,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
                 },
             )
 
-            assert result["errors"] == None
+            assert result["errors"] is None
 
             assert result["type"] == FlowResultType.FORM
             assert result["step_id"] == "geofence_init"
@@ -580,7 +589,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
                 {ZONE_DEL: True},
             )
 
-            assert result["errors"] == None
+            assert result["errors"] is None
 
             assert result["type"] == FlowResultType.FORM
             assert result["step_id"] == "geofence_init"

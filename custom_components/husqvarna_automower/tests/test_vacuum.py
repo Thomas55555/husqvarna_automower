@@ -30,7 +30,7 @@ from .test_common import setup_entity
 @pytest.mark.asyncio
 async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
     """test vacuum extra state attributes."""
-    config_entry = await setup_entity(hass)
+    await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
 
@@ -52,6 +52,7 @@ async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
             "restrictedReason"
         ] = reason
 
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
 
     set_state("UNKNOWN")
@@ -172,6 +173,7 @@ async def test_vacuum_state(hass: HomeAssistant):
             "activity"
         ] = activity
 
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
     set_activity("")
 
@@ -263,6 +265,7 @@ async def test_vacuum_error(hass: HomeAssistant):
             "errorCode"
         ] = code
 
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
     assert vacuum.error is None
 
@@ -279,6 +282,7 @@ async def test_vacuum_commands(hass: HomeAssistant):
     await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
 
     # Start
@@ -372,7 +376,12 @@ async def test_vacuum_commands(hass: HomeAssistant):
         False,
         False,
     )
-    exp_payload = '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 600, "duration": 60, "monday": true, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": false}]}}}'
+    exp_payload = (
+        '{"data": {"type": "calendar", "attributes": {"tasks":'
+        ' [{"start": 600, "duration": 60, "monday": true, "tuesday": false,'
+        ' "wednesday": false, "thursday": false, "friday": false,'
+        ' "saturday": false, "sunday": false}]}}}'
+    )
     coordinator.session.action.assert_awaited_once_with(
         MWR_ONE_ID, exp_payload, "calendar"
     )
@@ -417,6 +426,7 @@ async def test_vacuum_schedule_selector_success(hass: HomeAssistant):
     await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
 
     mock_async_load = AsyncMock(
@@ -443,11 +453,31 @@ async def test_vacuum_schedule_selector_success(hass: HomeAssistant):
     with patch(
         "custom_components.husqvarna_automower.vacuum.Store",
         MagicMock(name="store mock", spec=Store, return_value=storage_mock),
-    ) as store_mock:
+    ):
         await vacuum.async_schedule_selector("schedule.test_schedule")
         coordinator.session.action.assert_called_once_with(
             "c7233734-b219-4287-a173-08e3643f89f0",
-            '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 1020, "duration": 240, "monday": true, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": true, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": false, "wednesday": true, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": false, "wednesday": false, "thursday": true, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 360, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": true, "saturday": false, "sunday": false}, {"start": 420, "duration": 180, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": true, "sunday": false}, {"start": 960, "duration": 420, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": true, "sunday": false}, {"start": 420, "duration": 840, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": true}]}}}',
+            '{"data": {"type": "calendar", "attributes": {"tasks": '
+            '[{"start": 1020, "duration": 240, "monday": true, '
+            '"tuesday": false, "wednesday": false, "thursday": false,'
+            ' "friday": false, "saturday": false, "sunday": false},'
+            ' {"start": 1020, "duration": 240, "monday": false, "tuesday": true,'
+            ' "wednesday": false, "thursday": false, "friday": false, '
+            '"saturday": false, "sunday": false}, {"start": 1020, "duration": 240,'
+            ' "monday": false, "tuesday": false, "wednesday": true,'
+            ' "thursday": false, "friday": false, "saturday": false,'
+            ' "sunday": false}, {"start": 1020, "duration": 240, "monday": false,'
+            ' "tuesday": false, "wednesday": false, "thursday": true, "friday": false,'
+            ' "saturday": false, "sunday": false}, {"start": 1020, "duration": 360,'
+            ' "monday": false, "tuesday": false, "wednesday": false, "thursday": false,'
+            ' "friday": true, "saturday": false, "sunday": false}, {"start": 420, '
+            '"duration": 180, "monday": false, "tuesday": false, "wednesday": false,'
+            ' "thursday": false, "friday": false, "saturday": true, "sunday": false},'
+            ' {"start": 960, "duration": 420, "monday": false, "tuesday": false, '
+            '"wednesday": false, "thursday": false, "friday": false, "saturday": true,'
+            ' "sunday": false}, {"start": 420, "duration": 840, "monday": false, '
+            '"tuesday": false, "wednesday": false, "thursday": false, "friday": false, '
+            '"saturday": false, "sunday": true}]}}}',
             "calendar",
         )
 
@@ -458,6 +488,8 @@ async def test_vacuum_schedule_selector_fail(hass: HomeAssistant):
     await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
+
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
 
     mock_async_load = AsyncMock(
@@ -484,7 +516,7 @@ async def test_vacuum_schedule_selector_fail(hass: HomeAssistant):
     with patch(
         "custom_components.husqvarna_automower.vacuum.Store",
         MagicMock(name="store mock", spec=Store, return_value=storage_mock),
-    ) as store_mock:
+    ):
         # Raises ClientResponseError
         coordinator.session.action.reset_mock()
         coordinator.session.action.side_effect = ClientResponseError(
@@ -495,6 +527,24 @@ async def test_vacuum_schedule_selector_fail(hass: HomeAssistant):
             await vacuum.async_schedule_selector("schedule.test_schedule")
             coordinator.session.action.assert_called_once_with(
                 "c7233734-b219-4287-a173-08e3643f89f0",
-                '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 1020, "duration": 240, "monday": true, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": true, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": false, "wednesday": true, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 240, "monday": false, "tuesday": false, "wednesday": false, "thursday": true, "friday": false, "saturday": false, "sunday": false}, {"start": 1020, "duration": 360, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": true, "saturday": false, "sunday": false}, {"start": 420, "duration": 180, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": true, "sunday": false}, {"start": 960, "duration": 420, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": true, "sunday": false}, {"start": 420, "duration": 840, "monday": false, "tuesday": false, "wednesday": false, "thursday": false, "friday": false, "saturday": false, "sunday": true}]}}}',
+                '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 1020,'
+                ' "duration": 240, "monday": true, "tuesday": false, "wednesday": false,'
+                ' "thursday": false, "friday": false, "saturday": false, "sunday": false},'
+                ' {"start": 1020, "duration": 240, "monday": false, "tuesday": true, '
+                '"wednesday": false, "thursday": false, "friday": false, "saturday": false,'
+                ' "sunday": false}, {"start": 1020, "duration": 240, "monday": false,'
+                ' "tuesday": false, "wednesday": true, "thursday": false, "friday": false,'
+                ' "saturday": false, "sunday": false}, {"start": 1020, "duration": 240,'
+                ' "monday": false, "tuesday": false, "wednesday": false, "thursday": true,'
+                ' "friday": false, "saturday": false, "sunday": false}, {"start": 1020,'
+                ' "duration": 360, "monday": false, "tuesday": false, "wednesday": false,'
+                ' "thursday": false, "friday": true, "saturday": false, "sunday": false},'
+                ' {"start": 420, "duration": 180, "monday": false, "tuesday": false,'
+                ' "wednesday": false, "thursday": false, "friday": false, "saturday": true,'
+                ' "sunday": false}, {"start": 960, "duration": 420, "monday": false,'
+                ' "tuesday": false, "wednesday": false, "thursday": false, "friday": false,'
+                ' "saturday": true, "sunday": false}, {"start": 420, "duration": 840, '
+                '"monday": false, "tuesday": false, "wednesday": false, "thursday": false,'
+                ' "friday": false, "saturday": false, "sunday": true}]}}}',
                 "calendar",
             )

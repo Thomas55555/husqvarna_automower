@@ -1,13 +1,8 @@
 """Test for diagnostics module."""
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import pytest
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from ..const import DOMAIN
 from ..diagnostics import TO_REDACT, async_get_config_entry_diagnostics
-from .const import AUTOMER_SM_CONFIG, AUTOMOWER_CONFIG_DATA
 
 from .test_common import setup_entity
 
