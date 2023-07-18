@@ -6,6 +6,10 @@ import pytest
 from aioautomower import AutomowerSession, GetMowerData
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from homeassistant.components.application_credentials import (
+    ClientCredential,
+    async_import_client_credential,
+)
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN
@@ -19,7 +23,7 @@ from .const import (
 
 
 @pytest.mark.asyncio
-async def setup_entity(hass: HomeAssistant, dual_mower: bool = False):
+async def setup_entity(hass: HomeAssistant, dual_mower: bool = False, conf_version=1):
     """Set up entity and config entry"""
 
     if dual_mower:
@@ -33,6 +37,7 @@ async def setup_entity(hass: HomeAssistant, dual_mower: bool = False):
         options=options,
         entry_id="automower_test",
         title="Automower Test",
+        version=conf_version,
     )
 
     config_entry.add_to_hass(hass)
@@ -65,3 +70,25 @@ async def setup_entity(hass: HomeAssistant, dual_mower: bool = False):
             assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
     return config_entry
+
+
+async def configure_application_credentials(hass: HomeAssistant):
+    """Configure application credentials"""
+    app_cred_config_entry = MockConfigEntry(
+        domain="application_credentials",
+        data={},
+        entry_id="application_credentials",
+        title="Application Credentials",
+    )
+    app_cred_config_entry.add_to_hass(hass)
+
+    await hass.config_entries.async_setup(app_cred_config_entry.entry_id)
+
+    await async_import_client_credential(
+        hass,
+        DOMAIN,
+        ClientCredential(
+            "test_client_id",
+            "test_config_secret",
+        ),
+    )

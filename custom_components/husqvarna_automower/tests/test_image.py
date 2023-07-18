@@ -4,7 +4,7 @@ import io
 from pathlib import Path
 from unittest.mock import patch
 
-import PIL.Image as Image
+from PIL import Image
 import pytest
 from homeassistant.core import HomeAssistant
 

@@ -40,4 +40,4 @@ async def test_load_no_data(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     coordinator.session.data = AUTOMOWER_ERROR_SESSION_DATA
     with pytest.raises(KeyError):
-        entity = AutomowerEntity(coordinator, MWR_ONE_IDX)
+        AutomowerEntity(coordinator, MWR_ONE_IDX)

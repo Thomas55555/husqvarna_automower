@@ -27,6 +27,7 @@ async def test_number_cut_height(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     number = AutomowerNumber(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert number._attr_unique_id == f"{MWR_ONE_ID}_cuttingheight"
 
     # Success
@@ -53,6 +54,7 @@ async def test_number_park_start(hass: HomeAssistant):
         coordinator, MWR_ONE_IDX, NUMBER_SENSOR_TYPES[0]
     )
 
+    # pylint: disable=protected-access
     assert number._attr_unique_id == f"{MWR_ONE_ID}_Park"
 
     # Success

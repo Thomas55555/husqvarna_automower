@@ -1,20 +1,12 @@
 """Tests for select module."""
-from copy import deepcopy
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from aioautomower import AutomowerSession
-from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN, HEADLIGHTMODES
 from ..select import AutomowerSelect
 from .const import (
-    AUTOMER_DM_CONFIG,
-    AUTOMOWER_CONFIG_DATA,
-    AUTOMOWER_SM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
 )
@@ -30,6 +22,7 @@ async def test_number_cut_height(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     select = AutomowerSelect(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert select._attr_unique_id == f"{MWR_ONE_ID}_headlight_mode"
 
     # Not connected
@@ -37,14 +30,14 @@ async def test_number_cut_height(hass: HomeAssistant):
         "connected"
     ] = False
 
-    assert select.available == False
+    assert select.available is False
 
     # Connected
     coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
         "connected"
     ] = True
 
-    assert select.available == True
+    assert select.available is True
 
     # Current Option
     assert select.current_option == "evening_only"
