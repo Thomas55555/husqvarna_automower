@@ -78,7 +78,7 @@ class AutomowerLeavingDockBinarySensor(BinarySensorEntity, AutomowerEntity):
 class AutomowerErrorBinarySensor(BinarySensorEntity, AutomowerEntity):
     """Defining the AutomowerErrorSensor Entity."""
 
-    _attr_entity_registry_enabled_default: bool = False
+    _attr_entity_registry_enabled_default: bool = True
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
     _attr_translation_key = "error"
 

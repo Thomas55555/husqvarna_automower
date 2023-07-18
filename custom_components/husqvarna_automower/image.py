@@ -12,6 +12,7 @@ from geopy.distance import distance, geodesic
 from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from PIL import Image, ImageDraw
 
@@ -57,6 +58,7 @@ async def async_setup_entry(
 class AutomowerImage(ImageEntity, AutomowerEntity):
     """Representation of the AutomowerImage element."""
 
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_translation_key = "mower_img"
 
     def __init__(self, session, idx, entry, hass: HomeAssistant) -> None:
