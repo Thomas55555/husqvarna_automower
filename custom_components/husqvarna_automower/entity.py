@@ -47,7 +47,10 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         """Call when entity about to be added to Home Assistant."""
         await super().async_added_to_hass()
         self.coordinator.session.register_data_callback(
-            lambda _: self.async_write_ha_state(), schedule_immediately=True
+            lambda _: self.coordinator.async_set_updated_data(
+                self.coordinator.session.data
+            ),
+            schedule_immediately=True,
         )
 
     async def async_will_remove_from_hass(self) -> None:

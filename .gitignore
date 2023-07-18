@@ -15,3 +15,4 @@ custom_components/husqvarna_automower/tests/output/*.png
 *.lock
 coverage.xml
 .gitmodules
+core/
