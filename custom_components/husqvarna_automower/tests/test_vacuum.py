@@ -34,6 +34,7 @@ async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     vacuum = HusqvarnaAutomowerEntity(coordinator, MWR_ONE_IDX)
 
+    # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID
     assert vacuum.extra_state_attributes == {"action": None}
 

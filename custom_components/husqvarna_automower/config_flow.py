@@ -6,7 +6,7 @@ import os
 import voluptuous as vol
 from homeassistant import config_entries, data_entry_flow
 from homeassistant.const import CONF_TOKEN
-from homeassistant.core import async_get_hass, callback
+from homeassistant.core import async_get_hass, callback, HomeAssistant
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers import selector
 import homeassistant.helpers.config_validation as cv
@@ -122,7 +122,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         super().__init__()
         self.base_path = os.path.dirname(__file__)
         self.config_entry = config_entry
-
+        self.hass: HomeAssistant  # pylint throws no member errors if we don't hint
         self.hass = async_get_hass()
         self.mower_idx = []
         for entity in self.hass.data[DOMAIN].keys():
