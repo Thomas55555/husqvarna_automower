@@ -45,7 +45,7 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         HusqvarnaAutomowerEntity(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
     )
     platform = entity_platform.current_platform.get()
 
@@ -94,7 +94,7 @@ class HusqvarnaAutomowerEntity(StateVacuumEntity, AutomowerEntity):
     def __init__(self, session, idx):
         """Set up HusqvarnaAutomowerEntity."""
         super().__init__(session, idx)
-        self._attr_unique_id = self.coordinator.session.data["data"][self.idx]["id"]
+        self._attr_unique_id = self.coordinator.data["data"][self.idx]["id"]
 
     @property
     def available(self) -> bool:

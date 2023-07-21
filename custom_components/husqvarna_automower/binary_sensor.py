@@ -22,15 +22,15 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerBatteryChargingBinarySensor(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
     )
     async_add_entities(
         AutomowerLeavingDockBinarySensor(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
     )
     async_add_entities(
         AutomowerErrorBinarySensor(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
     )
 
 

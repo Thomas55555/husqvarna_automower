@@ -153,7 +153,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         )
         await coordinator.async_config_entry_first_refresh()
         # pylint: disable=unused-variable
-        for idx, ent in enumerate(coordinator.session.data["data"]):
+        for idx, ent in enumerate(coordinator.data["data"]):
             mower_idx.append(ent["id"])
 
         for mower_id in mower_idx:

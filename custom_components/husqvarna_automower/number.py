@@ -25,16 +25,15 @@ async def async_setup_entry(
 
     async_add_entities(
         AutomowerNumber(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
         if any(
-            ele
-            in coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
+            ele in coordinator.data["data"][idx]["attributes"]["system"]["model"]
             for ele in CHANGING_CUTTING_HEIGHT_SUPPORT
         )
     )
     async_add_entities(
         AutomowerParkStartNumberEntity(coordinator, idx, description)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
         for description in NUMBER_SENSOR_TYPES
     )
 

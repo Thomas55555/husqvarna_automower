@@ -38,6 +38,6 @@ async def test_load_no_data(hass: HomeAssistant):
     """test automower initialization, not data returned"""
     await setup_entity(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
-    coordinator.session.data = AUTOMOWER_ERROR_SESSION_DATA
+    coordinator.data = AUTOMOWER_ERROR_SESSION_DATA
     with pytest.raises(KeyError):
         AutomowerEntity(coordinator, MWR_ONE_IDX)

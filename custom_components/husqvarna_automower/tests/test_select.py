@@ -26,16 +26,12 @@ async def test_number_cut_height(hass: HomeAssistant):
     assert select._attr_unique_id == f"{MWR_ONE_ID}_headlight_mode"
 
     # Not connected
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
-        "connected"
-    ] = False
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["metadata"]["connected"] = False
 
     assert select.available is False
 
     # Connected
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
-        "connected"
-    ] = True
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["metadata"]["connected"] = True
 
     assert select.available is True
 

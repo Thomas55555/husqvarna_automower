@@ -112,7 +112,7 @@ async def test_load_image_enabled(hass: HomeAssistant):
     assert image.height == 195  # Resize maintains aspect ratio
 
     # Mower at home
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "CHARGING"
     assert image_one.is_home is True
@@ -120,9 +120,7 @@ async def test_load_image_enabled(hass: HomeAssistant):
     await asyncio.to_thread(image_one._generate_image, {})
 
     # Mower not at home
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-        "activity"
-    ] = "MOWING"
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"]["activity"] = "MOWING"
     assert image_one.is_home is False
     # pylint: disable=protected-access
     # pylint: disable=protected-access
@@ -135,22 +133,18 @@ async def test_load_image_enabled(hass: HomeAssistant):
 
     # Single position history
     exp_result = [
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
-    ] + coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"]
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = [
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
+    ] + coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"]
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = [
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
     ]
     # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})
     assert image_one._position_history[MWR_ONE_ID] == exp_result
 
     # Single position history, but it's the first position update
-    exp_result = [
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]
-    ]
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
-    ] = exp_result
+    exp_result = [coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0]]
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = exp_result
     image_one._position_history = {}
     # pylint: disable=protected-access
     await asyncio.to_thread(image_one._generate_image, {})

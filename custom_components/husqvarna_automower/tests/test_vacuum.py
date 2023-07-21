@@ -38,7 +38,7 @@ async def test_vacuum_extra_state_attributes(hass: HomeAssistant):
     assert vacuum._attr_unique_id == MWR_ONE_ID
     assert vacuum.extra_state_attributes == {"action": None}
 
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["planner"] = {
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["planner"] = {
         "override": {"action": "Test_Action"}
     }
 
@@ -54,13 +54,11 @@ async def test_vacuum_state(hass: HomeAssistant):
 
     def set_state(state: str):
         """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "state"
-        ] = state
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"]["state"] = state
 
     def set_activity(activity: str):
         """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
             "activity"
         ] = activity
 
@@ -140,21 +138,17 @@ async def test_vacuum_error(hass: HomeAssistant):
 
     def set_state(state: str):
         """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "state"
-        ] = state
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"]["state"] = state
 
     def set_activity(activity: str):
         """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
             "activity"
         ] = activity
 
     def set_error_code(code: str):
         """Set new state"""
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-            "errorCode"
-        ] = code
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"]["errorCode"] = code
 
     # pylint: disable=protected-access
     assert vacuum._attr_unique_id == MWR_ONE_ID

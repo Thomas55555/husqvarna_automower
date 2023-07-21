@@ -34,7 +34,7 @@ async def test_zone_sensor(hass: HomeAssistant):
     assert zone_sensor.zones == DEFAULT_ZONES
 
     # Mower is home
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "PARKED_IN_CS"
     assert zone_sensor.native_value == "Home"
@@ -42,27 +42,25 @@ async def test_zone_sensor(hass: HomeAssistant):
 
     # Mower is in front garden
     # Mower is still home, but point would be in the front garden
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
         "latitude"
     ] = FRONT_GARDEN_PNT[0]
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
         "longitude"
     ] = FRONT_GARDEN_PNT[1]
     assert zone_sensor.native_value == "Home"
     assert zone_sensor.extra_state_attributes == {ZONE_ID: "home"}
 
     # Mower state is mowing
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
-        "activity"
-    ] = "MOWING"
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"]["activity"] = "MOWING"
     assert zone_sensor.native_value == "Front Garden"
     assert zone_sensor.extra_state_attributes == {ZONE_ID: "front_garden"}
 
     # Mower is mowing but not in a zone
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
         "latitude"
     ] = NO_ZONE_PNT[0]
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"][0][
         "longitude"
     ] = NO_ZONE_PNT[1]
     assert zone_sensor.native_value == "Unknown"

@@ -266,26 +266,22 @@ async def async_setup_entry(
     entity_list = []
 
     # pylint: disable=unused-variable
-    for idx, ent in enumerate(coordinator.session.data["data"]):
+    for idx, ent in enumerate(coordinator.data["data"]):
         if entry.options.get(CONF_ZONES):
             entity_list.append(AutomowerZoneSensor(coordinator, idx, entry))
         for description in SENSOR_TYPES:
             try:
-                description.value_fn(
-                    coordinator.session.data["data"][idx]["attributes"]
-                )
+                description.value_fn(coordinator.data["data"][idx]["attributes"])
                 if description.key == "cuttingHeight":
                     if (
                         any(
                             ele
-                            in coordinator.session.data["data"][idx]["attributes"][
-                                "system"
-                            ]["model"]
+                            in coordinator.data["data"][idx]["attributes"]["system"][
+                                "model"
+                            ]
                             for ele in NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT
                         )
-                        and coordinator.session.data["data"][idx]["attributes"][
-                            "cuttingHeight"
-                        ]
+                        and coordinator.data["data"][idx]["attributes"]["cuttingHeight"]
                         is not None
                     ):
                         entity_list.append(

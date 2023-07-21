@@ -48,7 +48,7 @@ async def async_setup_entry(
     """Set up select platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
-    for idx, ent in enumerate(coordinator.session.data["data"]):
+    for idx, ent in enumerate(coordinator.data["data"]):
         if entry.options.get(ent["id"], {}).get(ENABLE_IMAGE):
             entity_list.append(AutomowerImage(coordinator, idx, entry, hass))
 

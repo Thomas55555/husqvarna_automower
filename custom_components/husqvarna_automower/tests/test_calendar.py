@@ -29,16 +29,12 @@ async def test_calendar(hass: HomeAssistant):
     assert calendar._attr_unique_id == f"{MWR_ONE_ID}_calendar"
 
     # Not connected
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
-        "connected"
-    ] = False
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["metadata"]["connected"] = False
 
     assert calendar.available is False
 
     # Connected
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
-        "connected"
-    ] = True
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["metadata"]["connected"] = True
 
     assert calendar.available is True
 
@@ -159,7 +155,7 @@ async def test_calendar(hass: HomeAssistant):
         )
         mock_geo.reverse.reset_mock()
         mock_geo.reverse.return_value = location_result
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = []
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = []
 
         result = await calendar.async_get_events_data(
             hass, datetime(2023, 6, 9, 7), datetime(2023, 6, 9, 16)

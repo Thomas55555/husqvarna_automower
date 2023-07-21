@@ -31,7 +31,7 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerCalendar(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
+        for idx, ent in enumerate(coordinator.data["data"])
     )
 
 

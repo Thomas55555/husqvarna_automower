@@ -22,7 +22,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         """Initialize AutomowerEntity."""
         super().__init__(coordinator, context=idx)
         self.idx = idx
-        self.mower = coordinator.session.data["data"][self.idx]
+        self.mower = coordinator.data["data"][self.idx]
         mower_attributes = self.get_mower_attributes()
         self.mower_id = self.mower["id"]
         self.mower_name = mower_attributes["system"]["name"]
@@ -32,7 +32,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
 
     def get_mower_attributes(self) -> dict:
         """Get the mower attributes of the current mower."""
-        return self.coordinator.session.data["data"][self.idx]["attributes"]
+        return self.coordinator.data["data"][self.idx]["attributes"]
 
     def datetime_object(self, timestamp) -> datetime:
         """Convert the mower local timestamp to a UTC datetime object."""
@@ -47,9 +47,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         """Call when entity about to be added to Home Assistant."""
         await super().async_added_to_hass()
         self.coordinator.session.register_data_callback(
-            lambda _: self.coordinator.async_set_updated_data(
-                self.coordinator.session.data
-            ),
+            lambda x: self.coordinator.async_set_updated_data(x),
             schedule_immediately=True,
         )
 

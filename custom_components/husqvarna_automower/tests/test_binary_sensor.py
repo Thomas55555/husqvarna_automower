@@ -29,7 +29,7 @@ async def test_battery_charging_sensor(hass: HomeAssistant):
     assert battery_sensor._attr_unique_id == f"{MWR_ONE_ID}_battery_charging"
 
     assert battery_sensor.is_on is False
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "CHARGING"
 
@@ -49,7 +49,7 @@ async def test_leaving_dock_sensor(hass: HomeAssistant):
     assert leaving_sensor._attr_unique_id == f"{MWR_ONE_ID}_leaving_dock"
 
     assert leaving_sensor.is_on is False
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "LEAVING"
 
@@ -74,7 +74,7 @@ async def test_error_sensor(hass: HomeAssistant):
         "description": "No Error",
     }
 
-    coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+    coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "errorCode"
     ] = 0
 
@@ -84,7 +84,7 @@ async def test_error_sensor(hass: HomeAssistant):
     }
 
     for e_state in ERROR_STATES:
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
+        coordinator.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
             "state"
         ] = e_state
 

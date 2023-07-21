@@ -22,11 +22,10 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         AutomowerSelect(coordinator, idx)
-        for idx, ent in enumerate(coordinator.session.data["data"])
-        if not coordinator.session.data["data"][idx]["attributes"]["system"]["model"]
+        for idx, ent in enumerate(coordinator.data["data"])
+        if not coordinator.data["data"][idx]["attributes"]["system"]["model"]
         in ["550", "Ceora"]
-        and coordinator.session.data["data"][idx]["attributes"]["headlight"]["mode"]
-        is not None
+        and coordinator.data["data"][idx]["attributes"]["headlight"]["mode"] is not None
     )
 
 

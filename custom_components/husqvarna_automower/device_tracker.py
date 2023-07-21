@@ -19,12 +19,10 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entity_list = []
     # pylint: disable=unused-variable
-    for idx, ent in enumerate(coordinator.session.data["data"]):
+    for idx, ent in enumerate(coordinator.data["data"]):
         try:
             assert (
-                coordinator.session.data["data"][idx]["attributes"]["positions"][0][
-                    "latitude"
-                ]
+                coordinator.data["data"][idx]["attributes"]["positions"][0]["latitude"]
                 is not None
             )
             entity_list.append(AutomowerTracker(coordinator, idx))
