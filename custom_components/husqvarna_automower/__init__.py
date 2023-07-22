@@ -71,8 +71,14 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> None:
         """Fetch data from Husqvarna."""
+        provider = self.access_token["provider"]
+        token_type = self.access_token["token_type"]
+        access_token = self.access_token["access_token"]
+        rest = aioautomower.GetMowerData(
+            self.api_key, access_token, provider, token_type
+        )
         try:
-            return await self.session.get_status()
+            return await rest.async_mower_state()
         except aioautomower.MowerApiConnectionsError as error:
             _LOGGER.debug("Exception in updating Rest data: %s", error)
             raise ConfigEntryAuthFailed from Exception
