@@ -61,10 +61,10 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_translation_key = "mower_img"
 
-    def __init__(self, session, idx, entry, hass: HomeAssistant) -> None:
+    def __init__(self, coordinator, idx, entry, hass: HomeAssistant) -> None:
         """Initialize AutomowerImage."""
         ImageEntity.__init__(self, hass)
-        AutomowerEntity.__init__(self, session, idx)
+        AutomowerEntity.__init__(self, coordinator, idx)
 
         self.entry = entry
         self._position_history = {}
@@ -81,8 +81,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         self._mwr_id_to_idx = {}
 
         # pylint: disable=unused-variable
-        for idx, ent in enumerate(session.session.data["data"]):
-            self._mwr_id_to_idx[session.session.data["data"][idx]["id"]] = idx
+        for idx, ent in enumerate(coordinator.data["data"]):
+            self._mwr_id_to_idx[coordinator.data["data"][idx]["id"]] = idx
 
         self._additional_images = self.options.get(ADD_IMAGES, [])
 
@@ -97,7 +97,7 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
 
             # pylint: disable=unnecessary-lambda
             self.coordinator.session.register_data_callback(
-                lambda data: self._generate_image(data),
+                lambda _: self._generate_image(self.coordinator.data),
                 schedule_immediately=True,
             )
         else:
