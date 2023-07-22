@@ -68,6 +68,10 @@ class AutomowerDataUpdateCoordinator(DataUpdateCoordinator):
                 data={"auth_implementation": DOMAIN, CONF_TOKEN: token},
             )
         )
+        self.session.register_data_callback(
+            lambda x: self.async_set_updated_data(x),
+            schedule_immediately=True,
+        )
 
     async def _async_update_data(self) -> None:
         """Fetch data from Husqvarna."""
@@ -115,6 +119,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
     return True
+
+
+async def async_added_to_hass(self) -> None:
+    """Call when entity about to be added to Home Assistant."""
+    await self.coordinator.async_added_to_hass()
+
+
+async def async_will_remove_from_hass(self) -> None:
+    """Call when entity is being removed from Home Assistant."""
+    await self.coordinator.async_will_remove_from_hass()
+    self.coordinator.session.unregister_data_callback(
+        lambda _: self.async_write_ha_state()
+    )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

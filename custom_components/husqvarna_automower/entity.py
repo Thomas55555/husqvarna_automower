@@ -43,21 +43,6 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
             local = None
         return local
 
-    async def async_added_to_hass(self) -> None:
-        """Call when entity about to be added to Home Assistant."""
-        await super().async_added_to_hass()
-        self.coordinator.session.register_data_callback(
-            lambda x: self.coordinator.async_set_updated_data(x),
-            schedule_immediately=True,
-        )
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Call when entity is being removed from Home Assistant."""
-        await super().async_will_remove_from_hass()
-        self.coordinator.session.unregister_data_callback(
-            lambda _: self.async_write_ha_state()
-        )
-
     @property
     def device_info(self) -> DeviceInfo:
         """Define the DeviceInfo for the mower."""
