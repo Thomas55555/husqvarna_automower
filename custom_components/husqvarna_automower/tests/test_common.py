@@ -62,7 +62,13 @@ async def setup_entity(hass: HomeAssistant, dual_mower: bool = False, conf_versi
     ):
         with patch(
             "aioautomower.GetMowerData",
-            return_value=AsyncMock(name="GetMowerMock", model=GetMowerData, data={}),
+            return_value=AsyncMock(
+                name="GetMowerDataMock",
+                model=GetMowerData,
+                async_mower_state=AsyncMock(
+                    name="mower_state_mock", return_value=session
+                ),
+            ),
         ):
             await hass.config_entries.async_setup(config_entry.entry_id)
             await hass.async_block_till_done()
