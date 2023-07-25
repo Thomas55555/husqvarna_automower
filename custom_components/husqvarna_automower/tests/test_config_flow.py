@@ -1,12 +1,14 @@
 """Tests for config flow module."""
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
-
 from homeassistant.data_entry_flow import FlowResultType
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import (
     ADD_IMAGES,
+    DOMAIN,
     ENABLE_IMAGE,
     GPS_BOTTOM_RIGHT,
     GPS_TOP_LEFT,
@@ -27,11 +29,11 @@ from ..const import (
 )
 from .const import (
     AUTOMER_DM_CONFIG,
+    AUTOMOWER_CONFIG_DATA,
+    AUTOMOWER_DM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_TWO_ID,
 )
-
-from .test_common import setup_entity
 
 
 def get_suggested(schema, key):
@@ -42,17 +44,33 @@ def get_suggested(schema, key):
                 return None
             return k.description["suggested_value"]
     # Wanted key absent from schema
-    raise KeyError
+    raise Exception
 
 
 async def test_options_init(hass: HomeAssistant) -> None:
     """Test option flow init"""
 
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options={},
+        entry_id="automower_test",
+        title="Automower Test",
+    )
     with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
-        {},
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
     ):
-        config_entry = await setup_entity(hass, dual_mower=True)
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
         assert result["type"] == FlowResultType.MENU
         assert result["step_id"] == "select"
@@ -60,17 +78,38 @@ async def test_options_init(hass: HomeAssistant) -> None:
 
 async def test_options_image_config_existing_options(hass: HomeAssistant) -> None:
     """Test Image Config option flow."""
-    config_entry = await setup_entity(hass, dual_mower=True)
-
-    result = await hass.config_entries.options.async_init(config_entry.entry_id)
-
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {"next_step_id": "image_select"}
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=AUTOMER_DM_CONFIG,
+        entry_id="automower_test",
+        title="Automower Test",
     )
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
+    ):
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {"selected_image": "Test Mower 1"}
-    )
+        result = await hass.config_entries.options.async_init(config_entry.entry_id)
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"next_step_id": "image_select"}
+        )
+
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {"selected_image": "Test Mower 1"}
+        )
 
 
 async def test_options_image_config_existing_options_bad_zone(
@@ -79,12 +118,28 @@ async def test_options_image_config_existing_options_bad_zone(
     """Test Image Config option flow where the configured zones is not a dict."""
     options = AUTOMER_DM_CONFIG.copy()
     options["configured_zones"] = "[]"
-
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=options,
+        entry_id="automower_test",
+        title="Automower Test",
+    )
     with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
-        options,
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
     ):
-        config_entry = await setup_entity(hass, dual_mower=True)
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
 
@@ -99,22 +154,36 @@ async def test_options_image_config_existing_options_bad_zone(
 
 async def test_options_image_config(hass: HomeAssistant) -> None:
     """Test Image Config option flow."""
-
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options={},
+        entry_id="automower_test",
+        title="Automower Test",
+    )
     with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
-        {},
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
     ):
-        config_entry = await setup_entity(hass, dual_mower=True)
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
 
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
-        await hass.async_block_till_done()
         assert result["type"] == FlowResultType.MENU
         assert result["step_id"] == "select"
 
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {"next_step_id": "image_select"}
         )
-        await hass.async_block_till_done()
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "image_select"
 
@@ -125,7 +194,6 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {"selected_image": "Test Mower 1"}
         )
-        await hass.async_block_till_done()
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "image_config"
 
@@ -141,13 +209,11 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {ENABLE_IMAGE: False}
         )
-        await hass.async_block_till_done()
 
         assert result["type"] == FlowResultType.CREATE_ENTRY
 
         # Restart flow
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
-        await hass.async_block_till_done()
         assert result["type"] == FlowResultType.MENU
         assert result["step_id"] == "select"
 
@@ -163,7 +229,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {ENABLE_IMAGE: True}
         )
-        await hass.async_block_till_done()
+
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "image_config"
         assert result["errors"][GPS_BOTTOM_RIGHT] == "points_match"
@@ -177,7 +243,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 GPS_TOP_LEFT: "235.5411008,-82.5527418",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {GPS_TOP_LEFT: "not_wgs84"}
 
         # Enable Image, provide invalid bottom right point
@@ -189,7 +255,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {GPS_BOTTOM_RIGHT: "not_wgs84"}
 
         # Enable Image, provide valid points, bad path for mower
@@ -199,11 +265,10 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                MOWER_IMG_PATH: "custom_components/husqvarna_automower"
-                "/tests/resources/missing.png",
+                MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MOWER_IMG_PATH: "not_file"}
 
         # Enable Image, provide valid points, bad image for mower
@@ -213,11 +278,10 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                MOWER_IMG_PATH: "custom_components/husqvarna_automower"
-                "/tests/resources/bad_image.png",
+                MOWER_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MOWER_IMG_PATH: "not_image"}
 
         # Enable Image, provide valid points, bad path for map
@@ -227,11 +291,10 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                MAP_IMG_PATH: "custom_components/husqvarna_automower"
-                "/tests/resources/missing.png",
+                MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/missing.png",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MAP_IMG_PATH: "not_file"}
 
         # Enable Image, provide valid points, bad image for map
@@ -241,11 +304,10 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 ENABLE_IMAGE: True,
                 GPS_BOTTOM_RIGHT: "35.539442,-82.5504646",
                 GPS_TOP_LEFT: "35.5411008,-82.5527418",
-                MAP_IMG_PATH: "custom_components/husqvarna_automower/"
-                "tests/resources/bad_image.png",
+                MAP_IMG_PATH: "custom_components/husqvarna_automower/tests/resources/bad_image.png",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MAP_IMG_PATH: "not_image"}
 
         # Enable Image, provide valid points, bad color
@@ -258,7 +320,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 MAP_PATH_COLOR: "-100, 0, 0",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MAP_PATH_COLOR: "color_error"}
 
         # Enable Image, provide valid points, bad rotation
@@ -271,7 +333,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 MAP_IMG_ROTATION: -500,
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {MAP_IMG_ROTATION: "rotation_error"}
 
         # Enable Image, provide valid corner points, bad home point
@@ -284,7 +346,7 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 HOME_LOCATION: "35.54028774,-282.5526962",
             },
         )
-        await hass.async_block_till_done()
+
         assert result["errors"] == {HOME_LOCATION: "not_wgs84"}
 
         # Enable Image, provide valid points
@@ -297,17 +359,32 @@ async def test_options_image_config(hass: HomeAssistant) -> None:
                 HOME_LOCATION: "35.54028774,-82.5526962",
             },
         )
-        await hass.async_block_till_done()
+
         assert "errors" not in result
 
 
 async def test_options_zone_config(hass: HomeAssistant) -> None:
     """Test Zone Config option flow (geofence_init)."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options={},
+        entry_id="automower_test",
+        title="Automower Test",
+    )
     with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_DM_CONFIG",
-        {},
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            data=AUTOMOWER_DM_SESSION_DATA,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+        ),
     ):
-        config_entry = await setup_entity(hass, dual_mower=True)
+        config_entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
 
         result = await hass.config_entries.options.async_init(config_entry.entry_id)
         assert result["type"] == FlowResultType.MENU
@@ -341,8 +418,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ZONE_COORD: "35.5408367,-82.5524521 35.5403893,-82.552613;35.5399462,"
-                "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                ZONE_COORD: "35.5408367,-82.5524521 35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                 ZONE_NAME: "Front Garden",
                 ZONE_COLOR: "255,0,0",
                 ZONE_DISPLAY: True,
@@ -376,8 +452,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,"
-                "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                 ZONE_NAME: "Front Garden",
                 ZONE_COLOR: "500,0,0",
                 ZONE_DISPLAY: True,
@@ -394,9 +469,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,"
-                "-82.552613;35.5399462,-82.5506738;35.5403827,"
-                "-82.5505236;35.5408367,-82.5524521",
+                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                 ZONE_NAME: "Front Garden",
                 ZONE_COLOR: "255,0,0",
                 ZONE_DISPLAY: True,
@@ -413,8 +486,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
             {
-                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,"
-                "-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
+                ZONE_COORD: "35.5408367,-82.5524521;35.5403893,-82.552613;35.5399462,-82.5506738;35.5403827,-82.5505236;35.5408367,-82.5524521",
                 ZONE_NAME: "Front Garden",
                 ZONE_COLOR: "255,0,0",
                 ZONE_DISPLAY: True,
@@ -422,7 +494,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             },
         )
 
-        assert result["errors"] is None
+        assert result["errors"] == None
 
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "geofence_init"
@@ -470,7 +542,7 @@ async def test_options_zone_config(hass: HomeAssistant) -> None:
             {ZONE_DEL: True},
         )
 
-        assert result["errors"] is None
+        assert result["errors"] == None
 
         assert result["type"] == FlowResultType.FORM
         assert result["step_id"] == "geofence_init"
