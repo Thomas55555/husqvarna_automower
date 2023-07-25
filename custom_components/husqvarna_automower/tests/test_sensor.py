@@ -1,14 +1,18 @@
 """Tests for sensor module."""
 from copy import deepcopy
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from aioautomower import AutomowerSession
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..const import DOMAIN, NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT, ZONE_ID
 from ..sensor import SENSOR_TYPES, AutomowerZoneSensor, get_problem
 from .const import (
-    AUTOMER_SM_CONFIG,
+    AUTOMER_DM_CONFIG,
+    AUTOMOWER_CONFIG_DATA,
     AUTOMOWER_SM_SESSION_DATA,
     DEFAULT_ZONES,
     FRONT_GARDEN_PNT,
@@ -16,24 +20,72 @@ from .const import (
     MWR_ONE_IDX,
     NO_ZONE_PNT,
 )
-from .test_common import setup_entity
+
+
+@pytest.mark.asyncio
+async def setup_zone_sensor(
+    hass: HomeAssistant, zone_overide: str = None, enable_cut: bool = True
+):
+    """Set up sensor and config entry"""
+
+    options = deepcopy(AUTOMER_DM_CONFIG)
+
+    if zone_overide:
+        options["configured_zones"] = zone_overide
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=options,
+        entry_id="automower_test",
+        title="Automower Test",
+    )
+
+    config_entry.add_to_hass(hass)
+
+    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
+
+    if not enable_cut:
+        session["data"][MWR_ONE_IDX]["attributes"]["system"][
+            "model"
+        ] = NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT[0]
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            name="AutomowerMockSession",
+            model=AutomowerSession,
+            data=session,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+        ),
+    ) as automower_session_mock:
+        automower_coordinator_mock = MagicMock(
+            name="MockCoordinator", session=automower_session_mock()
+        )
+
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+    return config_entry
 
 
 @pytest.mark.asyncio
 async def test_zone_sensor(hass: HomeAssistant):
     """test zone."""
-    config_entry = await setup_entity(hass, dual_mower=True)
+    config_entry = await setup_zone_sensor(hass)
     coordinator = hass.data[DOMAIN]["automower_test"]
     zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
 
-    # pylint: disable=protected-access
     assert zone_sensor._attr_unique_id == f"{MWR_ONE_ID}_zone_sensor"
 
-    # Load zones works
-    # pylint: disable=protected-access
+    # # Load zones works
     assert zone_sensor.zones == DEFAULT_ZONES
 
-    # Mower is home
+    # # Mower is home
     coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["mower"][
         "activity"
     ] = "PARKED_IN_CS"
@@ -72,53 +124,35 @@ async def test_zone_sensor(hass: HomeAssistant):
 @pytest.mark.asyncio
 async def test_zone_sensor_bad_json(hass: HomeAssistant):
     """test zone sensor if zones aren't a dict"""
-    options = deepcopy(AUTOMER_SM_CONFIG)
-    options["configured_zones"] = "[]"
-    with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMER_SM_CONFIG",
-        options,
-    ):
-        config_entry = await setup_entity(hass)
-        coordinator = hass.data[DOMAIN]["automower_test"]
-        zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
+    config_entry = await setup_zone_sensor(hass, zone_overide="[]")
+    coordinator = hass.data[DOMAIN]["automower_test"]
+    zone_sensor = AutomowerZoneSensor(coordinator, MWR_ONE_IDX, config_entry)
 
-        # Zone JSON isn't a dict
-        # pylint: disable=protected-access
-        zone_sensor._load_zones()
-
-        # pylint: disable=use-implicit-booleaness-not-comparison
-        assert zone_sensor.zones == {}
+    # Zone JSON isn't a dict
+    zone_sensor._load_zones()
+    assert zone_sensor.zones == {}
 
 
 @pytest.mark.asyncio
 async def test_sensors_no_cut(hass: HomeAssistant):
     """test sensors if cutting height is missing."""
-    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
-    session["data"][MWR_ONE_IDX]["attributes"]["system"][
-        "model"
-    ] = NO_SUPPORT_FOR_CHANGING_CUTTING_HEIGHT[0]
-
-    with patch(
-        "custom_components.husqvarna_automower.tests.test_common.AUTOMOWER_SM_SESSION_DATA",
-        session,
-    ):
-        await setup_entity(hass)
+    config_entry = await setup_zone_sensor(hass, enable_cut=False)
 
 
 @pytest.mark.asyncio
 async def test_statistics_sensors(hass: HomeAssistant):
     """test statistics sensors."""
-    test_sensor_types = deepcopy(SENSOR_TYPES)
-    for sensor in test_sensor_types:
-        sensor.entity_registry_enabled_default = True
+    TEST_SENSOR_TYPES = deepcopy(SENSOR_TYPES)
+    for s in TEST_SENSOR_TYPES:
+        s.entity_registry_enabled_default = True
     with patch(
-        "custom_components.husqvarna_automower.sensor.SENSOR_TYPES", test_sensor_types
+        "custom_components.husqvarna_automower.sensor.SENSOR_TYPES", TEST_SENSOR_TYPES
     ):
-        await setup_entity(hass)
+        config_entry = await setup_zone_sensor(hass)
 
 
 @pytest.mark.asyncio
-async def test_get_problem(hass: HomeAssistant):  # pylint: disable=unused-argument
+async def test_get_problem(hass: HomeAssistant):
     """Test get_problem function."""
     mower_attributes = {
         "mower": {

@@ -1,21 +1,69 @@
 """Tests for calendar module."""
+from copy import deepcopy
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import voluptuous as vol
+from aioautomower import AutomowerSession
 from aiohttp import ClientResponseError
 from geopy import Location
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from ..calendar import AutomowerCalendar
 from ..const import DOMAIN
 from .const import (
+    AUTOMER_DM_CONFIG,
+    AUTOMOWER_CONFIG_DATA,
+    AUTOMOWER_SM_SESSION_DATA,
     MWR_ONE_ID,
     MWR_ONE_IDX,
 )
 
-from .test_common import setup_entity
+
+@pytest.mark.asyncio
+async def setup_entity(hass: HomeAssistant):
+    """Set up entity and config entry"""
+
+    options = deepcopy(AUTOMER_DM_CONFIG)
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data=AUTOMOWER_CONFIG_DATA,
+        options=options,
+        entry_id="automower_test",
+        title="Automower Test",
+    )
+
+    config_entry.add_to_hass(hass)
+
+    session = deepcopy(AUTOMOWER_SM_SESSION_DATA)
+
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            name="AutomowerMockSession",
+            model=AutomowerSession,
+            data=session,
+            register_data_callback=MagicMock(),
+            unregister_data_callback=MagicMock(),
+            register_token_callback=MagicMock(),
+            connect=AsyncMock(),
+            action=AsyncMock(),
+        ),
+    ) as automower_session_mock:
+        automower_coordinator_mock = MagicMock(
+            name="MockCoordinator", session=automower_session_mock()
+        )
+
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.LOADED
+        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+    return config_entry
 
 
 @pytest.mark.asyncio
@@ -25,7 +73,6 @@ async def test_calendar(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     calendar = AutomowerCalendar(coordinator, MWR_ONE_IDX)
 
-    # pylint: disable=protected-access
     assert calendar._attr_unique_id == f"{MWR_ONE_ID}_calendar"
 
     # Not connected
@@ -33,19 +80,18 @@ async def test_calendar(hass: HomeAssistant):
         "connected"
     ] = False
 
-    assert calendar.available is False
+    assert calendar.available == False
 
     # Connected
     coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["metadata"][
         "connected"
     ] = True
 
-    assert calendar.available is True
+    assert calendar.available == True
 
     # Get calendar events
     location_result = Location(
-        "Italian Garden, Biltmore Estate Path, Buncombe County,"
-        " North Carolina, 28803, United States",
+        "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
         (35.5399226, -82.55193188763246, 0.0),
         {
             "place_id": 266519807,
@@ -54,8 +100,7 @@ async def test_calendar(hass: HomeAssistant):
             "osm_id": 830192286,
             "lat": "35.5399226",
             "lon": "-82.55193188763246",
-            "display_name": "Italian Garden, Biltmore Estate Path, "
-            "Buncombe County, North Carolina, 28803, United States",
+            "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
             "address": {
                 "leisure": "Italian Garden",
                 "road": "Biltmore Estate Path",
@@ -84,8 +129,7 @@ async def test_calendar(hass: HomeAssistant):
 
         # No house number in return address
         location_result = Location(
-            "Italian Garden, Biltmore Estate Path, Buncombe County,"
-            " North Carolina, 28803, United States",
+            "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
             (35.5399226, -82.55193188763246, 0.0),
             {
                 "place_id": 266519807,
@@ -94,8 +138,7 @@ async def test_calendar(hass: HomeAssistant):
                 "osm_id": 830192286,
                 "lat": "35.5399226",
                 "lon": "-82.55193188763246",
-                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County,"
-                " North Carolina, 28803, United States",
+                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
                 "address": {
                     "leisure": "Italian Garden",
                     "road": "Biltmore Estate Path",
@@ -125,8 +168,7 @@ async def test_calendar(hass: HomeAssistant):
 
         # No postions, Index error
         location_result = Location(
-            "Italian Garden, Biltmore Estate Path, Buncombe County,"
-            " North Carolina, 28803, United States",
+            "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
             (35.5399226, -82.55193188763246, 0.0),
             {
                 "place_id": 266519807,
@@ -135,8 +177,7 @@ async def test_calendar(hass: HomeAssistant):
                 "osm_id": 830192286,
                 "lat": "35.5399226",
                 "lon": "-82.55193188763246",
-                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County,"
-                " North Carolina, 28803, United States",
+                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
                 "address": {
                     "leisure": "Italian Garden",
                     "road": "Biltmore Estate Path",
@@ -184,7 +225,6 @@ async def test_async_parse_to_husqvarna_string(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     calendar = AutomowerCalendar(coordinator, MWR_ONE_IDX)
 
-    # pylint: disable=protected-access
     assert calendar._attr_unique_id == f"{MWR_ONE_ID}_calendar"
 
     # Parse to Husqvarna String
@@ -233,7 +273,6 @@ async def test_aysnc_send_command_to_mower(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     calendar = AutomowerCalendar(coordinator, MWR_ONE_IDX)
 
-    # pylint: disable=protected-access
     assert calendar._attr_unique_id == f"{MWR_ONE_ID}_calendar"
 
     task_list = [
@@ -254,9 +293,7 @@ async def test_aysnc_send_command_to_mower(hass: HomeAssistant):
     await calendar.aysnc_send_command_to_mower(task_list)
     coordinator.session.action.assert_awaited_once_with(
         MWR_ONE_ID,
-        '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 480, "duration": 60,'
-        ' "friday": false, "monday": true, "saturday": false, "sunday": false, "wednesday":'
-        ' true, "thursday": false, "tuesday": true}]}}}',
+        '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 480, "duration": 60, "friday": false, "monday": true, "saturday": false, "sunday": false, "wednesday": true, "thursday": false, "tuesday": true}]}}}',
         "calendar",
     )
 
@@ -275,7 +312,6 @@ async def test_aysnc_edit_events(hass: HomeAssistant):
     coordinator = hass.data[DOMAIN]["automower_test"]
     calendar = AutomowerCalendar(coordinator, MWR_ONE_IDX)
 
-    # pylint: disable=protected-access
     assert calendar._attr_unique_id == f"{MWR_ONE_ID}_calendar"
 
     event = {
@@ -288,14 +324,7 @@ async def test_aysnc_edit_events(hass: HomeAssistant):
     await calendar.async_create_event(**event)
     coordinator.session.action.assert_awaited_once_with(
         MWR_ONE_ID,
-        '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 1140,'
-        ' "duration": 300, "monday": true, "tuesday": false, "wednesday": true,'
-        ' "thursday": false, "friday": true, "saturday": false, "sunday": false},'
-        ' {"start": 0, "duration": 480, "monday": false, "tuesday": true, '
-        '"wednesday": false, "thursday": true, "friday": false, "saturday": true,'
-        ' "sunday": false}, {"start": 480, "duration": 60, "monday": true,'
-        ' "tuesday": true, "wednesday": true, "thursday": false, "friday": false,'
-        ' "saturday": false, "sunday": false}]}}}',
+        '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 1140, "duration": 300, "monday": true, "tuesday": false, "wednesday": true, "thursday": false, "friday": true, "saturday": false, "sunday": false}, {"start": 0, "duration": 480, "monday": false, "tuesday": true, "wednesday": false, "thursday": true, "friday": false, "saturday": true, "sunday": false}, {"start": 480, "duration": 60, "monday": true, "tuesday": true, "wednesday": true, "thursday": false, "friday": false, "saturday": false, "sunday": false}]}}}',
         "calendar",
     )
 
@@ -305,12 +334,7 @@ async def test_aysnc_edit_events(hass: HomeAssistant):
         await calendar.async_update_event("0", event)
         coordinator.session.action.assert_awaited_once_with(
             MWR_ONE_ID,
-            '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 480,'
-            ' "duration": 60, "monday": true, "tuesday": true, "wednesday": true,'
-            ' "thursday": false, "friday": false, "saturday": false, "sunday": false},'
-            ' {"start": 0, "duration": 480, "monday": false, "tuesday": true,'
-            ' "wednesday": false, "thursday": true, "friday": false, '
-            '"saturday": true, "sunday": false}]}}}',
+            '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 480, "duration": 60, "monday": true, "tuesday": true, "wednesday": true, "thursday": false, "friday": false, "saturday": false, "sunday": false}, {"start": 0, "duration": 480, "monday": false, "tuesday": true, "wednesday": false, "thursday": true, "friday": false, "saturday": true, "sunday": false}]}}}',
             "calendar",
         )
 
@@ -320,9 +344,7 @@ async def test_aysnc_edit_events(hass: HomeAssistant):
         await calendar.async_delete_event("0")
         coordinator.session.action.assert_awaited_once_with(
             MWR_ONE_ID,
-            '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 0, "duration": 480,'
-            ' "monday": false, "tuesday": true, "wednesday": false, "thursday": true,'
-            ' "friday": false, "saturday": true, "sunday": false}]}}}',
+            '{"data": {"type": "calendar", "attributes": {"tasks": [{"start": 0, "duration": 480, "monday": false, "tuesday": true, "wednesday": false, "thursday": true, "friday": false, "saturday": true, "sunday": false}]}}}',
             "calendar",
         )
 
