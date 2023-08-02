@@ -166,7 +166,8 @@
           "daily_limit": "Päevane limiit",
           "fota": "Püsivara uuendamine",
           "frost": "Härmatis",
-          "parked_until_further_notice": "Pargitud kuni edasise korralduseni"
+          "parked_until_further_notice": "Pargitud kuni edasise korralduseni",
+          "charging": "Laadimas"
         }
       },
       "mode_list": {

@@ -14,12 +14,7 @@
   "integration_type": "hub",
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/Thomas55555/husqvarna_automower/issues",
-  "loggers": [
-    "aioautomower",
-    "geopy",
-    "numpy",
-    "Pillow"
-  ],
+  "loggers": ["aioautomower", "geopy", "numpy", "Pillow"],
   "requirements": [
     "aioautomower==2023.8.0",
     "geopy>=2.1.0",
