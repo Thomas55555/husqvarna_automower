@@ -68,7 +68,6 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
 
         self.entry = entry
         self._position_history = {}
-        self._previous_position_history = {}
         self._attr_unique_id = f"{self.mower_id}_image"
         self.options = self.entry.options.get(self.mower_id, {})
         self.home_location = self.options.get(HOME_LOCATION, None)
@@ -239,36 +238,11 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
                 position_history[0]["longitude"],
             )
 
-        _LOGGER.debug(
-            "position_history[0]: %s",
-            json.dumps(position_history[0]),
-        )
-        _LOGGER.debug(
-            "self._position_history.get(mower_id, []): %s",
-            json.dumps(self._position_history.get(mower_id, [])),
-        )
-        if len(position_history) == 1:
-            if position_history[0] != self._position_history.get(mower_id, [])[0]:
-                self._position_history[
-                    mower_id
-                ] = position_history + self._position_history.get(mower_id, [])
-            position_history = self._position_history[mower_id]
-        else:
-            self._position_history[mower_id] = position_history
+        self._position_history[mower_id] = position_history
 
         # pylint: disable=invalid-name
         x1, y1 = self._scale_to_img(location, (map_image.size[0], map_image.size[1]))
         img_draw = ImageDraw.Draw(map_image)
-
-        _LOGGER.debug(
-            "position_history: %s",
-            json.dumps(position_history),
-        )
-        _LOGGER.debug(
-            "len(position_history): %s",
-            len(position_history),
-        )
-        # pylint: disable=invalid-name
 
         for i in range(len(position_history) - 1, 0, -1):
             point_1 = (

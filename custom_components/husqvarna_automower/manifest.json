@@ -21,7 +21,7 @@
     "Pillow"
   ],
   "requirements": [
-    "aioautomower==2023.7.1",
+    "aioautomower==2023.7.2",
     "geopy>=2.1.0",
     "numpy>=1.21.6",
     "Pillow>=9.1.1",
