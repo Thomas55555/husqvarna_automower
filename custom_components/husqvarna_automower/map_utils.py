@@ -1,9 +1,9 @@
 """Utilities for parsing and validating coordinates."""
 
 from PIL import Image, UnidentifiedImageError
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 
-from .const import LAT_LON_BOUNDS
+LAT_LON_BOUNDS = Polygon.from_bounds(xmin=-90.0, ymin=-180.0, xmax=90.0, ymax=180.0)
 
 
 def validate_rotation(rotation: float) -> float:
