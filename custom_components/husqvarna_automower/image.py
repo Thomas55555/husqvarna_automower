@@ -4,6 +4,7 @@ import io
 import json
 import logging
 import math
+from datetime import datetime
 from typing import Optional
 
 import numpy as np
@@ -310,9 +311,7 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
                 map_image,
             )
             self._image = map_image
-            self._attr_image_last_updated = self.datetime_object(
-                self.get_mower_attributes()["metadata"]["statusTimestamp"]
-            )
+            self._attr_image_last_updated = datetime.now()
 
     def _find_points_on_line(
         self, point_1: ImgPoint, point_2: ImgPoint
