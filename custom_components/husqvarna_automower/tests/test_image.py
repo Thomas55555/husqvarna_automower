@@ -145,37 +145,7 @@ async def test_load_image_enabled(hass: HomeAssistant):
     # Mower, no home location
     image_one.home_location = None
     await asyncio.to_thread(image_one._generate_image, {})
-
-    # Single position history
-    exp_result = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
-    ] + automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
-    ]
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
-    ] = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
-    ]
-    await asyncio.to_thread(image_one._generate_image, {})
-    assert image_one._position_history[MWR_ONE_ID] == exp_result
-
-    # Single position history, but it's the first position update
-    exp_result = [
-        automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-            "positions"
-        ][0]
-    ]
-    automower_coordinator_mock.session.data["data"][MWR_ONE_IDX]["attributes"][
-        "positions"
-    ] = exp_result
     image_one._position_history = {}
-    await asyncio.to_thread(image_one._generate_image, {})
-    assert image_one._position_history[MWR_ONE_ID] == exp_result
 
 
 @pytest.mark.asyncio

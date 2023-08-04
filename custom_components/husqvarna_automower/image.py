@@ -237,13 +237,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
                 position_history[0]["latitude"],
                 position_history[0]["longitude"],
             )
-        if len(position_history) == 1:
-            self._position_history[
-                mower_id
-            ] = position_history + self._position_history.get(mower_id, [])
-            position_history = self._position_history[mower_id]
-        else:
-            self._position_history[mower_id] = position_history
+
+        self._position_history[mower_id] = position_history
 
         # pylint: disable=invalid-name
         x1, y1 = self._scale_to_img(location, (map_image.size[0], map_image.size[1]))
