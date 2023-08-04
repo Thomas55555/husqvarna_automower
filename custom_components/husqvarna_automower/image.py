@@ -68,6 +68,7 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
 
         self.entry = entry
         self._position_history = {}
+        self.previous_position_history = {}
         self._attr_unique_id = f"{self.mower_id}_image"
         self.options = self.entry.options.get(self.mower_id, {})
         self.home_location = self.options.get(HOME_LOCATION, None)
@@ -310,7 +311,9 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         )
 
         self._image = map_image
-        self._attr_image_last_updated = datetime.now()
+        self._attr_image_last_updated = self.datetime_object(
+            self.get_mower_attributes()["metadata"]["statusTimestamp"]
+        )
 
     def _find_points_on_line(
         self, point_1: ImgPoint, point_2: ImgPoint
