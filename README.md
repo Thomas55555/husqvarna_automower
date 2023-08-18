@@ -40,7 +40,7 @@ Husqvarna Automowers with built-in *AutomowerÂ® Connect* or with the *AutomowerÂ
 
 ## Installation
 
-Requires Home Assistant 2023.3.0 or newer.
+Requires Home Assistant 2023.7.0 or newer.
 
 ### Installation through HACS
 
