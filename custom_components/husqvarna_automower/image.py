@@ -61,13 +61,14 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_translation_key = "mower_img"
 
-    def __init__(self, session, idx, entry, hass: HomeAssistant) -> None:
+    def __init__(self, coordinator, idx, entry, hass: HomeAssistant) -> None:
         """Initialize AutomowerImage."""
         ImageEntity.__init__(self, hass)
-        AutomowerEntity.__init__(self, session, idx)
+        AutomowerEntity.__init__(self, coordinator, idx)
 
         self.entry = entry
         self._position_history = {}
+        self.previous_position_history = {}
         self._attr_unique_id = f"{self.mower_id}_image"
         self.options = self.entry.options.get(self.mower_id, {})
         self.home_location = self.options.get(HOME_LOCATION, None)
@@ -81,8 +82,8 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
         self._mwr_id_to_idx = {}
 
         # pylint: disable=unused-variable
-        for idx, ent in enumerate(session.session.data["data"]):
-            self._mwr_id_to_idx[session.session.data["data"][idx]["id"]] = idx
+        for idx, ent in enumerate(coordinator.session.data["data"]):
+            self._mwr_id_to_idx[coordinator.session.data["data"][idx]["id"]] = idx
 
         self._additional_images = self.options.get(ADD_IMAGES, [])
 
@@ -299,18 +300,18 @@ class AutomowerImage(ImageEntity, AutomowerEntity):
                 )
 
         position_history = AutomowerEntity.get_mower_attributes(self)["positions"]
-
-        map_image = self._generate_image_img(
-            self.is_home,
-            self.home_location,
-            position_history,
-            self.mower_id,
-            self._path_color,
-            map_image,
-        )
-
-        self._image = map_image
-        self._attr_image_last_updated = datetime.now()
+        if self.previous_position_history != position_history:
+            self.previous_position_history = position_history
+            map_image = self._generate_image_img(
+                self.is_home,
+                self.home_location,
+                position_history,
+                self.mower_id,
+                self._path_color,
+                map_image,
+            )
+            self._image = map_image
+            self._attr_image_last_updated = datetime.now()
 
     def _find_points_on_line(
         self, point_1: ImgPoint, point_2: ImgPoint
