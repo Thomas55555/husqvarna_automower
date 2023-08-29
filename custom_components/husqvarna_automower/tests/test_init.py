@@ -69,6 +69,7 @@ async def test_load_unload(hass: HomeAssistant):
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
             data=AUTOMOWER_SM_SESSION_DATA,
             register_data_callback=MagicMock(),
             unregister_data_callback=MagicMock(),
@@ -96,7 +97,7 @@ async def test_load_unload(hass: HomeAssistant):
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(side_effect=TimeoutError),
-            close=AsyncMock(Exception),
+            close=AsyncMock(side_effect=Exception),
         ),
     ):
         # Timeout Error
@@ -113,6 +114,7 @@ async def test_load_unload(hass: HomeAssistant):
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(side_effect=Exception("Test Exception")),
+            close=AsyncMock(side_effect=Exception("Test Exception")),
         ),
     ):
         # Genric Error
