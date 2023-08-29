@@ -96,6 +96,7 @@ async def test_load_unload(hass: HomeAssistant):
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(side_effect=TimeoutError),
+            close=AsyncMock(Exception),
         ),
     ):
         # Timeout Error
