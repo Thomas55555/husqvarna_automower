@@ -92,6 +92,11 @@ async def test_load_unload(hass: HomeAssistant):
         await hass.async_block_till_done()
         assert config_entry.state == ConfigEntryState.NOT_LOADED
 
+        assert await config_entry.async_unload(hass)
+        assert AutomowerSession.close(Exception)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.NOT_LOADED
+
     with patch(
         "aioautomower.AutomowerSession",
         return_value=AsyncMock(
