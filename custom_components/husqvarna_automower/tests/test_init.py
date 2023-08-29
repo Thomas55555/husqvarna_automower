@@ -191,6 +191,7 @@ async def test_async_migrate_entry_2_to_4(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
         ),
     ) as automower_session_mock:
         automower_coordinator_mock = MagicMock(
@@ -278,6 +279,7 @@ async def test_async_migrate_entry_3_to_4(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
         ),
     ) as automower_session_mock:
         automower_coordinator_mock = MagicMock(
