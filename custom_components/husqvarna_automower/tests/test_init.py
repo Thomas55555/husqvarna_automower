@@ -111,6 +111,18 @@ async def test_load_unload(hass: HomeAssistant):
     with patch(
         "aioautomower.AutomowerSession",
         return_value=AsyncMock(
+            close=AsyncMock(side_effect=Exception),
+        ),
+    ):
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+        assert await config_entry.async_unload(hass)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.NOT_LOADED
+
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(side_effect=Exception("Test Exception")),
         ),
@@ -119,42 +131,6 @@ async def test_load_unload(hass: HomeAssistant):
         await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
         assert config_entry.state == ConfigEntryState.SETUP_ERROR
-
-
-@pytest.mark.asyncio
-async def test_unload(hass: HomeAssistant):
-    """test automower initialization"""
-
-    await configure_application_credentials(hass)
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data=AUTOMOWER_CONFIG_DATA,
-        options=AUTOMER_SM_CONFIG,
-        entry_id="automower_test",
-        title="Automower Test",
-    )
-    config_entry.add_to_hass(hass)
-
-    with patch(
-        "aioautomower.AutomowerSession",
-        return_value=AsyncMock(
-            register_token_callback=MagicMock(),
-            connect=AsyncMock(),
-            close=AsyncMock(side_effect=Exception),
-            data=AUTOMOWER_SM_SESSION_DATA,
-            register_data_callback=MagicMock(),
-            unregister_data_callback=MagicMock(),
-        ),
-    ):
-        await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.LOADED
-        assert len(hass.config_entries.async_entries(DOMAIN)) == 1
-
-        assert await config_entry.async_unload(hass)
-        await hass.async_block_till_done()
-        assert config_entry.state == ConfigEntryState.NOT_LOADED
 
 
 @pytest.mark.asyncio
