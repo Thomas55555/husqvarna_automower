@@ -69,6 +69,7 @@ async def test_load_unload(hass: HomeAssistant):
         return_value=AsyncMock(
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
             data=AUTOMOWER_SM_SESSION_DATA,
             register_data_callback=MagicMock(),
             unregister_data_callback=MagicMock(),
@@ -103,6 +104,18 @@ async def test_load_unload(hass: HomeAssistant):
         await hass.async_block_till_done()
         assert config_entry.state == ConfigEntryState.SETUP_RETRY
 
+        assert await config_entry.async_unload(hass)
+        await hass.async_block_till_done()
+        assert config_entry.state == ConfigEntryState.NOT_LOADED
+
+    with patch(
+        "aioautomower.AutomowerSession",
+        return_value=AsyncMock(
+            close=AsyncMock(side_effect=Exception),
+        ),
+    ):
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
         assert await config_entry.async_unload(hass)
         await hass.async_block_till_done()
         assert config_entry.state == ConfigEntryState.NOT_LOADED
@@ -188,6 +201,7 @@ async def test_async_migrate_entry_2_to_4(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
         ),
     ) as automower_session_mock:
         automower_coordinator_mock = MagicMock(
@@ -275,6 +289,7 @@ async def test_async_migrate_entry_3_to_4(hass: HomeAssistant):
             unregister_data_callback=MagicMock(),
             register_token_callback=MagicMock(),
             connect=AsyncMock(),
+            close=AsyncMock(),
         ),
     ) as automower_session_mock:
         automower_coordinator_mock = MagicMock(
