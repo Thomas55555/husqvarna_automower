@@ -142,6 +142,9 @@
       "cutting_time_percent": {
         "name": "Cutting time percent"
       },
+      "total_drive_distance": {
+        "name": "Total drive distance"
+      },
       "battery_level": {
         "name": "Battery level"
       },
