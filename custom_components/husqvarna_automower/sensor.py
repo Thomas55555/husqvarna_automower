@@ -11,7 +11,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfTime
+from homeassistant.const import PERCENTAGE, UnitOfTime, UnitofLength
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -253,6 +253,17 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         icon="mdi:grass",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: data["cuttingHeight"],
+        available_fn=lambda data: True,
+    ),
+    AutomowerSensorEntityDescription(
+        key="totalDriveDistance",
+        translation_key="total_drive_distance",
+        entity_registry_enabled_default=False,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfTime.METERS,
+        value_fn=lambda data: data["statistics"]["totalDriveDistance"],
         available_fn=lambda data: True,
     ),
 )
