@@ -11,7 +11,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfTime, UnitofLength
+from homeassistant.const import PERCENTAGE, UnitOfLength, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -262,7 +262,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DISTANCE,
-        native_unit_of_measurement=UnitOfTime.METERS,
+        native_unit_of_measurement=UnitOfLength.METERS,
         value_fn=lambda data: data["statistics"]["totalDriveDistance"],
         available_fn=lambda data: True,
     ),
