@@ -142,6 +142,9 @@
       "cutting_time_percent": {
         "name": "Niitmisaeg"
       },
+      "total_drive_distance": {
+        "name": "Läbitud teekond kokku"
+      },
       "battery_level": {
         "name": "Aku laetuse tase"
       },
