@@ -51,7 +51,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self._event = None
         self._next_event = None
         self.loc = None
-        self.geolocator = Nominatim(user_agent=self.mower_id)
         self._attr_unique_id = f"{self.mower_id}_calendar"
 
     @property
