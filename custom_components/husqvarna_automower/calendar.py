@@ -6,7 +6,6 @@ from datetime import datetime
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from aiohttp import ClientResponseError
-from geopy.geocoders import Nominatim
 from homeassistant.components.calendar import (
     CalendarEntity,
     CalendarEntityFeature,
@@ -52,7 +51,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
         self._event = None
         self._next_event = None
         self.loc = None
-        self.geolocator = Nominatim(user_agent=self.mower_id)
         self._attr_unique_id = f"{self.mower_id}_calendar"
 
     @property
@@ -67,24 +65,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
     ) -> list[CalendarEvent]:
         """Get all events in a specific time frame."""
         mower_attributes = AutomowerEntity.get_mower_attributes(self)
-        try:
-            lat = mower_attributes["positions"][0]["latitude"]
-            long = mower_attributes["positions"][0]["longitude"]
-            position = f"{lat}, {long}"
-            result = await hass.async_add_executor_job(
-                self.geolocator.reverse, position
-            )
-            try:
-                self.loc = (
-                    f"{result.raw['address']['road']} "
-                    f"{result.raw['address']['house_number']}, "
-                    f"{result.raw['address']['town']}"
-                )
-            except Exception:  # TODO: What exception are we trying to catch here?
-                self.loc = None
-        except IndexError:
-            self.loc = None
-        # pylint: disable=unused-variable
         even_list, next_event = self.get_next_event()
         return even_list
 
@@ -95,7 +75,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
             summary="",
             start=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7),
             end=dt_util.start_of_local_day() + dt_util.dt.timedelta(days=7, hours=2),
-            location="",
         )
         event_list = []
         # pylint: disable=unused-variable
@@ -128,7 +107,6 @@ class AutomowerCalendar(CalendarEntity, AutomowerEntity):
                         start=start_mowing + dt_util.dt.timedelta(days=days),
                         end=end_mowing + dt_util.dt.timedelta(days=days),
                         description="Description can't be changed",
-                        location=self.loc,
                         rrule=f"FREQ=WEEKLY;BYDAY={day_list}",
                         uid=task,
                         recurrence_id=f"Recure{task}",

@@ -7,7 +7,6 @@ import pytest
 import voluptuous as vol
 from aioautomower import AutomowerSession
 from aiohttp import ClientResponseError
-from geopy import Location
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -88,125 +87,6 @@ async def test_calendar(hass: HomeAssistant):
     ] = True
 
     assert calendar.available == True
-
-    # Get calendar events
-    location_result = Location(
-        "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-        (35.5399226, -82.55193188763246, 0.0),
-        {
-            "place_id": 266519807,
-            "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-            "osm_type": "way",
-            "osm_id": 830192286,
-            "lat": "35.5399226",
-            "lon": "-82.55193188763246",
-            "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-            "address": {
-                "leisure": "Italian Garden",
-                "road": "Biltmore Estate Path",
-                "county": "Buncombe County",
-                "state": "North Carolina",
-                "ISO3166-2-lvl4": "US-NC",
-                "postcode": "28803",
-                "country": "United States",
-                "country_code": "us",
-                "house_number": "1",
-                "town": "Asheville",
-            },
-            "boundingbox": ["35.5395166", "35.5403093", "-82.5530644", "-82.550742"],
-        },
-    )
-    with patch.object(
-        calendar,
-        "geolocator",
-        MagicMock(reverse=MagicMock(return_value=location_result)),
-    ) as mock_geo:
-        result = await calendar.async_get_events_data(
-            hass, datetime(2023, 6, 9, 7), datetime(2023, 6, 9, 16)
-        )
-        mock_geo.reverse.assert_called_once()
-        assert len(result) == 6
-
-        # No house number in return address
-        location_result = Location(
-            "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-            (35.5399226, -82.55193188763246, 0.0),
-            {
-                "place_id": 266519807,
-                "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-                "osm_type": "way",
-                "osm_id": 830192286,
-                "lat": "35.5399226",
-                "lon": "-82.55193188763246",
-                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-                "address": {
-                    "leisure": "Italian Garden",
-                    "road": "Biltmore Estate Path",
-                    "county": "Buncombe County",
-                    "state": "North Carolina",
-                    "ISO3166-2-lvl4": "US-NC",
-                    "postcode": "28803",
-                    "country": "United States",
-                    "country_code": "us",
-                    "town": "Asheville",
-                },
-                "boundingbox": [
-                    "35.5395166",
-                    "35.5403093",
-                    "-82.5530644",
-                    "-82.550742",
-                ],
-            },
-        )
-        mock_geo.reverse.reset_mock()
-        mock_geo.reverse.return_value = location_result
-        result = await calendar.async_get_events_data(
-            hass, datetime(2023, 6, 9, 7), datetime(2023, 6, 9, 16)
-        )
-        mock_geo.reverse.assert_called_once()
-        assert len(result) == 6
-
-        # No postions, Index error
-        location_result = Location(
-            "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-            (35.5399226, -82.55193188763246, 0.0),
-            {
-                "place_id": 266519807,
-                "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-                "osm_type": "way",
-                "osm_id": 830192286,
-                "lat": "35.5399226",
-                "lon": "-82.55193188763246",
-                "display_name": "Italian Garden, Biltmore Estate Path, Buncombe County, North Carolina, 28803, United States",
-                "address": {
-                    "leisure": "Italian Garden",
-                    "road": "Biltmore Estate Path",
-                    "county": "Buncombe County",
-                    "state": "North Carolina",
-                    "ISO3166-2-lvl4": "US-NC",
-                    "postcode": "28803",
-                    "country": "United States",
-                    "country_code": "us",
-                    "house_number": "1",
-                    "town": "Asheville",
-                },
-                "boundingbox": [
-                    "35.5395166",
-                    "35.5403093",
-                    "-82.5530644",
-                    "-82.550742",
-                ],
-            },
-        )
-        mock_geo.reverse.reset_mock()
-        mock_geo.reverse.return_value = location_result
-        coordinator.session.data["data"][MWR_ONE_IDX]["attributes"]["positions"] = []
-
-        result = await calendar.async_get_events_data(
-            hass, datetime(2023, 6, 9, 7), datetime(2023, 6, 9, 16)
-        )
-        mock_geo.reverse.assert_not_called()
-        assert len(result) == 6
 
     # Get next event
     assert len(calendar.get_next_event()) == 2
