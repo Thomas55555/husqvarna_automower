@@ -22,7 +22,6 @@
   ],
   "requirements": [
     "aioautomower==2023.8.1",
-    "geopy>=2.1.0",
     "numpy>=1.21.6",
     "Pillow>=9.1.1",
     "Shapely>=1.8.2"
