@@ -71,7 +71,7 @@ In order to use this integration you must properly configure OAuth2 credentials 
 
 Your Husqvarna account username/password used for the *Automower® Connect*  phone app is required.  Most users probably created a Husqvarna account during initial mower setup.
 
-1. Make sure, that the exgernal url on the page `Settings -> Network` in the field `Internet` is set to your external url.
+1. Make sure, that the external url on the page `Settings -> Network` in the field `Internet` is set to your external url.
 
 2. Go to <https://developer.husqvarnagroup.cloud/> and sign in with Husqvarna account.  Sign in page has password recovery/reset using registered email address if needed.  Authorize *Developer Porthole* to access Husqvarna account when prompted.
 
