@@ -20,11 +20,6 @@
     "numpy",
     "Pillow"
   ],
-  "requirements": [
-    "aioautomower==2023.8.1",
-    "numpy>=1.21.6",
-    "Pillow>=9.1.1",
-    "Shapely>=1.8.2"
-  ],
-  "version": "0.0.0"
+  "requirements": ["aioautomower==2023.12.0b0"],
+  "version": "2023.11.0"
 }
