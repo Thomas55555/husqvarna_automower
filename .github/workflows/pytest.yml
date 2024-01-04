@@ -34,7 +34,8 @@ jobs:
           pipenv install --deploy --dev
       - name: Run test suite
         run: |
-          pipenv run test --asyncio-mode=auto custom_components/husqvarna_automower --cov=custom_components.husqvarna_automower --cov-report xml -v
+          pip install -r requirements.txt
+          pytest --asyncio-mode=auto custom_components/husqvarna_automower --cov=custom_components.husqvarna_automower --cov-report xml -v
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
