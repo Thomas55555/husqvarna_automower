@@ -5,7 +5,7 @@ import logging
 from aiohttp import ClientResponseError
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TIME_MINUTES
+from homeassistant.const import UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -45,14 +45,14 @@ NUMBER_SENSOR_TYPES: tuple[NumberEntityDescription, ...] = (
         translation_key="park_for",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
-        native_unit_of_measurement=TIME_MINUTES,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
     ),
     NumberEntityDescription(
         key="Start",
         translation_key="mow_for",
         icon="mdi:clock-outline",
         entity_registry_enabled_default=True,
-        native_unit_of_measurement=TIME_MINUTES,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
     ),
 )
 
