@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pytest-homeassistant-custom-component = "*"
-aioautomower = "*"
+aioautomower = "2023.8.1"
 geopy = "*"
 numpy = "*"
 pillow = "*"
@@ -20,7 +20,7 @@ fnv-hash-fast = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
 
 [scripts]
 test = "pytest"
