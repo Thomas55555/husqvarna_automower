@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pytest-homeassistant-custom-component = "*"
-aioautomower = "*"
+aioautomower = "2023.8.1"
 geopy = "*"
 numpy = "*"
 pillow = "*"
