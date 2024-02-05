@@ -37,7 +37,7 @@ jobs:
           pip install -r requirements.txt
           pytest --asyncio-mode=auto custom_components/husqvarna_automower --cov=custom_components.husqvarna_automower --cov-report xml -v
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
             token: ${{ secrets.CODECOV_TOKEN }}
 
