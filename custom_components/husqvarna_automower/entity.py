@@ -67,7 +67,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
             model=self.model_name,
             configuration_url=HUSQVARNA_URL,
             suggested_area="Garden",
-            serial_number=self.serial
+            serial_number=self.serial,
         )
 
     @property
