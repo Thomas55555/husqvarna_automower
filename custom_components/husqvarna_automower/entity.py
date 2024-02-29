@@ -27,7 +27,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
         self.mower_id = self.mower["id"]
         self.mower_name = mower_attributes["system"]["name"]
         self.model_name = mower_attributes["system"]["model"]
-
+        self.serial = mower_attributes["system"]["serialNumber"]
         self._available = self.get_mower_attributes()["metadata"]["connected"]
 
     def get_mower_attributes(self) -> dict:
@@ -67,6 +67,7 @@ class AutomowerEntity(CoordinatorEntity[AutomowerDataUpdateCoordinator]):
             model=self.model_name,
             configuration_url=HUSQVARNA_URL,
             suggested_area="Garden",
+            serial_number=self.serial
         )
 
     @property
