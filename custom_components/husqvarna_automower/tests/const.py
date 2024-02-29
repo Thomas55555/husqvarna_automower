@@ -50,7 +50,7 @@ MOWER_ONE_SESSION_DATA = {
         "system": {
             "name": "Test Mower 1",
             "model": "450XH-TEST",
-            "serialNumber" : "123",
+            "serialNumber": "123",
         },
         "metadata": {"connected": True, "statusTimestamp": 1685899526195},
         "calendar": {
@@ -127,7 +127,7 @@ MOWER_TWO_SESSION_DATA = {
         "system": {
             "name": "Test Mower 2",
             "model": "450XH-TEST",
-            "serialNumber" : "123",
+            "serialNumber": "123",
         },
         "metadata": {"connected": True, "statusTimestamp": 1685899526195},
         "calendar": {
